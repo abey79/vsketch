@@ -1,0 +1,10 @@
+numpy
+matplotlib
+git+https://github.com/abey79/vpype#egg=vpype
+
+# jupyter
+jupyter
+
+# dev/test
+pytest
+black
