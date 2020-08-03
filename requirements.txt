@@ -3,7 +3,8 @@ matplotlib
 git+https://github.com/abey79/vpype#egg=vpype
 
 # jupyter
-jupyter
+jupyterlab
+ipympl
 
 # dev/test
 pytest

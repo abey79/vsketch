@@ -130,6 +130,19 @@ class Vsketch:
         """Disable fill."""
         self._cur_fill = None
 
+    def line(self, x1: float, y1: float, x2: float, y2: float) -> None:
+        """Draw a line.
+
+        Args:
+            x1: X coordinate of starting point
+            y1: Y coordinate of starting point
+            x2: X coordinate of ending point
+            y2: Y coordinate of ending point
+        """
+
+        # TODO: handle transformation
+        self._add_line(np.array([x1 + y1 * 1j, x2 + y2 * 1j], dtype=complex))
+
     def circle(self, x: float, y: float, d: float) -> None:
         """Draw a circle.
 

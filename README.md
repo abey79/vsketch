@@ -14,7 +14,15 @@ python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-jupyter notebook  # [optional] to start the jupyter environment
+pip install -e .
+
+# to install the interactive matplotlib widget
+jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib
+```
+
+To start the Jupyter Lab environment:
+```bash
+jupyter lab
 ```
 
 ## Example
@@ -41,6 +49,8 @@ vsk.plot()
 # write the SVG
 vsk.write("test.svg", "a4", center=True)
 ```
+
+See also included [examples](https://github.com/abey79/vsketch/tree/master/examples).
 
 
 ## Contributing
