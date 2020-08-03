@@ -1,10 +1,9 @@
 import shlex
-from typing import Optional, Union
+from typing import List, Optional, Tuple, Union, cast
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-
 import vpype as vp
 import vpype_cli
 
@@ -40,7 +39,9 @@ def _plot_vector_data(
     collections = {}
     for layer_id, lc in vector_data.layers.items():
         if colorful:
-            color = COLORS[color_idx:] + COLORS[:color_idx]
+            color: Union[
+                Tuple[float, float, float], List[Tuple[float, float, float]]
+            ] = COLORS[color_idx:] + COLORS[:color_idx]
             color_idx += len(lc)
         else:
             color = COLORS[color_idx]
@@ -61,10 +62,7 @@ def _plot_vector_data(
         if show_pen_up:
             pen_up_lines = matplotlib.collections.LineCollection(
                 (
-                    (
-                        vp.as_vector(lc[i])[-1] * scale,
-                        vp.as_vector(lc[i + 1])[0] * scale,
-                    )
+                    (vp.as_vector(lc[i])[-1] * scale, vp.as_vector(lc[i + 1])[0] * scale,)
                     for i in range(len(lc) - 1)
                 ),
                 color=(0, 0, 0),
@@ -100,6 +98,10 @@ class Vsketch:
         self._quantization = 0.1
         self._pipeline = ""
         self._figure = None
+
+    @property
+    def vector_data(self):
+        return self._vector_data
 
     def stroke(self, c: int) -> None:
         """Set the current stroke color.
@@ -143,16 +145,36 @@ class Vsketch:
         # TODO: handle transformation
         self._add_line(np.array([x1 + y1 * 1j, x2 + y2 * 1j], dtype=complex))
 
-    def circle(self, x: float, y: float, d: float) -> None:
+    def circle(
+        self,
+        x: float,
+        y: float,
+        diameter: Optional[float] = None,
+        radius: Optional[float] = None,
+    ) -> None:
         """Draw a circle.
+
+        Example:
+
+            >>> import vsketch
+            >>> vsk = vsketch.Vsketch()
+            >>> vsk.circle(0, 0, 10)  # by default, diameter is used
+            >>> vsk.circle(0, 0, radius=5)  # radius can be specified instead
 
         Args:
             x: x coordinate of the center
             y: y coordinate of the center
-            d: circle diameter
+            diameter: circle diameter (or None if using radius)
+            radius: circle radius (or None if using diameter
         """
 
-        line = vp.circle(x, y, d / 2, self._quantization)
+        if (diameter is None) == (radius is None):
+            raise ValueError("either (but not both) diameter and radius must be provided")
+
+        if radius is None:
+            radius = cast(float, diameter) / 2
+
+        line = vp.circle(x, y, radius, self._quantization)
         # TODO: handle transformation
         self._add_line(line)
 
@@ -183,6 +205,8 @@ class Vsketch:
         """
         if not h:
             h = w
+        if not tl:
+            tl = 0
         if not tr:
             tr = tl
         if not br:
@@ -219,11 +243,8 @@ class Vsketch:
         @vpype_cli.cli.command(group="vsketch")
         @vp.global_processor
         def vsketchplot(vector_data):
-            #splt.figure(1)
             _plot_vector_data(vector_data)
             return vector_data
 
         args = "vsketchinput " + self._pipeline + " vsketchplot"
-        vpype_cli.cli.main(
-            prog_name="vpype", args=shlex.split(args), standalone_mode=False
-        )
+        vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)

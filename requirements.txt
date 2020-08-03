@@ -4,8 +4,12 @@ git+https://github.com/abey79/vpype#egg=vpype
 
 # jupyter
 jupyterlab
+jupyter_nbextensions_configurator
+jupyterlab_code_formatter
 ipympl
+black
+isort
 
 # dev/test
 pytest
-black
+mypy

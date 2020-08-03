@@ -16,8 +16,9 @@ pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 
-# to install the interactive matplotlib widget
-jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib
+# setup a nice jupyter lab environment with interactive matplotlib widget and code formatting
+jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib @ryantam626/jupyterlab_code_formatter
+jupyter serverextension enable --py jupyterlab_code_formatter
 ```
 
 To start the Jupyter Lab environment:
