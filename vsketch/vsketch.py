@@ -1,5 +1,5 @@
 import shlex
-from typing import List, Optional, Tuple, Union, cast
+from typing import Iterable, List, Optional, Sequence, Tuple, Union, cast
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -221,6 +221,58 @@ class Vsketch:
 
         line = vp.rect(x, y, w, h)
         # TODO: handle round corners
+
+        self._add_line(line)
+
+    def polygon(
+        self,
+        x: Union[Iterable[float], Iterable[Sequence[float]]],
+        y: Optional[Iterable[float]] = None,
+        close: bool = False,
+    ):
+        """Draw a polygon.
+
+        Examples:
+
+            A single iterable of size-2 sequence can be used::
+
+                >>> import vsketch
+                >>> vsk = vsketch.Vsketch()
+                >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
+
+            Alternatively, two iterables of float can be passed::
+
+                >>> vsk.polygon([0, 2, 3], [0, 3, 2])
+
+            The polygon can be automatically closed if needed::
+
+                >>> vsk.polygon([0, 2, 3], [0, 3, 2], close=True)
+
+        Args:
+            x: X coordinates or iterable of size-2 points (if ``y`` is omitted)
+            y: Y coordinates
+            close: the polygon is closed if True
+        """
+        if y is None:
+            try:
+                # noinspection PyTypeChecker
+                line = np.array(
+                    [complex(c[0], c[1]) for c in cast(Iterable[Sequence[float]], x)]
+                )
+            except:
+                raise ValueError(
+                    "when Y is not provided, X must contain an iterable of size 2+ sequences"
+                )
+        else:
+            try:
+                line = np.array([complex(c[0], c[1]) for c in zip(x, y)])  # type: ignore
+            except:
+                raise ValueError(
+                    "when both X and Y are provided, they must be sequences o float"
+                )
+
+        if close:
+            line = np.hstack([line, line[0]])
 
         self._add_line(line)
 
