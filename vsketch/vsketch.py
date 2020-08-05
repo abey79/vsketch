@@ -1,11 +1,12 @@
 import shlex
-from typing import Iterable, List, Optional, Sequence, Tuple, Union, cast
+from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union, cast
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import vpype as vp
 import vpype_cli
+from shapely.geometry import LinearRing, LineString, MultiLineString, MultiPolygon, Polygon
 
 COLORS = [
     (0, 0, 1),
@@ -275,6 +276,34 @@ class Vsketch:
             line = np.hstack([line, line[0]])
 
         self._add_line(line)
+
+    def geometry(self, shape: Any) -> None:
+        """Draw a Shapely geometry.
+
+        This function should accept any of LineString, LinearRing, MultiPolygon,
+        MultiLineString, or Polygon.
+
+        Args:
+            shape (Shapely geometry): a supported shapely geometry object
+        """
+
+        try:
+            if shape.geom_type in ["LineString", "LinearRing"]:
+                self.polygon(shape.coords)
+            elif shape.geom_type == "MultiLineString":
+                for ls in shape:
+                    self.polygon(ls.coords)
+            elif shape.geom_type in ["Polygon", "MultiPolygon"]:
+                if shape.geom_type == "Polygon":
+                    shape = [shape]
+                for p in shape:
+                    self.polygon(p.exterior.coords)
+                    for hole in p.interiors:
+                        self.polygon(hole.coords)
+            else:
+                raise ValueError("unsupported Shapely geometry")
+        except AttributeError:
+            raise ValueError("the input must be a supported Shapely geometry")
 
     def _add_line(self, line: np.ndarray) -> None:
         if self._cur_stroke:

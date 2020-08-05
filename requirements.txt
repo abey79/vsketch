@@ -1,6 +1,7 @@
 numpy
 matplotlib
 git+https://github.com/abey79/vpype#egg=vpype
+shapely
 
 # jupyter
 jupyterlab
