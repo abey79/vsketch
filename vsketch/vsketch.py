@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import vpype as vp
 import vpype_cli
-from shapely.geometry import LinearRing, LineString, MultiLineString, MultiPolygon, Polygon
+
+__all__ = ["Vsketch"]
 
 COLORS = [
     (0, 0, 1),
@@ -92,6 +93,8 @@ def _plot_vector_data(
 
 # noinspection PyPep8Naming
 class Vsketch:
+    """Vsketch doc"""
+
     def __init__(self):
         self._vector_data = vp.VectorData()
         self._cur_stroke: Optional[int] = 1

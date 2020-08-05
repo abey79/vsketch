@@ -1,1 +1,3 @@
-from .vsketch import Vsketch
+"""Module doc"""
+
+from .vsketch import *

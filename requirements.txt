@@ -14,3 +14,6 @@ isort
 # dev/test
 pytest
 mypy
+
+# documentation
+-r docs/requirements.txt

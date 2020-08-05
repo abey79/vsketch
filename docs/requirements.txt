@@ -1,0 +1,4 @@
+sphinx>=3
+sphinx-autodoc-typehints
+sphinx-rtd-theme
+recommonmark
