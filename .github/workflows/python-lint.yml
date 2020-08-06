@@ -4,6 +4,7 @@ on: push
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     steps:
     - name: Python Code Quality and Lint
       uses: abey79/python-lint@master
