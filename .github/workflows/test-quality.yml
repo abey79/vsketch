@@ -53,4 +53,4 @@ jobs:
         # Extra options: mypy $(extra-mypy-options) $(python-root-list)
         #extra-mypy-options: # optional, default is
         # Extra options: isort -rc $(extra-isort-options) $(python-root-list) -c --diff
-        #extra-isort-options: # optional, default is
+        extra-isort-options: -w 95 -m 3
