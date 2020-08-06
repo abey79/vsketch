@@ -4,8 +4,8 @@ vsketch
 
 .. start-doc-inclusion-marker
 
-vsketch is plotter generative art toolkit based based on [vpype](https://github.com/abey79/vpype/) and suited
-for use within Jupyter notebooks. Its API is loosely based on that of [Processing](https://processing.org).
+vsketch is plotter generative art toolkit based based on `vpype <https://github.com/abey79/vpype/>`_ and suited
+for use within Jupyter notebooks. Its API is loosely based on that of `Processing <https://processing.org>`_.
 
 *This project is at the stage of the very early concept/prototype.*
 
@@ -77,4 +77,4 @@ Pull-request are most welcome contributions. Actually, this project survival mig
 License
 =======
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the `LICENSE <LICENSE>`_ file for details.
