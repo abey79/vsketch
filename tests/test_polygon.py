@@ -2,6 +2,7 @@ from typing import Iterable, Sequence
 
 import numpy as np
 import pytest
+
 import vsketch
 
 from .utils import line_count_equal, line_exists
