@@ -102,7 +102,7 @@ class Vsketch:
         self._quantization = 0.1
         self._pipeline = ""
         self._figure = None
-        self._transform = np.empty(shape=(2, 2), dtype=float)
+        self._transform = np.empty(shape=(3, 3), dtype=float)
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -119,6 +119,23 @@ class Vsketch:
         if self._processed_vector_data is None:
             self._apply_pipeline()
         return self._processed_vector_data
+
+    @property
+    def transform(self) -> np.ndarray:
+        """Get the current transform matrix.
+
+        Returns:
+            the current 3x3 homogenous planar transform matrix
+        """
+        return self._transform
+
+    @transform.setter
+    def transform(self, t: np.ndarray) -> None:
+        """Set the current transform matrix.
+        Args:
+            t: a 3x3 homogenous planar transform matrix
+        """
+        self._transform = t
 
     def stroke(self, c: int) -> None:
         """Set the current stroke color.
@@ -149,9 +166,9 @@ class Vsketch:
         """Disable fill."""
         self._cur_fill = None
 
-    def resetMatrix(self):
-        self._transform[0, 0] = self._transform[1, 1] = 1.0
-        self._transform[0, 1] = self._transform[1, 0] = 0.0
+    def resetMatrix(self) -> None:
+        """Reset the current transformation matrix."""
+        self.transform = np.identity(3)
 
     def scale(self, sx: Union[float, str], sy: Optional[Union[float, str]] = None) -> None:
         """Apply a scale factor to the current transformation matrix.
@@ -165,18 +182,52 @@ class Vsketch:
         """
 
         if isinstance(sx, str):
-            x = vp.convert_length(sx)
-        else:
-            x = float(sx)
+            sx = vp.convert_length(sx)
 
         if sy is None:
-            y = x
+            sy = sx
         elif isinstance(sy, str):
-            y = vp.convert_length(sy)
-        else:
-            y = float(sy)
+            sy = vp.convert_length(sy)
 
-        self._transform = np.array([(x, 0), (0, y)], dtype=float) @ self._transform
+        self.transform = np.diag([float(sx), float(sy), 1]) @ self.transform
+
+    def rotate(self, angle: float, degrees=True) -> None:
+        """Apply a rotation to the current transformation matrix.
+
+        The coordinates are always rotated around their relative position to the origin.
+        Positive numbers rotate objects in a clockwise direction and negative numbers rotate in
+        the couter-clockwise direction.
+
+        Args:
+            angle: the angle of the rotation in radian (or degrees if ``degrees=True``)
+            degrees: if True, the input is interpreted as degree instead of radians
+        """
+
+        if degrees:
+            angle = angle * np.pi / 180.0
+
+        self.transform = (
+            np.array(
+                [
+                    (np.cos(angle), np.sin(angle), 0),
+                    (np.sin(angle), -np.cos(angle), 0),
+                    (0, 0, 1),
+                ],
+                dtype=float,
+            )
+            @ self.transform
+        )
+
+    def translate(self, dx: float, dy: float) -> None:
+        """Apply a translation to the current transformation matrix.
+
+        Args:
+            dx: translation along X axis
+            dy: translation along Y axis
+        """
+
+        self.transform[0, 2] += float(dx)
+        self.transform[1, 2] += float(dy)
 
     def line(self, x1: float, y1: float, x2: float, y2: float) -> None:
         """Draw a line.
@@ -354,12 +405,15 @@ class Vsketch:
         # invalidate the cache
         self._processed_vector_data = None
 
-        new_line = np.empty(line.shape, dtype=complex)
-        new_line.real = line.real * self._transform[0, 0] + line.imag * self._transform[0, 1]
-        new_line.imag = line.real * self._transform[1, 0] + line.imag * self._transform[1, 1]
+        # apply transformation
+        transformed_line = self.transform @ np.vstack(
+            [line.real, line.imag, np.ones(len(line))]
+        ).T.reshape(len(line), 3, 1)
+        line.real = transformed_line[:, 0, 0]
+        line.imag = transformed_line[:, 1, 0]
 
         if self._cur_stroke:
-            self._vector_data.add(vp.LineCollection([new_line]), self._cur_stroke)
+            self._vector_data.add(vp.LineCollection([line]), self._cur_stroke)
 
         # TODO: handle fill
 

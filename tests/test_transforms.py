@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from .utils import line_count_equal, line_exists
+from .utils import bounds_equal, line_count_equal, line_exists
 
 POLYGON = np.array([0, 1, 3 + 1j, 4 - 2j])
 
@@ -32,6 +32,31 @@ def test_scale_no_y(vsk):
 
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, 2 * POLYGON)
+
+
+def test_translate(vsk):
+    vsk.translate(12, 23)
+    vsk.polygon(POLYGON.real, POLYGON.imag)
+
+    assert line_count_equal(vsk, 1)
+    assert line_exists(vsk, POLYGON + 12 + 23j)
+
+
+def test_rotate_radians(vsk):
+    vsk.rotate(np.pi / 2)
+    vsk.rect(5, 0, 1, 2)
+
+    assert line_count_equal(vsk, 1)
+    assert bounds_equal(vsk, -1, 5, 0, 7)
+
+
+def test_rotate_deg_rad(vsk):
+    vsk.rotate(np.pi / 2)
+    vsk.rotate(-90, degrees=True)
+    vsk.polygon(POLYGON.real, POLYGON.imag)
+
+    assert line_count_equal(vsk, 1)
+    assert line_exists(vsk, POLYGON)
 
 
 def test_resetMatrix(vsk):
