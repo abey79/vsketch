@@ -1,5 +1,5 @@
 import shlex
-from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union, cast
+from typing import Any, Iterable, List, Optional, Sequence, TextIO, Tuple, Union, cast
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -102,10 +102,23 @@ class Vsketch:
         self._quantization = 0.1
         self._pipeline = ""
         self._figure = None
+        self._transform = np.empty(shape=(2, 2), dtype=float)
+        self.resetMatrix()
+
+        # we cache the processed vector data to make sequence of plot() and write() faster
+        # the cache must be invalidated (ie. _processed_vector_data set to None) each time
+        # _vector_data or _pipeline changes
+        self._processed_vector_data: Optional[vp.VectorData] = None
 
     @property
     def vector_data(self):
         return self._vector_data
+
+    @property
+    def processed_vector_data(self):
+        if self._processed_vector_data is None:
+            self._apply_pipeline()
+        return self._processed_vector_data
 
     def stroke(self, c: int) -> None:
         """Set the current stroke color.
@@ -135,6 +148,35 @@ class Vsketch:
     def noFill(self) -> None:
         """Disable fill."""
         self._cur_fill = None
+
+    def resetMatrix(self):
+        self._transform[0, 0] = self._transform[1, 1] = 1.0
+        self._transform[0, 1] = self._transform[1, 0] = 0.0
+
+    def scale(self, sx: Union[float, str], sy: Optional[Union[float, str]] = None) -> None:
+        """Apply a scale factor to the current transformation matrix.
+
+        TODO: add examples
+
+        Args:
+            sx: scale factor along x axis (can be a string with units)
+            sy: scale factor along y axis (can be a string with units) or None, in which case
+                the same value as sx is used
+        """
+
+        if isinstance(sx, str):
+            x = vp.convert_length(sx)
+        else:
+            x = float(sx)
+
+        if sy is None:
+            y = x
+        elif isinstance(sy, str):
+            y = vp.convert_length(sy)
+        else:
+            y = float(sy)
+
+        self._transform = np.array([(x, 0), (0, y)], dtype=float) @ self._transform
 
     def line(self, x1: float, y1: float, x2: float, y2: float) -> None:
         """Draw a line.
@@ -309,15 +351,95 @@ class Vsketch:
             raise ValueError("the input must be a supported Shapely geometry")
 
     def _add_line(self, line: np.ndarray) -> None:
+        # invalidate the cache
+        self._processed_vector_data = None
+
+        new_line = np.empty(line.shape, dtype=complex)
+        new_line.real = line.real * self._transform[0, 0] + line.imag * self._transform[0, 1]
+        new_line.imag = line.real * self._transform[1, 0] + line.imag * self._transform[1, 1]
+
         if self._cur_stroke:
-            self._vector_data.add(vp.LineCollection([line]), self._cur_stroke)
+            self._vector_data.add(vp.LineCollection([new_line]), self._cur_stroke)
 
         # TODO: handle fill
 
     def pipeline(self, s: str) -> None:
+        # invalidate the cache
+        if s != self._pipeline:
+            self._processed_vector_data = None
+
         self._pipeline = s
 
-    def plot(self) -> None:
+    def plot(
+        self,
+        axes: bool = False,
+        grid: bool = False,
+        pen_up: bool = False,
+        colorful: bool = False,
+        unit: str = "px",
+    ) -> None:
+        """Plot the vsketch.
+
+        TODO: explain arguments
+
+        TODO: page boundaries should be displayed, probably requires a separate pageFormat()
+            API.
+
+        Args:
+            axes: controls axis display
+            grid: controls grid display
+            pen_up: controls display of pen-up trajectories
+            colorful: use a different color for each separate line
+            unit: use a specific unit (``axes=True`` only)
+        """
+        _plot_vector_data(
+            self.processed_vector_data,
+            show_axes=axes,
+            show_grid=grid,
+            show_pen_up=pen_up,
+            colorful=colorful,
+            unit=unit,
+        )
+
+    def write(
+        self,
+        file: Union[str, TextIO],
+        page_format: Union[str, Tuple[str, str]] = "a4",
+        landscape: bool = False,
+        center: bool = True,
+        layer_label: str = "%d",
+    ) -> None:
+        """Write the current pipeline to a SVG file.
+
+        TODO: probably should be renamed to save()
+
+        Args:
+            file: destination SVG file (can be a file path or text-based IO stream)
+            page_format: file format (can be a string with standard format or a tuple of string
+                with sizes, eg. ("15in", "10in").
+            landscape: if True, rotate the page format by 90 degrees
+            center: centers the geometries on the page (default True)
+            layer_label: define a template for layer naming (use %d for layer ID)
+        """
+        if isinstance(file, str):
+            file = open(file, "w")
+
+        w, h = vp.convert_page_format(page_format)
+        if landscape:
+            w, h = h, w
+
+        vp.write_svg(
+            file,
+            self.processed_vector_data,
+            (w, h),
+            center,
+            layer_label_format=layer_label,
+            source_string="Generated with vsketch",
+        )
+
+    def _apply_pipeline(self):
+        """Apply the current pipeline on the current vector data."""
+
         @vpype_cli.cli.command(group="vsketch")
         @vp.global_processor
         def vsketchinput(vector_data):
@@ -326,9 +448,9 @@ class Vsketch:
 
         @vpype_cli.cli.command(group="vsketch")
         @vp.global_processor
-        def vsketchplot(vector_data):
-            _plot_vector_data(vector_data)
+        def vsketchoutput(vector_data):
+            self._processed_vector_data = vector_data
             return vector_data
 
-        args = "vsketchinput " + self._pipeline + " vsketchplot"
+        args = "vsketchinput " + self._pipeline + " vsketchoutput"
         vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
