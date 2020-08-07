@@ -1,94 +1,14 @@
 import shlex
-from typing import Any, Iterable, List, Optional, Sequence, TextIO, Tuple, Union, cast
+from typing import Any, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
 
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import vpype as vp
 import vpype_cli
 
+from .plot import plot_vector_data
+from .utils import MatrixPopper
+
 __all__ = ["Vsketch"]
-
-COLORS = [
-    (0, 0, 1),
-    (0, 0.5, 0),
-    (1, 0, 0),
-    (0, 0.75, 0.75),
-    (0, 1, 0),
-    (0.75, 0, 0.75),
-    (0.75, 0.75, 0),
-    (0, 0, 0),
-]
-
-
-# noinspection PyUnresolvedReferences
-def _plot_vector_data(
-    vector_data: Union[vp.LineCollection, vp.VectorData],
-    show_axes: bool = True,
-    show_grid: bool = False,
-    show_pen_up: bool = False,
-    colorful: bool = False,
-    unit: str = "px",
-):
-    if isinstance(vector_data, vp.LineCollection):
-        vector_data = vp.VectorData(vector_data)
-
-    scale = 1 / vp.convert(unit)
-
-    plt.cla()
-
-    color_idx = 0
-    collections = {}
-    for layer_id, lc in vector_data.layers.items():
-        if colorful:
-            color: Union[
-                Tuple[float, float, float], List[Tuple[float, float, float]]
-            ] = COLORS[color_idx:] + COLORS[:color_idx]
-            color_idx += len(lc)
-        else:
-            color = COLORS[color_idx]
-            color_idx += 1
-        if color_idx >= len(COLORS):
-            color_idx = color_idx % len(COLORS)
-
-        layer_lines = matplotlib.collections.LineCollection(
-            (vp.as_vector(line) * scale for line in lc),
-            color=color,
-            lw=1,
-            alpha=0.5,
-            label=str(layer_id),
-        )
-        collections[layer_id] = [layer_lines]
-        plt.gca().add_collection(layer_lines)
-
-        if show_pen_up:
-            pen_up_lines = matplotlib.collections.LineCollection(
-                (
-                    (vp.as_vector(lc[i])[-1] * scale, vp.as_vector(lc[i + 1])[0] * scale,)
-                    for i in range(len(lc) - 1)
-                ),
-                color=(0, 0, 0),
-                lw=0.5,
-                alpha=0.5,
-            )
-            collections[layer_id].append(pen_up_lines)
-            plt.gca().add_collection(pen_up_lines)
-
-    plt.gca().invert_yaxis()
-    plt.axis("equal")
-    plt.margins(0, 0)
-
-    if show_axes or show_grid:
-        plt.axis("on")
-        plt.xlabel(f"[{unit}]")
-        plt.ylabel(f"[{unit}]")
-    else:
-        plt.axis("off")
-    if show_grid:
-        plt.grid("on")
-    plt.show()
-
-    return vector_data
 
 
 # noinspection PyPep8Naming
@@ -102,7 +22,7 @@ class Vsketch:
         self._quantization = 0.1
         self._pipeline = ""
         self._figure = None
-        self._transform = np.empty(shape=(3, 3), dtype=float)
+        self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -127,7 +47,7 @@ class Vsketch:
         Returns:
             the current 3x3 homogenous planar transform matrix
         """
-        return self._transform
+        return self._transform_stack[-1]
 
     @transform.setter
     def transform(self, t: np.ndarray) -> None:
@@ -135,7 +55,7 @@ class Vsketch:
         Args:
             t: a 3x3 homogenous planar transform matrix
         """
-        self._transform = t
+        self._transform_stack[-1] = t
 
     def stroke(self, c: int) -> None:
         """Set the current stroke color.
@@ -170,6 +90,54 @@ class Vsketch:
         """Reset the current transformation matrix."""
         self.transform = np.identity(3)
 
+    def pushMatrix(self) -> MatrixPopper:
+        """Push the current transformation matrix onto the matrix stack.
+
+        Each call to ``pushMatrix()`` should be matched by exactly one call to
+        :py:member:`popMatrix` to maintain consistency. Alternatively, the context manager
+        returned by ``pushMatrix()`` can be used to automatically call :py:member:`popMatrix`
+
+        Examples:
+
+            Using matching :py:member:`popMatrix`::
+
+                >>> import vsketch
+                >>> vsk = vsketch.Vsketch()
+                >>> for _ in range(5):
+                ...    vsk.pushMatrix()
+                ...    vsk.rotate(_*5, degrees=True)
+                ...    vsk.rect(-2, -2, 2, 2)
+                ...    vsk.popMatrix()
+                ...    vsk.translate(5, 0)
+                ...
+
+            Using context manager::
+
+                >>> for _ in range(5):
+                ...    with vsk.pushMatrix():
+                ...        vsk.rotate(_*5, degrees=True)
+                ...        vsk.rect(-2, -2, 2, 2)
+                ...    vsk.translate(5, 0)
+                ...
+
+        Returns:
+            context manager object: a context manager object for use with a ``with`` statement
+        """
+        self._transform_stack.append(self.transform.copy())
+
+        return MatrixPopper(self)
+
+    def popMatrix(self) -> None:
+        """Pop the current transformation matrix from the matrix stack."""
+        if len(self._transform_stack) == 1:
+            raise RuntimeError("popMatrix() was called more times than pushMatrix()")
+
+        self._transform_stack.pop()
+
+    def printMatrix(self) -> None:
+        """Print the current transformation matrix."""
+        print(self.transform)
+
     def scale(self, sx: Union[float, str], sy: Optional[Union[float, str]] = None) -> None:
         """Apply a scale factor to the current transformation matrix.
 
@@ -189,14 +157,14 @@ class Vsketch:
         elif isinstance(sy, str):
             sy = vp.convert_length(sy)
 
-        self.transform = np.diag([float(sx), float(sy), 1]) @ self.transform
+        self.transform = self.transform @ np.diag([sx, sy, 1])
 
-    def rotate(self, angle: float, degrees=True) -> None:
+    def rotate(self, angle: float, degrees=False) -> None:
         """Apply a rotation to the current transformation matrix.
 
         The coordinates are always rotated around their relative position to the origin.
         Positive numbers rotate objects in a clockwise direction and negative numbers rotate in
-        the couter-clockwise direction.
+        the counter-clockwise direction.
 
         Args:
             angle: the angle of the rotation in radian (or degrees if ``degrees=True``)
@@ -206,16 +174,13 @@ class Vsketch:
         if degrees:
             angle = angle * np.pi / 180.0
 
-        self.transform = (
-            np.array(
-                [
-                    (np.cos(angle), np.sin(angle), 0),
-                    (np.sin(angle), -np.cos(angle), 0),
-                    (0, 0, 1),
-                ],
-                dtype=float,
-            )
-            @ self.transform
+        self.transform = self.transform @ np.array(
+            [
+                (np.cos(angle), -np.sin(angle), 0),
+                (np.sin(angle), np.cos(angle), 0),
+                (0, 0, 1),
+            ],
+            dtype=float,
         )
 
     def translate(self, dx: float, dy: float) -> None:
@@ -226,8 +191,9 @@ class Vsketch:
             dy: translation along Y axis
         """
 
-        self.transform[0, 2] += float(dx)
-        self.transform[1, 2] += float(dy)
+        self.transform = self.transform @ np.array(
+            [(1, 0, dx), (0, 1, dy), (0, 0, 1)], dtype=float
+        )
 
     def line(self, x1: float, y1: float, x2: float, y2: float) -> None:
         """Draw a line.
@@ -446,7 +412,7 @@ class Vsketch:
             colorful: use a different color for each separate line
             unit: use a specific unit (``axes=True`` only)
         """
-        _plot_vector_data(
+        plot_vector_data(
             self.processed_vector_data,
             show_axes=axes,
             show_grid=grid,

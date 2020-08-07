@@ -47,7 +47,7 @@ def test_rotate_radians(vsk):
     vsk.rect(5, 0, 1, 2)
 
     assert line_count_equal(vsk, 1)
-    assert bounds_equal(vsk, -1, 5, 0, 7)
+    assert bounds_equal(vsk, -2, 5, 0, 6)
 
 
 def test_rotate_deg_rad(vsk):
@@ -64,5 +64,26 @@ def test_resetMatrix(vsk):
     vsk.resetMatrix()
     vsk.polygon(POLYGON.real, POLYGON.imag)
 
+    assert line_count_equal(vsk, 1)
+    assert line_exists(vsk, POLYGON)
+
+
+def test_pushMatrix(vsk):
+    vsk.pushMatrix()
+    vsk.scale(100, 200)
+    vsk.rotate(34)
+    vsk.popMatrix()
+
+    vsk.polygon(POLYGON.real, POLYGON.imag)
+    assert line_count_equal(vsk, 1)
+    assert line_exists(vsk, POLYGON)
+
+
+def test_pushMatrix_context(vsk):
+    with vsk.pushMatrix():
+        vsk.scale(100, 200)
+        vsk.rotate(34)
+
+    vsk.polygon(POLYGON.real, POLYGON.imag)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON)

@@ -30,7 +30,7 @@ from tests.utils import line_count_equal, line_exists
             ),
             [
                 [0, 30, 30 + 30j, 30j, 0],
-                [(1 + 1j, 3 + 3j, 2 + 3j, 1 + 1j)],
+                [1 + 1j, 3 + 3j, 2 + 3j, 1 + 1j],
                 [10 + 10j, 12 + 10j, 10 + 12j, 10 + 10j],
             ],
         ],
