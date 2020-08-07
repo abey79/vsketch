@@ -23,6 +23,7 @@ class Vsketch:
         self._pipeline = ""
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
+        self._page_format = vp.convert_page_format("a3")
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -41,6 +42,24 @@ class Vsketch:
         return self._processed_vector_data
 
     @property
+    def width(self) -> float:
+        """Get the page width in CSS pixels.
+
+        Returns:
+            page width
+        """
+        return self._page_format[0]
+
+    @property
+    def height(self) -> float:
+        """Get the page height in CSS pixels.
+
+        Returns:
+            page height
+        """
+        return self._page_format[1]
+
+    @property
     def transform(self) -> np.ndarray:
         """Get the current transform matrix.
 
@@ -56,6 +75,47 @@ class Vsketch:
             t: a 3x3 homogenous planar transform matrix
         """
         self._transform_stack[-1] = t
+
+    def size(self, w: Union[float, str], h: Optional[Union[float, str]] = None) -> None:
+        """Set the size of the page.
+
+        If floats are passed as input, they are interpreted as CSS pixel (same as SVG).
+        Alternatively, strings can be passed and may contain units. The string form accepts
+        both two parameters, or a single, vpype-like page format specifier.
+
+        Page format specifier can either be a known page format (see ``vpype write --help`` for
+        a list) or a string in the form of `WxH`, where both W and H may have units (e.g.
+        `15inx10in`.
+
+        The current page format (in CSS pixels) can be obtained with :py:attr:`width` and
+        :py:attr:`height` properties.
+
+        Examples:
+
+            Known page format can be used directly::
+
+                >>> vsk.size("a4")
+
+            Alternatively, the page size can be explicitely provided. All of the following
+            calls are strictly equivalent::
+
+                >>> import vsketch
+                >>> vsk = vsketch.Vsketch()
+                >>> vsk.size("15in", "10in")
+                >>> vsk.size("15inx10in")
+                >>> vsk.size("15in", 960.)  # 1in = 96 CSS pixels
+
+        Args:
+            w: page width or page forwat specifier if ``h`` is omitted
+            h: page height
+        """
+
+        if h is None:
+            w, h = vp.convert_page_format(w)
+        else:
+            w, h = vp.convert_length(w), vp.convert_length(h)
+
+        self._page_format = (w, h)
 
     def stroke(self, c: int) -> None:
         """Set the current stroke color.
