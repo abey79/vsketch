@@ -4,17 +4,18 @@ vsketch
 
 .. start-doc-inclusion-marker
 
-vsketch is plotter generative art toolkit based based on `vpype <https://github.com/abey79/vpype/>`_ and suited
-for use within Jupyter notebooks. Its API is loosely based on that of `Processing <https://processing.org>`_.
+Vsketch is plotter generative art toolkit based based on `vpype <https://github.com/abey79/vpype/>`_ and suited
+for use within Jupyter notebooks. Its API is loosely based on that of `Processing <https://processing.org>`_ and
+it plays nicely with `Shapely <https://shapely.readthedocs.io/en/latest/>`_.
 
-*This project is at the stage of the very early concept/prototype.*
+*This project is at the stage of the very early concept/prototype and welcomes contributions.*
 
 Installation
 ============
 
 .. highlight:: bash
 
-Follow these steps::
+Follow these steps to install vsketch::
 
     git clone https://github.com/abey79/vsketch
     cd vsketch
@@ -23,16 +24,15 @@ Follow these steps::
     pip install --upgrade pip
     pip install -r requirements.txt
     pip install -e .
+    
+Follow these steps to setup a nice Jupyter Lab environment with interactive matplotlib widget and automatic code formating
+with `black <https://github.com/psf/black>`_::
 
-    # setup a nice jupyter lab environment with interactive matplotlib widget and code formatting
     jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib @ryantam626/jupyterlab_code_formatter
     jupyter serverextension enable --py jupyterlab_code_formatter
 
-
-To start the Jupyter Lab environment::
-
+    # start jupyter lab
     jupyter lab
-
 
 
 Examples
@@ -40,36 +40,64 @@ Examples
 
 .. highlight:: python
 
-Here is a basic example to get the idea::
+Getting started with vsketch takes two lines::
 
     import vsketch
 
     vsk = vsketch.Vsketch()
+    
+The usual primitives are available::
 
-    # by default, geometries go to layer 1
     vsk.rect(10, 10, 5, 8)
-    vsk.rect(12, 8, 4, 5)
+    vsk.circle(2, 2, radius=3)
+    vsk.triangle(0, 0, 1, 1, 0, 1)
+    
+Colors do not really make sense when preparing files for plotters. Vsketch instead uses layers which are
+intended to be plotted with different pens each::
 
-    # destination layer can be changed
+    # by default, layer 1 is current
+    vsk.line(0, 0, 5, 5)
+    
+    # the current layer can be changed
     vsk.stroke(2)
     vsk.circle(14, 8, 3)
+    
+`Shapely <https://shapely.readthedocs.io/en/latest/>`_ is a computational geometry library that is often
+very useful for generative plotter art. Vsketch directly accepts Shapely objects::
 
-    # arbitrary vpype pipeline can be postpended
+    from shapely.geometry import Point
+    
+    vsk.geometry(Point(0, 0).buffer(2).union(Point(1.5, 0).buffer(1.5)))
+    
+Transformation matrices are fully supported::
+
+    for i in range(5):
+        with pushMatrix():
+            vsk.rotate(i * 5, degrees=True)
+            vsk.rect(-2, -2, 2, 2)
+        
+        vsk.translate(5, 0)
+
+The power of `vpype <https://github.com/abey79/vpype>`_ can be unleashed with a single call::
+
     vsk.pipeline("linemerge reloop linesort")
+    
+Displaying your sketch is as easy as::
 
-    # plot the resulting graphics
     vsk.plot()
+    
+Finally, you can save a ready-to-plot SVG with fine-grained control::
 
-    # write the SVG
-    vsk.write("test.svg", "a4", center=True)
-
-See also included the examples included in the repository.
+    vsk.write("my_file.svg", "a3", landscape=True, center=True)
+    
+See also included the multiple examples included in the repository.
 
 
 Contributing
 ============
 
-Pull-request are most welcome contributions. Actually, this project survival might very well depend on them :)
+Pull-request are most welcome contributions. The best way is to contact the author on the
+`Drawingbots Discord server <https://discordapp.com/invite/XHP3dBg>`_.
 
 
 .. stop-doc-inclusion-marker
