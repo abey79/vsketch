@@ -287,6 +287,28 @@ class Vsketch:
 
         self._add_line(line)
 
+    def triangle(
+        self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float
+    ) -> None:
+        """Draw a triangle.
+
+        Example:
+
+            >>> import vsketch
+            >>> vsk = vsketch.Vsketch()
+            >>> vsk.triangle(2, 2, 2, 3, 3, 2.5)
+
+        Args:
+            x1: X coordinate of the first corner
+            y1: Y coordinate of the first corner
+            x2: X coordinate of the second corner
+            y2: Y coordinate of the second corner
+            x3: X coordinate of the third corner
+            y3: Y coordinate of the third corner
+        """
+        line = np.array([x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j], dtype=complex)
+        self._add_line(line)
+
     def polygon(
         self,
         x: Union[Iterable[float], Iterable[Sequence[float]]],
