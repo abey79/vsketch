@@ -306,7 +306,10 @@ class Vsketch:
             x3: X coordinate of the third corner
             y3: Y coordinate of the third corner
         """
-        line = np.array([x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j], dtype=complex)
+
+        line = np.array(
+            [x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j, x1 + y1 * 1j], dtype=complex
+        )
         self._add_line(line)
 
     def polygon(
