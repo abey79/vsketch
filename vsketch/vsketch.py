@@ -93,13 +93,13 @@ class Vsketch:
     def pushMatrix(self) -> MatrixPopper:
         """Push the current transformation matrix onto the matrix stack.
 
-        Each call to ``pushMatrix()`` should be matched by exactly one call to
-        :py:member:`popMatrix` to maintain consistency. Alternatively, the context manager
-        returned by ``pushMatrix()`` can be used to automatically call :py:member:`popMatrix`
+        Each call to :func:`pushMatrix` should be matched by exactly one call to
+        :func:`popMatrix` to maintain consistency. Alternatively, the context manager
+        returned by :func:`pushMatrix` can be used to automatically call :func:`popMatrix`
 
         Examples:
 
-            Using matching :py:member:`popMatrix`::
+            Using matching :func:`popMatrix`::
 
                 >>> import vsketch
                 >>> vsk = vsketch.Vsketch()
