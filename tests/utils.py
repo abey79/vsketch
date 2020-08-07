@@ -73,6 +73,6 @@ def line_exists(
     for layer_id in layer_ids:
         if layer_id in vsk.vector_data.layers:
             for line_ in vsk.vector_data.layers[layer_id]:
-                if np.all(line_ == line):
+                if len(line_) == len(line) and np.all(line_ == line):
                     return True
     return False
