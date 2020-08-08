@@ -406,6 +406,24 @@ class Vsketch:
 
         self._add_line(line)
 
+    def square(self, x: float, y: float, extent: float) -> None:
+        """Draw a square.
+
+        Example:
+
+            >>> vsk = Vsketch()
+            >>> vsk.square(2, 2, 2.5)
+        
+        Args:
+            x: X coordinate of top-left corner
+            y: Y coordinate of top-left corner
+            extent: width and height of the square
+        """
+
+        line = vp.rect(x, y, extent, extent)
+
+        self._add_line(line)
+
     def triangle(
         self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float
     ) -> None:
