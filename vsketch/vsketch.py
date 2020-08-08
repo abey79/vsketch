@@ -291,8 +291,8 @@ class Vsketch:
         """Draw a square.
 
         Example:
-            >>> import vsketch
-            >>> vsk = vsketch.Vsketch()
+
+            >>> vsk = Vsketch()
             >>> vsk.square(2, 2, 2.5)
         
         Args:
