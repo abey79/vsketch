@@ -3,7 +3,8 @@ import vpype as vp
 from shapely.geometry import LineString, MultiPolygon, Polygon
 from shapely.ops import unary_union
 
-from vsketch.fill import complex_to_2d, generate_fill
+from vsketch.fill import generate_fill
+from vsketch.utils import complex_to_2d
 
 
 def _simulate_pen(lc: vp.LineCollection, lw: float) -> MultiPolygon:

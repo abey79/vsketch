@@ -4,13 +4,11 @@ import numpy as np
 import vpype as vp
 from shapely.geometry import MultiLineString, Polygon
 
-
-def complex_to_2d(line: np.ndarray) -> np.ndarray:
-    return np.vstack([line.real, line.imag]).T
+from .utils import complex_to_2d
 
 
-def generate_fill(line: np.ndarray, pen_width: float) -> vp.LineCollection:
-    poly = Polygon(complex_to_2d(line))
+def generate_fill(poly: Polygon, pen_width: float) -> vp.LineCollection:
+    """Draw a fill pattern for the the input polygon."""
 
     # we draw the boundary, accounting for pen width
     p = poly.buffer(-pen_width / 2, join_style=2, mitre_limit=10.0)
