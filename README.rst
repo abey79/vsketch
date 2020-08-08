@@ -25,8 +25,8 @@ Follow these steps to install vsketch::
     pip install -r requirements.txt
     pip install -e .
     
-Follow these steps to setup a nice Jupyter Lab environment with interactive matplotlib widget and automatic code formating
-with `black <https://github.com/psf/black>`_::
+Follow these steps to setup a nice Jupyter Lab environment with interactive matplotlib widget and automatic code
+formatting with `black <https://github.com/psf/black>`_::
 
     jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib @ryantam626/jupyterlab_code_formatter
     jupyter serverextension enable --py jupyterlab_code_formatter
@@ -35,12 +35,12 @@ with `black <https://github.com/psf/black>`_::
     jupyter lab
 
 
-Examples
+Overview
 ========
 
 .. highlight:: python
 
-Getting started with vsketch takes two lines::
+To get started with vsketch only takes two lines::
 
     import vsketch
 
@@ -69,6 +69,16 @@ intended to be plotted with different pens each::
     # the current layer can be changed
     vsk.stroke(2)
     vsk.circle(14, 8, 3)
+
+No reason plotters should miss on the "fill" party! This works just as you didn't dare to expect::
+
+    # let's use a pen width of 0.5mm for layer 2
+    vsk.penWidth("0.5mm", 2)
+
+    # this circle will be stroked in layer 1 and and filled in layer 2
+    vsk.stroke(1)
+    vsk.fill(2)
+    vsk.circle(0, 0, 5)
     
 `Shapely <https://shapely.readthedocs.io/en/latest/>`_ is a computational geometry library that is often
 very useful for generative plotter art. Vsketch directly accepts Shapely objects::
@@ -117,7 +127,7 @@ See also included the multiple examples included in the repository.
 Contributing
 ============
 
-Pull-request are most welcome contributions. The best way is to contact the author on the
+Issues and pull-request are most welcome contributions. Let's get the discussion started on the
 `Drawingbots Discord server <https://discordapp.com/invite/XHP3dBg>`_.
 
 
