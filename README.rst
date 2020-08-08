@@ -45,12 +45,20 @@ Getting started with vsketch takes two lines::
     import vsketch
 
     vsk = vsketch.Vsketch()
+    vsk.size("a3", landscape=True)
     
 The usual primitives are available::
 
+    vsk.line(0, 0, 10, 20)
     vsk.rect(10, 10, 5, 8)
     vsk.circle(2, 2, radius=3)
     vsk.triangle(0, 0, 1, 1, 0, 1)
+    
+By default, vsketch uses CSS pixels as unit, just like SVG. If you'd rather work in some other unit,
+just start your sketch with a scale factor::
+
+    vsk.scale("1cm")
+    vsk.line(0, 0, 21, 29.7)  # this line will span an entire A4 page
     
 Colors do not really make sense when preparing files for plotters. Vsketch instead uses layers which are
 intended to be plotted with different pens each::
@@ -86,9 +94,9 @@ Displaying your sketch is as easy as::
 
     vsk.plot()
     
-Finally, you can save a ready-to-plot SVG with fine-grained control::
+Finally, you can save a ready-to-plot SVG::
 
-    vsk.write("my_file.svg", "a3", landscape=True, center=True)
+    vsk.save("my_file.svg")
     
 See also included the multiple examples included in the repository.
 
