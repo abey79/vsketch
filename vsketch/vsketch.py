@@ -1,5 +1,5 @@
 import shlex
-from typing import Any, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
+from typing import Any, Iterable, Optional, Sequence, TextIO, Union, cast
 
 import numpy as np
 import vpype as vp
@@ -24,6 +24,7 @@ class Vsketch:
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self._page_format = vp.convert_page_format("a3")
+        self._center_on_page = True
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -76,16 +77,26 @@ class Vsketch:
         """
         self._transform_stack[-1] = t
 
-    def size(self, w: Union[float, str], h: Optional[Union[float, str]] = None) -> None:
-        """Set the size of the page.
+    def size(
+        self,
+        width: Union[float, str],
+        height: Optional[Union[float, str]] = None,
+        landscape: bool = False,
+        center: bool = True,
+    ) -> None:
+        """Define the page layout.
 
-        If floats are passed as input, they are interpreted as CSS pixel (same as SVG).
+        If floats are for width and height, they are interpreted as CSS pixel (same as SVG).
         Alternatively, strings can be passed and may contain units. The string form accepts
         both two parameters, or a single, vpype-like page format specifier.
 
         Page format specifier can either be a known page format (see ``vpype write --help`` for
         a list) or a string in the form of `WxH`, where both W and H may have units (e.g.
         `15inx10in`.
+
+        By default, the sketch is always centered on the page. This can be disabled with
+        ``center=False``. In this case, the sketch's absolute coordinates are used, with (0, 0)
+        corresponding to the page's top-left corener and Y coordinates increasing downwards.
 
         The current page format (in CSS pixels) can be obtained with :py:attr:`width` and
         :py:attr:`height` properties.
@@ -102,20 +113,27 @@ class Vsketch:
                 >>> import vsketch
                 >>> vsk = vsketch.Vsketch()
                 >>> vsk.size("15in", "10in")
+                >>> vsk.size("10in", "15in", landscape=True)
                 >>> vsk.size("15inx10in")
                 >>> vsk.size("15in", 960.)  # 1in = 96 CSS pixels
 
         Args:
-            w: page width or page forwat specifier if ``h`` is omitted
-            h: page height
+            width: page width or page forwat specifier if ``h`` is omitted
+            height: page height
+            landscape: rotate page format by 90 degrees if True
+            center: if False, automatic centering is disabled
         """
 
-        if h is None:
-            w, h = vp.convert_page_format(w)
+        if height is None:
+            width, height = vp.convert_page_format(width)
         else:
-            w, h = vp.convert_length(w), vp.convert_length(h)
+            width, height = vp.convert_length(width), vp.convert_length(height)
 
-        self._page_format = (w, h)
+        if landscape:
+            self._page_format = (height, width)
+        else:
+            self._page_format = (width, height)
+        self._center_on_page = center
 
     def stroke(self, c: int) -> None:
         """Set the current stroke color.
@@ -477,6 +495,7 @@ class Vsketch:
 
     def plot(
         self,
+        page: bool = True,
         axes: bool = False,
         grid: bool = False,
         pen_up: bool = False,
@@ -491,6 +510,7 @@ class Vsketch:
             API.
 
         Args:
+            page: controls the page display
             axes: controls axis display
             grid: controls grid display
             pen_up: controls display of pen-up trajectories
@@ -499,6 +519,8 @@ class Vsketch:
         """
         plot_vector_data(
             self.processed_vector_data,
+            page_format=self._page_format,
+            center=self._center_on_page,
             show_axes=axes,
             show_grid=grid,
             show_pen_up=pen_up,
@@ -506,38 +528,26 @@ class Vsketch:
             unit=unit,
         )
 
-    def write(
-        self,
-        file: Union[str, TextIO],
-        page_format: Union[str, Tuple[str, str]] = "a4",
-        landscape: bool = False,
-        center: bool = True,
-        layer_label: str = "%d",
-    ) -> None:
-        """Write the current pipeline to a SVG file.
+    def save(self, file: Union[str, TextIO], layer_label: str = "%d",) -> None:
+        """Save the current sketch to a SVG file.
 
-        TODO: probably should be renamed to save()
+        ``file`` may  either be a file path or a IO stream handle (such as the one returned
+        by Python's ``open()`` built-in).
+
+        This function uses the page layout as defined by :method:`size`.
 
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
-            page_format: file format (can be a string with standard format or a tuple of string
-                with sizes, eg. ("15in", "10in").
-            landscape: if True, rotate the page format by 90 degrees
-            center: centers the geometries on the page (default True)
             layer_label: define a template for layer naming (use %d for layer ID)
         """
         if isinstance(file, str):
             file = open(file, "w")
 
-        w, h = vp.convert_page_format(page_format)
-        if landscape:
-            w, h = h, w
-
         vp.write_svg(
             file,
             self.processed_vector_data,
-            (w, h),
-            center,
+            self._page_format,
+            self._center_on_page,
             layer_label_format=layer_label,
             source_string="Generated with vsketch",
         )
