@@ -45,12 +45,20 @@ Getting started with vsketch takes two lines::
     import vsketch
 
     vsk = vsketch.Vsketch()
+    vsk.size("a3", landscape=True)
     
 The usual primitives are available::
 
+    vsk.line(0, 0, 10, 20)
     vsk.rect(10, 10, 5, 8)
     vsk.circle(2, 2, radius=3)
     vsk.triangle(0, 0, 1, 1, 0, 1)
+    
+By default, vsketch uses CSS pixels as unit, just like SVG. If you'd rather work in some other unit,
+just start your sketch with a scale factor::
+
+    vsk.scale("1cm")
+    vsk.line(0, 0, 21, 29.7)  # this line will span an entire A4 page
     
 Colors do not really make sense when preparing files for plotters. Vsketch instead uses layers which are
 intended to be plotted with different pens each::
@@ -78,7 +86,20 @@ Transformation matrices are fully supported::
         
         vsk.translate(5, 0)
 
-The power of `vpype <https://github.com/abey79/vpype>`_ can be unleashed with a single call::
+Internally, vsketch approximates all curves with segments. The level of detail (i.e. the maximum length of individual
+segment) can be adjusted. Vsketch tries to be smart about this::
+
+    vsk.detail("0.1mm")
+
+    # this circle is made of segment 0.1mm-long or less
+    vsk.circle(0, 0, radius=1)
+
+    vsk.scale(100)
+
+    # because it is bigger, this circle will be made of many more segments than the previous one
+    vsk.circle(0, 0, radius=1)
+
+The power of `vpype`_ can be unleashed with a single call::
 
     vsk.pipeline("linemerge reloop linesort")
     
@@ -86,9 +107,9 @@ Displaying your sketch is as easy as::
 
     vsk.plot()
     
-Finally, you can save a ready-to-plot SVG with fine-grained control::
+Finally, you can save a ready-to-plot SVG::
 
-    vsk.write("my_file.svg", "a3", landscape=True, center=True)
+    vsk.save("my_file.svg")
     
 See also included the multiple examples included in the repository.
 
