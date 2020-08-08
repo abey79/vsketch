@@ -86,7 +86,20 @@ Transformation matrices are fully supported::
         
         vsk.translate(5, 0)
 
-The power of `vpype <https://github.com/abey79/vpype>`_ can be unleashed with a single call::
+Internally, vsketch approximates all curves with segments. The level of detail (i.e. the maximum length of individual
+segment) can be adjusted. Vsketch tries to be smart about this::
+
+    vsk.detail("0.1mm")
+
+    # this circle is made of segment 0.1mm-long or less
+    vsk.circle(0, 0, radius=1)
+
+    vsk.scale(100)
+
+    # because it is bigger, this circle will be made of many more segments than the previous one
+    vsk.circle(0, 0, radius=1)
+
+The power of `vpype`_ can be unleashed with a single call::
 
     vsk.pipeline("linemerge reloop linesort")
     
