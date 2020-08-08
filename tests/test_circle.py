@@ -10,6 +10,7 @@ def test_circle_radius(vsk):
 
 
 def test_circle_diameter(vsk):
+    vsk.detail(0.01)  # make sure we have a tight bound match
     vsk.circle(0, 0, diameter=5)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, -2.5, -2.5, 2.5, 2.5)
@@ -17,6 +18,7 @@ def test_circle_diameter(vsk):
 
 def test_circle_default(vsk):
     # default should be diameter
+    vsk.detail(0.01)  # make sure we have a tight bound match
     vsk.circle(0, 0, 5)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, -2.5, -2.5, 2.5, 2.5)

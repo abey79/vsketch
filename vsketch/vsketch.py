@@ -1,3 +1,4 @@
+import math
 import shlex
 from typing import Any, Iterable, Optional, Sequence, TextIO, Union, cast
 
@@ -13,18 +14,16 @@ __all__ = ["Vsketch"]
 
 # noinspection PyPep8Naming
 class Vsketch:
-    """Vsketch doc"""
-
     def __init__(self):
         self._vector_data = vp.VectorData()
         self._cur_stroke: Optional[int] = 1
         self._cur_fill: Optional[int] = None
-        self._quantization = 0.1
         self._pipeline = ""
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self._page_format = vp.convert_page_format("a3")
         self._center_on_page = True
+        self._detail = vp.convert_length("0.1mm")
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -72,10 +71,54 @@ class Vsketch:
     @transform.setter
     def transform(self, t: np.ndarray) -> None:
         """Set the current transform matrix.
+
         Args:
             t: a 3x3 homogenous planar transform matrix
         """
         self._transform_stack[-1] = t
+
+    @property
+    def epsilon(self) -> float:
+        """Returns the segment maximum length for curve approximation.
+
+        The returned value takes into account the desired level of detail (see :func:`detail``
+        as well as the scaling to be applied by the current transformation matrix.
+
+        Returns:
+            the maximum segment length to use
+        """
+
+        # The top 2x2 sub-matrix of the current transform corresponds to how the base vectors
+        # would be transformed. We thus take their (transformed) length and use their maximum
+        # value as scaling factor.
+        scaling = max(math.hypot(*self.transform[0:2, 0]), math.hypot(*self.transform[0:2, 1]))
+
+        return self._detail / scaling
+
+    def detail(self, epsilon: Union[float, str]) -> None:
+        """Define the level of detail for curved paths.
+
+        Vsketch internally stores exclusively so called line strings, i.e. paths made of
+        straight segments. Curved geometries (e.g. :func:`circle`) are approximated by many
+        small segments. The level of detail controls the maximum size these segments may have.
+        The default value is set to 0.1mm, with is good enough for most plotting needs.
+
+        Examples::
+
+            :func:`detail` accepts string values with unit::
+
+                >>> vsk = Vsketch()
+                >>> vsk.detail("1mm")
+
+            A float input is interpretted as CSS pixels::
+
+                >>> vsk.detail(1.)
+
+        Args:
+            epsilon: maximum length of segments approximating curved elements (may be a string
+                value with units -- float value are interpreted as CSS pixels
+        """
+        self._detail = vp.convert_length(epsilon)
 
     def size(
         self,
@@ -105,13 +148,12 @@ class Vsketch:
 
             Known page format can be used directly::
 
+                >>> vsk = Vsketch()
                 >>> vsk.size("a4")
 
             Alternatively, the page size can be explicitely provided. All of the following
             calls are strictly equivalent::
 
-                >>> import vsketch
-                >>> vsk = vsketch.Vsketch()
                 >>> vsk.size("15in", "10in")
                 >>> vsk.size("10in", "15in", landscape=True)
                 >>> vsk.size("15inx10in")
@@ -179,8 +221,7 @@ class Vsketch:
 
             Using matching :func:`popMatrix`::
 
-                >>> import vsketch
-                >>> vsk = vsketch.Vsketch()
+                >>> vsk = Vsketch()
                 >>> for _ in range(5):
                 ...    vsk.pushMatrix()
                 ...    vsk.rotate(_*5, degrees=True)
@@ -295,10 +336,11 @@ class Vsketch:
     ) -> None:
         """Draw a circle.
 
+        The level of detail used to approximate the circle is controlled by :func:`detail`.
+
         Example:
 
-            >>> import vsketch
-            >>> vsk = vsketch.Vsketch()
+            >>> vsk = Vsketch()
             >>> vsk.circle(0, 0, 10)  # by default, diameter is used
             >>> vsk.circle(0, 0, radius=5)  # radius can be specified instead
 
@@ -315,8 +357,7 @@ class Vsketch:
         if radius is None:
             radius = cast(float, diameter) / 2
 
-        line = vp.circle(x, y, radius, self._quantization)
-        # TODO: handle transformation
+        line = vp.circle(x, y, radius, self.epsilon)
         self._add_line(line)
 
     def rect(
@@ -390,8 +431,7 @@ class Vsketch:
 
         Example:
 
-            >>> import vsketch
-            >>> vsk = vsketch.Vsketch()
+            >>> vsk = Vsketch()
             >>> vsk.triangle(2, 2, 2, 3, 3, 2.5)
 
         Args:
@@ -420,8 +460,7 @@ class Vsketch:
 
             A single iterable of size-2 sequence can be used::
 
-                >>> import vsketch
-                >>> vsk = vsketch.Vsketch()
+                >>> vsk = Vsketch()
                 >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
 
             Alternatively, two iterables of float can be passed::
@@ -537,7 +576,7 @@ class Vsketch:
         """
         plot_vector_data(
             self.processed_vector_data,
-            page_format=self._page_format,
+            page_format=self._page_format if page else None,
             center=self._center_on_page,
             show_axes=axes,
             show_grid=grid,
@@ -552,7 +591,7 @@ class Vsketch:
         ``file`` may  either be a file path or a IO stream handle (such as the one returned
         by Python's ``open()`` built-in).
 
-        This function uses the page layout as defined by :method:`size`.
+        This function uses the page layout as defined by :func:`size`.
 
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
