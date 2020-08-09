@@ -109,6 +109,19 @@ segment) can be adjusted. Vsketch tries to be smart about this::
     # because it is bigger, this circle will be made of many more segments than the previous one
     vsk.circle(0, 0, radius=1)
 
+Multiple sketches can be created and used as reusable sub-sketches::
+
+    # create a sub-sketch
+    sub_sketch = vsketch.Vsketch()
+    sub_sketch.square(0, 0, 1)
+    sub_sketch.square(0.5, 0.5, 1)
+
+    # add the sub-sketch
+    vsk.sketch(sub_sketch)
+    vsk.translate(10, 10)
+    vsk.rotate(45, degrees=True)
+    vsk.sketch(sub_sketch)  # the transformation matrix is applied on the sub-sketch
+
 The power of `vpype`_ can be unleashed with a single call::
 
     vsk.pipeline("linemerge reloop linesort")
