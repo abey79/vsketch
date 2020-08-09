@@ -32,3 +32,13 @@ def test_fill(line, lw):
 
     assert overfill_p.contains(p)
     assert p.contains(underfill_p)
+
+
+@pytest.mark.parametrize("scale", ["0.1mm", "1mm", "1cm", "10cm", "100cm"])
+def test_fill_for_primitives(vsk, scale):
+    # all of this should work without error independently of scale
+    vsk.fill(2)
+    vsk.polygon([0, 1, 1, 0], [0, 0, 1, 1])
+    vsk.circle(0, 0, 1)
+    vsk.rect(0, 0, 3, 2)
+    vsk.square(0, 0, 1)

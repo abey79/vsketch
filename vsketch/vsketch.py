@@ -608,6 +608,32 @@ class Vsketch:
         except AttributeError:
             raise ValueError("the input must be a supported Shapely geometry")
 
+    def sketch(self, sub_sketch: "Vsketch") -> None:
+        """Draw the content of another Vsketch.
+
+        Vsketch objects being self-contained, multiple instances can be created by a single
+        program, for example to create complex shapes in a sub-sketch to be used multiple times
+        in the main sketch. This function can be used to draw in a sketch the content of
+        another sketch.
+
+        The styling options (stroke layer, fill layer, pen width, etc.) must be defined in the
+        sub-sketch and are preserved by :func:`sketch`. Layers IDs are preserved and will be
+        created if needed.
+
+        The current transformation matrix is applied on the sub-sketch before inclusion in the
+        main sketch.
+
+        Args:
+            sub_sketch: sketch to draw in the current sketch
+        """
+
+        # invalidate the cache
+        self._processed_vector_data = None
+
+        for layer_id, layer in sub_sketch._vector_data.layers.items():
+            lc = vp.LineCollection([self._transform_line(line) for line in layer])
+            self._vector_data.add(lc, layer_id)
+
     def _transform_line(self, line: np.ndarray) -> np.ndarray:
         """Apply the current transformation matrix to a line."""
 
