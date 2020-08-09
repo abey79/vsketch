@@ -13,6 +13,10 @@ def generate_fill(poly: Polygon, pen_width: float) -> vp.LineCollection:
     # we draw the boundary, accounting for pen width
     p = poly.buffer(-pen_width / 2, join_style=2, mitre_limit=10.0)
 
+    if p.is_empty:
+        # too small, nothing to fill
+        return vp.LineCollection()
+
     min_x, min_y, max_x, max_y = p.bounds
     height = max_y - min_y
     line_count = math.ceil(height / pen_width) + 1
