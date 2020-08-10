@@ -516,7 +516,10 @@ class Vsketch:
             x4: X coordinate of the last vertex
             y4: Y coordinate of the last vertex
         """
-        line = np.array([x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j, x4 + y4 * 1j, x1 + y1 * 1j])
+        line = np.array(
+            [x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j, x4 + y4 * 1j, x1 + y1 * 1j],
+            dtype=complex,
+        )
         self._add_polygon(line)
 
     def triangle(
