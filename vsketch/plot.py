@@ -26,7 +26,7 @@ def plot_vector_data(
     show_pen_up: bool = False,
     colorful: bool = False,
     unit: str = "px",
-):
+) -> None:
     if isinstance(vector_data, vp.LineCollection):
         vector_data = vp.VectorData(vector_data)
 
@@ -115,6 +115,11 @@ def plot_vector_data(
         plt.axis("off")
     if show_grid:
         plt.grid("on")
-    plt.show()
 
-    return vector_data
+    try:
+        # noinspection PyUnresolvedReferences
+        import mpld3
+
+        mpld3.display()
+    except ModuleNotFoundError:
+        plt.show()

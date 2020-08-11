@@ -24,10 +24,7 @@ Vpype can be used in browser without any installation steps thanks to the
 `Google Colab <https://colab.research.google.com/notebooks/intro.ipynb>`_ free notebook environment. Add this content
 to the first cell to setup the environment::
 
-    !git clone https://github.com/abey79/vsketch
-    %cd vsketch
-    !pip install --upgrade pip
-    !pip install -e .[colab]
+    !pip install git+https://github.com/abey79/vsketch#egg=vsketch[colab]
 
 Check Colab notebook in the examples folder: open the notebook and press the "Open in Colab" button, or follow this
 `link <https://colab.research.google.com/github/DARKFRACTURES/vsketch/blob/master/examples/vsketch_google_colab_basic_setup.ipynb>`_.
