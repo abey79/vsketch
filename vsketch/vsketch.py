@@ -488,6 +488,40 @@ class Vsketch:
 
         self._add_polygon(line)
 
+    def quad(
+        self,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        x3: float,
+        y3: float,
+        x4: float,
+        y4: float,
+    ) -> None:
+        """Draw a quadrilateral.
+
+        Example:
+
+            >>> vsk = Vsketch()
+            >>> vsk.quad(0, 0, 1, 3.5, 4.5, 4.5, 3.5, 1)
+        
+        Args:
+            x1: X coordinate of the first vertex
+            y1: Y coordinate of the first vertex
+            x2: X coordinate of the second vertex
+            y2: Y coordinate of the second vertex
+            x3: X coordinate of the third vertex
+            y3: Y coordinate of the third vertex
+            x4: X coordinate of the last vertex
+            y4: Y coordinate of the last vertex
+        """
+        line = np.array(
+            [x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j, x4 + y4 * 1j, x1 + y1 * 1j],
+            dtype=complex,
+        )
+        self._add_polygon(line)
+
     def triangle(
         self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float
     ) -> None:
