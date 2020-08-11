@@ -116,10 +116,4 @@ def plot_vector_data(
     if show_grid:
         plt.grid("on")
 
-    # try:
-    #     # noinspection PyUnresolvedReferences
-    #     import mpld3
-    #
-    #     mpld3.display()
-    # except ModuleNotFoundError:
-    #     plt.show()
+    plt.show()
