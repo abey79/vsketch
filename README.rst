@@ -4,9 +4,11 @@ vsketch
 
 .. start-doc-inclusion-marker
 
-Vsketch is plotter generative art toolkit based based on `vpype <https://github.com/abey79/vpype/>`_ and suited
+Vsketch is plotter generative art toolkit based based on `vpype`_ and suited
 for use within Jupyter notebooks. Its API is loosely based on that of `Processing <https://processing.org>`_ and
 it plays nicely with `Shapely <https://shapely.readthedocs.io/en/latest/>`_.
+
+.. _vpype: https://github.com/abey79/vpype/
 
 *This project is at the stage of the very early concept/prototype and welcomes contributions.*
 
@@ -15,26 +17,59 @@ Installation
 
 .. highlight:: bash
 
-Follow these steps to install vsketch::
+Google Colab
+------------
+
+Vpype can be used in browser without any installation steps thanks to the
+`Google Colab <https://colab.research.google.com/notebooks/intro.ipynb>`_ free notebook environment. Add this content
+to the first cell to setup the environment::
+
+    !pip install git+https://github.com/abey79/vsketch#egg=vsketch[colab]
+
+Check Colab notebook in the examples folder: open the notebook and press the "Open in Colab" button, or follow this
+`link <https://colab.research.google.com/github/DARKFRACTURES/vsketch/blob/master/examples/vsketch_google_colab_basic_setup.ipynb>`_.
+
+
+Jupyter Lab
+-----------
+
+`Jupyter Lab <https://jupyterlab.readthedocs.io/en/stable/>`_ is a in-browser notebook environment similar
+to Google Colab but running locally on your computer.
+
+To set it up, install vsketch with the following steps::
 
     git clone https://github.com/abey79/vsketch
     cd vsketch
     python3 -m venv venv
     source venv/bin/activate
     pip install --upgrade pip
-    pip install -r requirements.txt
-    pip install -e .
-    
-Follow these steps to setup a nice Jupyter Lab environment with interactive matplotlib widget and automatic code
-formatting with `black <https://github.com/psf/black>`_::
+    pip install -e .[jupyterlab]
 
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib @ryantam626/jupyterlab_code_formatter
+The install and configure Jupyter Lab with the following steps (these steps include a nice Matplotlib integration as
+well as automatic code formatting)::
+
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager
+    jupyter labextension install jupyter-matplotlib
+    jupyter labextension install @ryantam626/jupyterlab_code_formatter
     jupyter serverextension enable --py jupyterlab_code_formatter
 
-    # start jupyter lab
+Finally, launch the Jupyter Lab environment with the following command::
+
     jupyter lab
 
 
+Standalone
+----------
+
+Vsketch being a regular Python package, you can use it with your favourite Python development environment.::
+
+    git clone https://github.com/abey79/vsketch
+    cd vsketch
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -e .
+    
 Overview
 ========
 
