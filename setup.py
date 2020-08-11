@@ -4,7 +4,7 @@ with open("README.rst") as f:
     readme = f.read()
 
 with open("LICENSE") as f:
-    license = f.read()
+    license_file = f.read()
 
 setup(
     name="vsketch",
@@ -14,7 +14,23 @@ setup(
     long_description_content_type="text/x-rst",
     author="Antoine Beyeler",
     url="https://github.com/abey79/vsketch",
-    license=license,
+    license=license_file,
     packages=["vsketch"],
-    install_requires=[],
+    install_requires=[
+        "numpy",
+        "matplotlib",
+        "vpype @ git+https://github.com/abey79/vpype",
+        "shapely[vectorized]",
+    ],
+    extras_require={
+        "colab": ["mpld3"],
+        "jupyterlab": [
+            "jupyterlab",
+            "jupyter_nbextensions_configurator",
+            "jupyterlab_code_formatter",
+            "ipympl",
+            "black",
+            "isort",
+        ],
+    },
 )
