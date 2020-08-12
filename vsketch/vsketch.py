@@ -744,13 +744,29 @@ class Vsketch:
 
         All of the above can be controlled using the optional arguments.
 
+        Examples:
+
+            In most case, the default behaviour is best::
+
+                >>> vsk = Vsketch()
+                >>> # draw stuff...
+                >>> vsk.display()
+
+            Sometimes, seeing the page boundaries and a laid out sketch is not useful::
+
+                >>> vsk.display(paper=False)
+
+            The ``"matplotlib"`` mode has additional options that can occasionaly be useful::
+
+                >>> vsk.display(mode="matplotlib", axes=True, grid=True, unit="cm")
+
         Args:
-            mode ("matplotlib" or "ipython"): override the default display mode
+            mode (``"matplotlib"`` or ``"ipython"``): override the default display mode
             paper: if True, the sketch is laid out on the desired page format (default: True)
             pen_up: if True, the pen-up trajectories will be displayed (default: False)
-            color_mode ("none", "layer", "path"): controls how color is used for display
-                (``"none"``: black and white, ``"layer"``: one color per layer, ``"path"``:
-                one color per path — default: ``"layer"``)
+            color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
+                display (``"none"``: black and white, ``"layer"``: one color per layer,
+                ``"path"``: one color per path — default: ``"layer"``)
             axes: (``"matplotlib"`` only) if True, labelled axes are displayed (default: False)
             grid: (``"matplotlib"`` only) if True, a grid is displayed (default: False)
             unit: (``"matplotlib"`` only) use a specific unit for the axes (default: "px")
