@@ -1,6 +1,9 @@
+import sys
+
 try:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
     import google.colab
+    import requests
 
     COLAB = True
 except ModuleNotFoundError:
@@ -9,10 +12,8 @@ except ModuleNotFoundError:
 try:
     # noinspection PyPackageRequirements
     import IPython
-    import requests
 except ModuleNotFoundError:
     pass
-
 
 try:
     # noinspection PyUnresolvedReferences
@@ -48,3 +49,6 @@ def setup_colab() -> None:
 def setup() -> None:
     if COLAB:
         setup_colab()
+
+    if "IPython" in sys.modules:
+        IPython.display.set_matplotlib_formats("svg")
