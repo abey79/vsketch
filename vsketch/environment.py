@@ -50,5 +50,5 @@ def setup() -> None:
     if COLAB:
         setup_colab()
 
-    if "IPython" in sys.modules:
+    if COLAB or JUPYTERLAB:
         IPython.display.set_matplotlib_formats("svg")
