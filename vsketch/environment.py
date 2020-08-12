@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 try:
     # noinspection PyUnresolvedReferences
-    JUPYTERLAB = get_ipython().__class__.__name__ == "ZMQInteractiveShell"
+    JUPYTERLAB = get_ipython().__class__.__name__ == "ZMQInteractiveShell"  # type: ignore
 except NameError:
     JUPYTERLAB = False
 
