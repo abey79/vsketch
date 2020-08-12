@@ -23,7 +23,7 @@ setup(
         "shapely[vectorized]",
     ],
     extras_require={
-        "colab": [],
+        "colab": ["requests"],
         "jupyterlab": [
             "jupyterlab",
             "jupyter_nbextensions_configurator",
