@@ -132,12 +132,16 @@ def display_matplotlib(
 
 def display_ipython(
     vector_data: Union[vp.LineCollection, vp.VectorData],
-    page_format: Tuple[float, float],
+    page_format: Optional[Tuple[float, float]],
     center: bool = False,
     show_pen_up: bool = False,
     color_mode: str = "layer",
 ):
-    """Implements a SVG previsualisation with pan/zoom support for IPython."""
+    """Implements a SVG previsualisation with pan/zoom support for IPython.
+
+    If page_format is provided, a page is displayed and the sketch is laid out on it. Otherwise
+    the sketch is displayed using its intrinsic boundaries.
+    """
     if "IPython" not in sys.modules:
         raise RuntimeError("IPython display cannot be used outside of IPython")
 
@@ -145,27 +149,46 @@ def display_ipython(
     vp.write_svg(
         svg_io,
         vector_data,
-        page_format,
+        page_format if page_format is not None else (0, 0),
         center,
         show_pen_up=show_pen_up,
         color_mode=color_mode,
     )
 
     MARGIN = 10
+
+    if page_format is None:
+        bounds = vector_data.bounds()
+        if bounds:
+            svg_width = bounds[2] - bounds[0]
+            svg_height = bounds[3] - bounds[1]
+        else:
+            svg_width = 0
+            svg_height = 0
+    else:
+        svg_width = page_format[0]
+        svg_height = page_format[1]
+
+    page_boundaries = f"""
+        <polygon points="{svg_width},{MARGIN}
+            {svg_width + MARGIN},{MARGIN}
+            {svg_width + MARGIN},{svg_height + MARGIN}
+            {MARGIN},{svg_height + MARGIN}
+            {MARGIN},{svg_height}
+            {svg_width},{svg_height}"
+            style="fill:black;stroke:none;opacity:0.3;" />
+        <rect width="{svg_width}" height="{svg_height}"
+            style="fill:none;stroke-width:1;stroke:rgb(0,0,0)" />
+    """
+
+    svg_margin = MARGIN if page_format is not None else 0
+
     IPython.display.display_html(
-        f"""<div id="container" style="width: 80%; height: 100px;">
-            <svg id="vsketch_svg" width="{page_format[0] + MARGIN}px"
-                    height={page_format[1] + MARGIN}
-                    viewBox="0 0 {page_format[0] + MARGIN} {page_format[1] + MARGIN}">
-                <polygon points="{page_format[0]},{MARGIN}
-                    {page_format[0] + MARGIN},{MARGIN}
-                    {page_format[0] + MARGIN},{page_format[1] + MARGIN}
-                    {MARGIN},{page_format[1] + MARGIN}
-                    {MARGIN},{page_format[1]}
-                    {page_format[0]},{page_format[1]}"
-                    style="fill:black;stroke:none;opacity:0.3;" />
-                <rect width="{page_format[0]}" height="{page_format[1]}"
-                    style="fill:none;stroke-width:1;stroke:rgb(0,0,0)" />
+        f"""<div id="container" style="width: 80%; height: {svg_height}px;">
+            <svg id="vsketch_svg" width="{svg_width + svg_margin}px"
+                    height={svg_height + svg_margin}
+                    viewBox="0 0 {svg_width + svg_margin} {svg_height + svg_margin}">
+                {page_boundaries if page_format is not None else ""}
                 {svg_io.getvalue()}
             </svg>
         </div>
@@ -186,7 +209,7 @@ def display_ipython(
 
 def display(
     vector_data: Union[vp.LineCollection, vp.VectorData],
-    page_format: Tuple[float, float],
+    page_format: Optional[Tuple[float, float]],
     center: bool = False,
     show_axes: bool = True,
     show_grid: bool = False,

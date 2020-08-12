@@ -715,38 +715,55 @@ class Vsketch:
 
         self._pipeline = s
 
-    def plot(
+    def display(
         self,
-        page: bool = True,
+        mode: Optional[str] = None,
+        paper: bool = True,
+        pen_up: bool = False,
+        color_mode: str = "layer",
         axes: bool = False,
         grid: bool = False,
-        pen_up: bool = False,
-        colorful: bool = False,
         unit: str = "px",
     ) -> None:
-        """Plot the vsketch.
+        """Display the sketch on screen.
 
-        TODO: explain arguments
+        This function displays the sketch on screen using the most appropriate mode depending
+        on the environment.
 
-        TODO: page boundaries should be displayed, probably requires a separate pageFormat()
-            API.
+        In standalone mode (vsketch used as a library), ``"matplotlib"`` mode is used by
+        default. Otherwise (i.e. in Jupyter Lab or Google Colab), ``"ipython"`` mode is used
+        instead.
+
+        The default options are the following:
+
+            * The sketch is laid out on the desired page format, the boundary of which are
+              displayed.
+            * The path are colored layer by layer.
+            * Pen-up trajectories are not displayed.
+            * Advanced plotting options (axes, grid, custom units) are disabled.
+
+        All of the above can be controlled using the optional arguments.
 
         Args:
-            page: controls the page display
-            axes: controls axis display
-            grid: controls grid display
-            pen_up: controls display of pen-up trajectories
-            colorful: use a different color for each separate line
-            unit: use a specific unit (``axes=True`` only)
+            mode ("matplotlib" or "ipython"): override the default display mode
+            paper: if True, the sketch is laid out on the desired page format (default: True)
+            pen_up: if True, the pen-up trajectories will be displayed (default: False)
+            color_mode ("none", "layer", "path"): controls how color is used for display
+                (``"none"``: black and white, ``"layer"``: one color per layer, ``"path"``:
+                one color per path — default: ``"layer"``)
+            axes: (``"matplotlib"`` only) if True, labelled axes are displayed (default: False)
+            grid: (``"matplotlib"`` only) if True, a grid is displayed (default: False)
+            unit: (``"matplotlib"`` only) use a specific unit for the axes (default: "px")
         """
         display(
             self.processed_vector_data,
-            page_format=self._page_format if page else None,
+            page_format=self._page_format if paper else None,
+            mode=mode,
             center=self._center_on_page,
             show_axes=axes,
             show_grid=grid,
             show_pen_up=pen_up,
-            color_mode="path" if colorful else "layer",
+            color_mode=color_mode,
             unit=unit,
         )
 
