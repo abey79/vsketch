@@ -14,6 +14,12 @@ except ModuleNotFoundError:
     pass
 
 
+try:
+    # noinspection PyUnresolvedReferences
+    JUPYTERLAB = get_ipython().__class__.__name__ == "ZMQInteractiveShell"
+except NameError:
+    JUPYTERLAB = False
+
 SVG_PAN_ZOOM_LIB = "http://ariutta.github.io/svg-pan-zoom/dist/svg-pan-zoom.min.js"
 SVG_PAN_ZOOM_ROOT = "/usr/local/share/jupyter"
 SVG_PAN_ZOOM_DEST = "/nbextensions/google.colab/svg-pan-zoom.min.js"

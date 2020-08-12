@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import vpype as vp
 
-from .environment import COLAB, get_svg_pan_zoom_url
+from .environment import COLAB, JUPYTERLAB, get_svg_pan_zoom_url
 
 try:
     # noinspection PyPackageRequirements
@@ -184,7 +184,7 @@ def display_ipython(
     svg_margin = MARGIN if page_format is not None else 0
 
     IPython.display.display_html(
-        f"""<div id="container" style="width: 80%; height: {svg_height}px;">
+        f"""<div id="container" style="width: 80%; height: {svg_height + svg_margin}px;">
             <svg id="vsketch_svg" width="{svg_width + svg_margin}px"
                     height={svg_height + svg_margin}
                     viewBox="0 0 {svg_width + svg_margin} {svg_height + svg_margin}">
@@ -241,7 +241,7 @@ def display(
     """
 
     if mode is None:
-        if COLAB:
+        if COLAB or JUPYTERLAB:
             mode = "ipython"
         else:
             mode = "matplotlib"
