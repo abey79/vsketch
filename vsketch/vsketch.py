@@ -7,8 +7,8 @@ import vpype as vp
 import vpype_cli
 from shapely.geometry import Polygon
 
+from .display import display
 from .fill import generate_fill
-from .plot import plot_vector_data
 from .utils import MatrixPopper, complex_to_2d
 
 __all__ = ["Vsketch"]
@@ -739,14 +739,14 @@ class Vsketch:
             colorful: use a different color for each separate line
             unit: use a specific unit (``axes=True`` only)
         """
-        plot_vector_data(
+        display(
             self.processed_vector_data,
             page_format=self._page_format if page else None,
             center=self._center_on_page,
             show_axes=axes,
             show_grid=grid,
             show_pen_up=pen_up,
-            colorful=colorful,
+            color_mode="path" if colorful else "layer",
             unit=unit,
         )
 
