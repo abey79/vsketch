@@ -474,14 +474,9 @@ class Vsketch:
             line = vp.rect(x, y, w, h)
         elif mode == "corners":
             #  Find top-left corner
-            if x <= w and y <= h:
-                width = w - x
-                height = h - y
-                line = vp.rect(x, y, width, height)
-            else:
-                width = x - w
-                height = y - h
-                line = vp.rect(w, h, width, height)
+            tl_x, tl_y = min(x, w), min(y, h)
+            width, height = max(x, w) - tl_x, max(y, h) - tl_y
+            line = vp.rect(tl_x, tl_y, width, height)
         elif mode == "center":
             line = vp.rect(x - w / 2, y - h / 2, w, h)
         elif mode == "radius":
