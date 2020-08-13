@@ -434,10 +434,14 @@ class Vsketch:
         tr: Optional[float] = None,
         br: Optional[float] = None,
         bl: Optional[float] = None,
+        mode: Optional[str] = "corner",
     ) -> None:
         """Draw a rectangle.
 
-        TODO: implement rectMode()
+        Examples:
+            >>> vsk = Vsketch()
+            >>> vsk.rect(0, 0, 2, 4)  # Default mode is 'corner'
+            >>> vsk.rect(3, 3, 2.5, 1, mode="radius")
 
         Args:
             x: x coordinate of the top-left corner
@@ -448,6 +452,7 @@ class Vsketch:
             tr: top-right corner radius (same as tl if not provided)
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
+            mode: One of "corner", "corners", "center", "radius" (default: "corner")
         """
         if not h:
             h = w
@@ -465,7 +470,25 @@ class Vsketch:
         if (tl + bl) > h or (tr + br) > h:
             raise ValueError("sum of corner radius cannot exceed height")
 
-        line = vp.rect(x, y, w, h)
+        if mode == "corner":
+            line = vp.rect(x, y, w, h)
+        elif mode == "corners":
+            #  Find top-left corner
+            if x <= w and y <= h:
+                width = w - x
+                height = h - y
+                line = vp.rect(x, y, width, height)
+            else:
+                width = x - w
+                height = y - h
+                line = vp.rect(w, h, width, height)
+        elif mode == "center":
+            line = vp.rect(x - w / 2, y - h / 2, w, h)
+        elif mode == "radius":
+            line = vp.rect(x - w, y - h, 2 * w, 2 * h)
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
         # TODO: handle round corners
 
         self._add_polygon(line)
