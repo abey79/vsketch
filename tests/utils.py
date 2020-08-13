@@ -55,6 +55,7 @@ def line_exists(
     vsk: vsketch.Vsketch,
     line: np.ndarray,
     layer_ids: Optional[Union[int, Iterable[int]]] = None,
+    strict: Optional[bool] = True,
 ) -> bool:
     """Asserts that a given line exists in the vsketch
 
@@ -63,6 +64,8 @@ def line_exists(
         line (Nx1 ndarray of complex): the line to look for
         layer_ids: the layer IDs to consider (can be a int, an iterable of int or None for all
             layers, which is the default)
+        strict: if True, checks for hard equality. Otherwise checks for equality with equivalent
+            lines (reversed, or closed at different points)
     """
 
     if isinstance(layer_ids, int):
@@ -73,6 +76,23 @@ def line_exists(
     for layer_id in layer_ids:
         if layer_id in vsk.vector_data.layers:
             for line_ in vsk.vector_data.layers[layer_id]:
-                if len(line_) == len(line) and np.all(line_ == line):
-                    return True
+                if len(line_) == len(line):
+                    if strict:
+                        if len(line_) == len(line) and np.all(line_ == line):
+                            return True
+                    else:
+                        # closed lines case
+                        if line[0] == line[-1] and line_[0] == line[-1]:
+                            tmp_line = line[:-1]
+                            tmp_line_ = line_[:-1]
+                            for i in range(len(tmp_line)):
+                                rolled_line = np.roll(tmp_line, i)
+                                if np.all(rolled_line == tmp_line_) or np.all(
+                                    rolled_line == tmp_line_[::-1]
+                                ):
+                                    return True
+                        # open lines case
+                        else:
+                            if np.all(line == line_) or np.all(line == line_[::-1]):
+                                return True
     return False
