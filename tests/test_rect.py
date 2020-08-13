@@ -22,6 +22,8 @@ def test_rect_default_success(vsk: vsketch.Vsketch):
         [(1, 2, 5, 4), "corners", (1 + 2j, 5 + 2j, 5 + 4j, 1 + 4j, 1 + 2j)],
         # 'corners' mode finds the top-left corner
         [(5, 4, 1, 2), "corners", (1 + 2j, 5 + 2j, 5 + 4j, 1 + 4j, 1 + 2j)],
+        [(1, 4, 5, 2), "corners", (1 + 2j, 5 + 2j, 5 + 4j, 1 + 4j, 1 + 2j)],
+        [(5, 2, 1, 4), "corners", (1 + 2j, 5 + 2j, 5 + 4j, 1 + 4j, 1 + 2j)],
         [(3, 3, 1, 2), "radius", (2 + 1j, 4 + 1j, 4 + 5j, 2 + 5j, 2 + 1j)],
     ],
 )
@@ -30,7 +32,7 @@ def test_rect_mode_succes(
 ):
     vsk.rect(*data, mode=mode)  # type: ignore
     assert line_count_equal(vsk, 1)
-    assert line_exists(vsk, np.array(expected, dtype=complex))
+    assert line_exists(vsk, np.array(expected, dtype=complex), strict=False)
 
 
 def test_rect_arg_fail(vsk: vsketch.Vsketch):
