@@ -28,7 +28,7 @@ def test_rect_default_success(vsk: vsketch.Vsketch):
 def test_rect_mode_succes(
     vsk: vsketch.Vsketch, data, mode: str, expected: Sequence[float],
 ):
-    vsk.rect(*data, mode=mode)
+    vsk.rect(*data, mode=mode)  # type: ignore
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array(expected, dtype=complex))
 
@@ -36,10 +36,10 @@ def test_rect_mode_succes(
 def test_rect_arg_fail(vsk: vsketch.Vsketch):
     # vsk.rect() expects 3 float args + optional `h` float and `mode` arg
     with pytest.raises(TypeError):
-        vsk.rect(0, 4, mode="corners")
+        vsk.rect(0, 4, mode="corners")  # type: ignore
 
     with pytest.raises(TypeError):
-        vsk.rect("hey", 0, 2.5, 4)
+        vsk.rect("hey", 0, 2.5, 4)  # type: ignore
 
     # vsk.rect() expects `mode` parameter to be one of "corner", "corners", "center", "radius"
     with pytest.raises(ValueError):
