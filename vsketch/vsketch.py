@@ -1,7 +1,9 @@
 import math
+import random
 import shlex
 from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Union, cast
 
+import noise
 import numpy as np
 import vpype as vp
 import vpype_cli
@@ -28,6 +30,12 @@ class Vsketch:
         self._detail = vp.convert_length("0.1mm")
         self._pen_width: Dict[int, float] = {}
         self._default_pen_width = vp.convert_length("0.3mm")
+        self._noise_lod = 4
+        self._random = random.Random()
+        self._noise_falloff = 0.5
+        # we use the global rng to guarantee unique seeds for noise
+        self._noise_seed = random.uniform(0, 1)
+        self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -824,3 +832,180 @@ class Vsketch:
 
         args = "vsketchinput " + self._pipeline + " vsketchoutput"
         vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
+
+    ####################
+    # RANDOM FUNCTIONS #
+    ####################
+
+    def random(self, a: float, b: Optional[float] = None) -> float:
+        """Return a random number with an uniform distribution between specified bounds.
+
+        .. seealso::
+
+            * :func:`randomSeed`
+            * :func:`noise`
+
+        Examples:
+
+            When using a single argument, it is used as higher bound and 0 is the lower
+            bound::
+
+                >>> vsk = Vsketch()
+                >>> vsk.random(10)
+                5.887767258845811
+
+            When using both arguments, they are used as lower and higher bounds::
+
+                >>> vsk.random(30, 40)
+                37.12222388435382
+
+        Args:
+            a: if b is provided: low bound, otherwise: high bound
+            b: high bound
+
+        Returns:
+            the random value
+        """
+        return self._random.uniform(0 if b is None else a, a if b is None else b)
+
+    def randomGaussian(self) -> float:
+        """Return a random number according to  a gaussian distribution with a mean of 0 and a
+        standard deviation of 1.0.
+
+        .. seealso::
+
+            * :func:`random`
+            * :func:`randomSeed`
+
+        Returns:
+            the random value
+        """
+        return self._random.gauss(0.0, 1.0)
+
+    def randomSeed(self, seed: int) -> None:
+        """Set the seed for :func:`random` and :func:`randomGaussian`.
+
+        By default, :class:`Vsketch` instance are initialized with a random seed. By explicitly
+        setting the seed, the sequence of number returned by :func:`random` and
+        :func:`randomGaussian` will be reproduced predictably.
+
+        Note that each :class:`Vsketch` instance has it's own random state and will not affect
+        other instances.
+
+        Args:
+            seed: the seed to use
+        """
+        self._random.seed(seed)
+
+    def noise(self, x: float, y: float = 0, z: float = 0) -> float:
+        """Returns the Perlin noise value at specified coordinates.
+
+        This function can compute 1D, 2D or 3D noise, depending on the number of coordinates
+        given. See `Processing's description <https://processing.org/reference/noise_.html>`_
+        of Perlin noise for background information.
+
+        For a given :class:`Vsketch` instance, a coordinate tuple will always lead to the same
+        pseudo-random value, unless another seed is set (:func:`noiseSeed`).
+
+        .. seealso::
+
+            * :func:`noiseSeed`
+            * :func:`noiseDetail`
+
+        Args:
+            x: X coordinate in the noise space
+            y: Y coordinate in the noise space (if provided)
+            z: Z coordinate in the noise space (if provided)
+
+        Returns:
+            noise value between 0.0 and 1.0
+        """
+
+        # We use simplex noise instead of perlin noise because it can be computed for all
+        # inputs (as opposed to [0, 1]) so it behaves in a way that is closer to Processing
+        return (
+            noise.snoise4(
+                x,
+                y,
+                z,
+                self._noise_seed,
+                octaves=self._noise_lod,
+                persistence=self._noise_falloff,
+            )
+            + 0.5
+        )
+
+    def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
+        """Adjusts parameters of the Perlin noise function.
+
+        By default, noise is computed over 4 octaves with each octave contributing exactly half
+        of it s predecessors. This falloff as well as the number of octaves can be adjusted
+        with this function
+
+        .. seealso::
+
+            * :func:`noise`
+            * Processing
+              `noiseDetail() doc <https://processing.org/reference/noiseDetail_.html>`_
+
+        Args:
+            lod: number of octaves to use
+            falloff: ratio of amplitude of one octave with respect to the previous one
+        """
+        self._noise_lod = lod
+        if falloff is not None:
+            self._noise_falloff = falloff
+
+    def noiseSeed(self, seed: int) -> None:
+        """Set the random seed for :func:`noise`.
+
+        .. seealso::
+
+            :func:`noise`
+
+        Args:
+            seed: the seed
+        """
+        rng = random.Random()
+        rng.seed(seed)
+        self._noise_seed = rng.uniform(0, 1)
+
+    #######################
+    # STATELESS UTILITIES #
+    #######################
+
+    @staticmethod
+    def map(
+        value: Union[float, np.ndarray],
+        start1: float,
+        stop1: float,
+        start2: float,
+        stop2: float,
+    ) -> Union[float, np.ndarray]:
+        """Re-map a value from one range to the other.
+
+        Input values are not clamped. This function accept float or NumPy array, in which case
+        it also returns a Numpy array.
+
+        Examples::
+
+            >>> vsk = Vsketch()
+            >>> vsk.map(5, 0, 10, 40, 60)
+            50
+            >>> vsk.map(-1, 0, 1, 0, 30)
+            -30
+            >>> vsk.map(np.arange(5), 0, 5, 10, 30)
+            array([10., 14., 18., 22., 26.])
+
+        Args:
+            value: value or array of value to re-map
+            start1: low bound of the value's current range
+            stop1: high bound of the value's current range
+            start2: low bound of the target range
+            stop2: high bound of the target range
+
+        Returns:
+            the re-maped value or array
+        """
+
+        return ((value - start1) * (stop2 - start2)) / (stop1 - start1) + start2

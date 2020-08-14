@@ -17,10 +17,11 @@ setup(
     license=license_file,
     packages=["vsketch"],
     install_requires=[
-        "numpy",
         "matplotlib",
-        "vpype @ git+https://github.com/abey79/vpype",
+        "noise",
+        "numpy",
         "shapely[vectorized]",
+        "vpype @ git+https://github.com/abey79/vpype",
     ],
     extras_require={
         "colab": ["requests"],
