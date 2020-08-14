@@ -34,7 +34,8 @@ class Vsketch:
         self._random = random.Random()
         self._noise_falloff = 0.5
         # we use the global rng to guarantee unique seeds for noise
-        self._noise_seed = random.randint(0, 2 ** 31)
+        self._noise_seed = random.uniform(0, 1)
+        self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -832,6 +833,10 @@ class Vsketch:
         args = "vsketchinput " + self._pipeline + " vsketchoutput"
         vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
 
+    ####################
+    # RANDOM FUNCTIONS #
+    ####################
+
     def random(self, a: float, b: Optional[float] = None) -> float:
         """Return a random number with an uniform distribution between specified bounds.
 
@@ -918,13 +923,16 @@ class Vsketch:
 
         # We use simplex noise instead of perlin noise because it can be computed for all
         # inputs (as opposed to [0, 1]) so it behaves in a way that is closer to Processing
-        return noise.snoise4(
-            x,
-            y,
-            z,
-            self._noise_seed,
-            octaves=self._noise_lod,
-            persistence=self._noise_falloff,
+        return (
+            noise.snoise4(
+                x,
+                y,
+                z,
+                self._noise_seed,
+                octaves=self._noise_lod,
+                persistence=self._noise_falloff,
+            )
+            + 0.5
         )
 
     def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
@@ -958,4 +966,46 @@ class Vsketch:
         Args:
             seed: the seed
         """
-        self._noise_seed = seed
+        rng = random.Random()
+        rng.seed(seed)
+        self._noise_seed = rng.uniform(0, 1)
+
+    #######################
+    # STATELESS UTILITIES #
+    #######################
+
+    @staticmethod
+    def map(
+        value: Union[float, np.ndarray],
+        start1: float,
+        stop1: float,
+        start2: float,
+        stop2: float,
+    ) -> Union[float, np.ndarray]:
+        """Re-map a value from one range to the other.
+
+        Input values are not clamped. This function accept float or NumPy array, in which case
+        it also returns a Numpy array.
+
+        Examples::
+
+            >>> vsk = Vsketch()
+            >>> vsk.map(5, 0, 10, 40, 60)
+            50
+            >>> vsk.map(-1, 0, 1, 0, 30)
+            -30
+            >>> vsk.map(np.arange(5), 0, 5, 10, 30)
+            array([10., 14., 18., 22., 26.])
+
+        Args:
+            value: value or array of value to re-map
+            start1: low bound of the value's current range
+            stop1: high bound of the value's current range
+            start2: low bound of the target range
+            stop2: high bound of the target range
+
+        Returns:
+            the re-maped value or array
+        """
+
+        return ((value - start1) * (stop2 - start2)) / (stop1 - start1) + start2

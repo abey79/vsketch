@@ -56,6 +56,10 @@ def test_noise_seed(vsk):
     n2 = vsk.noise(100)
     vsk.noiseSeed(0)
     n3 = vsk.noise(100)
+    vsk.noiseSeed(100000)
+    n4 = vsk.noise(100)
 
     assert n1 != n2
+    assert n1 != n4
+    assert n2 != n4
     assert n1 == n3
