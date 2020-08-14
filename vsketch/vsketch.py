@@ -1,4 +1,3 @@
-import datetime
 import math
 import random
 import shlex
@@ -34,7 +33,8 @@ class Vsketch:
         self._noise_lod = 4
         self._random = random.Random()
         self._noise_falloff = 0.5
-        self._noise_seed = datetime.datetime.now().microsecond
+        # we use the global rng to guarantee unique seeds for noise
+        self._noise_seed = random.randint(0, 2 ** 31)
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
