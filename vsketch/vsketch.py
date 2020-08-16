@@ -791,7 +791,9 @@ class Vsketch:
             unit=unit,
         )
 
-    def save(self, file: Union[str, TextIO], layer_label: str = "%d",) -> None:
+    def save(
+        self, file: Union[str, TextIO], color_mode="layer", layer_label: str = "%d"
+    ) -> None:
         """Save the current sketch to a SVG file.
 
         ``file`` may  either be a file path or a IO stream handle (such as the one returned
@@ -801,6 +803,9 @@ class Vsketch:
 
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
+            color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
+                display (``"none"``: black and white, ``"layer"``: one color per layer,
+                ``"path"``: one color per path — default: ``"layer"``)
             layer_label: define a template for layer naming (use %d for layer ID)
         """
         if isinstance(file, str):
@@ -811,6 +816,7 @@ class Vsketch:
             self.processed_vector_data,
             self._page_format,
             self._center_on_page,
+            color_mode=color_mode,
             layer_label_format=layer_label,
             source_string="Generated with vsketch",
         )
