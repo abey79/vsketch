@@ -11,6 +11,7 @@ from shapely.geometry import Polygon
 
 from .display import display
 from .fill import generate_fill
+from .style import stylize_path
 from .utils import MatrixPopper, complex_to_2d
 
 __all__ = ["Vsketch"]
@@ -21,6 +22,7 @@ class Vsketch:
     def __init__(self):
         self._vector_data = vp.VectorData()
         self._cur_stroke: Optional[int] = 1
+        self._stroke_weight: int = 1
         self._cur_fill: Optional[int] = None
         self._pipeline = ""
         self._figure = None
@@ -203,6 +205,28 @@ class Vsketch:
     def noStroke(self) -> None:
         """Disable stroke."""
         self._cur_stroke = None
+
+    def strokeWeight(self, weight: int) -> None:
+        """Set the stroke weight.
+
+        By default, stroke are plotted with a single line. Stroke can be made thicker by
+        setting weight greater than 1 using this function. With stroke weight greater than 1,
+        each stroke will be drawn with multiple lines, each spaced by the pen width defined
+        for the current layer. The pen width must thus be properly set for good results.
+
+        .. seealso::
+
+            * :func:`stroke`
+            * :func:`penWidth`
+
+        Args:
+            weight (strictly positive ``int``): number of plotted lines to use for strokes
+
+        """
+
+        if weight < 1:
+            raise ValueError("width should be a strictly positive integer")
+        self._stroke_weight = weight
 
     def fill(self, c: int) -> None:
         """Set the current fill color.
@@ -701,12 +725,17 @@ class Vsketch:
         transformed_holes = [self._transform_line(hole) for hole in holes]
 
         if self._cur_stroke:
-            self._vector_data.add(
-                vp.LineCollection(
-                    [line for line in [transformed_exterior] + transformed_holes]
-                ),
-                self._cur_stroke,
-            )
+            lc = vp.LineCollection()
+            for line in [transformed_exterior] + transformed_holes:
+                lc.extend(
+                    stylize_path(
+                        line,
+                        weight=self._stroke_weight,
+                        pen_width=cast(float, self.strokePenWidth),
+                        detail=self._detail,
+                    )
+                )
+            self._vector_data.add(lc, self._cur_stroke)
 
         if self._cur_fill:
             p = Polygon(
