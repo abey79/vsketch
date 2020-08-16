@@ -453,7 +453,7 @@ class Vsketch:
             tr: top-right corner radius (same as tl if not provided)
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
-            mode: One of "corner", "corners", "center", "radius" (default: "corner")
+            mode: See :meth:`Vsketch.rectMode`.
         """
         if not h:
             h = w
@@ -504,8 +504,7 @@ class Vsketch:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
             extent: width and height of the square
-            mode: One of "corner", "corners", "center", "radius" (default: "corner"). 
-                "corners" will be treated the same as "corner".
+            mode: See :meth:`Vsketch.rectMode`.
         """
         if mode == "corners" or (mode is None and self._rect_mode == "corners"):
             mode = "corner"
