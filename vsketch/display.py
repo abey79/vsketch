@@ -1,6 +1,7 @@
 import io
 import logging
 import sys
+import uuid
 from typing import List, Optional, Tuple, Union
 
 import matplotlib
@@ -182,10 +183,11 @@ def display_ipython(
     """
 
     svg_margin = MARGIN if page_format is not None else 0
+    svg_id = str(uuid.uuid1())
 
     IPython.display.display_html(
         f"""<div id="container" style="width: 80%; height: {svg_height + svg_margin}px;">
-            <svg id="vsketch_svg" width="{svg_width + svg_margin}px"
+            <svg id="{svg_id}" width="{svg_width + svg_margin}px"
                     height={svg_height + svg_margin}
                     viewBox="0 0 {svg_width + svg_margin} {svg_height + svg_margin}">
                 {page_boundaries if page_format is not None else ""}
@@ -194,7 +196,7 @@ def display_ipython(
         </div>
         <script src="{get_svg_pan_zoom_url()}"></script>
         <script>
-            svgPanZoom('#vsketch_svg', {{
+            svgPanZoom('#{svg_id}', {{
                 zoomEnabled: true,
                 controlIconsEnabled: true,
                 center: true,
