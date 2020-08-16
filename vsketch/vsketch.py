@@ -1,14 +1,16 @@
 import math
+import random
 import shlex
 from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Union, cast
 
+import noise
 import numpy as np
 import vpype as vp
 import vpype_cli
 from shapely.geometry import Polygon
 
+from .display import display
 from .fill import generate_fill
-from .plot import plot_vector_data
 from .utils import MatrixPopper, complex_to_2d
 
 __all__ = ["Vsketch"]
@@ -29,6 +31,12 @@ class Vsketch:
         self._pen_width: Dict[int, float] = {}
         self._default_pen_width = vp.convert_length("0.3mm")
         self._rect_mode = "corner"
+        self._noise_lod = 4
+        self._random = random.Random()
+        self._noise_falloff = 0.5
+        # we use the global rng to guarantee unique seeds for noise
+        self._noise_seed = random.uniform(0, 1)
+        self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -769,42 +777,77 @@ class Vsketch:
 
         self._pipeline = s
 
-    def plot(
+    def display(
         self,
-        page: bool = True,
+        mode: Optional[str] = None,
+        paper: bool = True,
+        pen_up: bool = False,
+        color_mode: str = "layer",
         axes: bool = False,
         grid: bool = False,
-        pen_up: bool = False,
-        colorful: bool = False,
         unit: str = "px",
     ) -> None:
-        """Plot the vsketch.
+        """Display the sketch on screen.
 
-        TODO: explain arguments
+        This function displays the sketch on screen using the most appropriate mode depending
+        on the environment.
 
-        TODO: page boundaries should be displayed, probably requires a separate pageFormat()
-            API.
+        In standalone mode (vsketch used as a library), ``"matplotlib"`` mode is used by
+        default. Otherwise (i.e. in Jupyter Lab or Google Colab), ``"ipython"`` mode is used
+        instead.
+
+        The default options are the following:
+
+            * The sketch is laid out on the desired page format, the boundary of which are
+              displayed.
+            * The path are colored layer by layer.
+            * Pen-up trajectories are not displayed.
+            * Advanced plotting options (axes, grid, custom units) are disabled.
+
+        All of the above can be controlled using the optional arguments.
+
+        Examples:
+
+            In most case, the default behaviour is best::
+
+                >>> vsk = Vsketch()
+                >>> # draw stuff...
+                >>> vsk.display()
+
+            Sometimes, seeing the page boundaries and a laid out sketch is not useful::
+
+                >>> vsk.display(paper=False)
+
+            The ``"matplotlib"`` mode has additional options that can occasionaly be useful::
+
+                >>> vsk.display(mode="matplotlib", axes=True, grid=True, unit="cm")
 
         Args:
-            page: controls the page display
-            axes: controls axis display
-            grid: controls grid display
-            pen_up: controls display of pen-up trajectories
-            colorful: use a different color for each separate line
-            unit: use a specific unit (``axes=True`` only)
+            mode (``"matplotlib"`` or ``"ipython"``): override the default display mode
+            paper: if True, the sketch is laid out on the desired page format (default: True)
+            pen_up: if True, the pen-up trajectories will be displayed (default: False)
+            color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
+                display (``"none"``: black and white, ``"layer"``: one color per layer,
+                ``"path"``: one color per path — default: ``"layer"``)
+            axes: (``"matplotlib"`` only) if True, labelled axes are displayed (default: False)
+            grid: (``"matplotlib"`` only) if True, a grid is displayed (default: False)
+            unit: (``"matplotlib"`` only) use a specific unit for the axes (default: "px")
         """
-        plot_vector_data(
+        display(
             self.processed_vector_data,
-            page_format=self._page_format if page else None,
+            page_format=self._page_format if paper else None,
+            mode=mode,
             center=self._center_on_page,
             show_axes=axes,
             show_grid=grid,
             show_pen_up=pen_up,
-            colorful=colorful,
+            color_mode=color_mode,
             unit=unit,
         )
 
-    def save(self, file: Union[str, TextIO], layer_label: str = "%d",) -> None:
+    def save(
+        self, file: Union[str, TextIO], color_mode="layer", layer_label: str = "%d"
+    ) -> None:
         """Save the current sketch to a SVG file.
 
         ``file`` may  either be a file path or a IO stream handle (such as the one returned
@@ -814,6 +857,9 @@ class Vsketch:
 
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
+            color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
+                display (``"none"``: black and white, ``"layer"``: one color per layer,
+                ``"path"``: one color per path — default: ``"layer"``)
             layer_label: define a template for layer naming (use %d for layer ID)
         """
         if isinstance(file, str):
@@ -824,6 +870,7 @@ class Vsketch:
             self.processed_vector_data,
             self._page_format,
             self._center_on_page,
+            color_mode=color_mode,
             layer_label_format=layer_label,
             source_string="Generated with vsketch",
         )
@@ -845,3 +892,180 @@ class Vsketch:
 
         args = "vsketchinput " + self._pipeline + " vsketchoutput"
         vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
+
+    ####################
+    # RANDOM FUNCTIONS #
+    ####################
+
+    def random(self, a: float, b: Optional[float] = None) -> float:
+        """Return a random number with an uniform distribution between specified bounds.
+
+        .. seealso::
+
+            * :func:`randomSeed`
+            * :func:`noise`
+
+        Examples:
+
+            When using a single argument, it is used as higher bound and 0 is the lower
+            bound::
+
+                >>> vsk = Vsketch()
+                >>> vsk.random(10)
+                5.887767258845811
+
+            When using both arguments, they are used as lower and higher bounds::
+
+                >>> vsk.random(30, 40)
+                37.12222388435382
+
+        Args:
+            a: if b is provided: low bound, otherwise: high bound
+            b: high bound
+
+        Returns:
+            the random value
+        """
+        return self._random.uniform(0 if b is None else a, a if b is None else b)
+
+    def randomGaussian(self) -> float:
+        """Return a random number according to  a gaussian distribution with a mean of 0 and a
+        standard deviation of 1.0.
+
+        .. seealso::
+
+            * :func:`random`
+            * :func:`randomSeed`
+
+        Returns:
+            the random value
+        """
+        return self._random.gauss(0.0, 1.0)
+
+    def randomSeed(self, seed: int) -> None:
+        """Set the seed for :func:`random` and :func:`randomGaussian`.
+
+        By default, :class:`Vsketch` instance are initialized with a random seed. By explicitly
+        setting the seed, the sequence of number returned by :func:`random` and
+        :func:`randomGaussian` will be reproduced predictably.
+
+        Note that each :class:`Vsketch` instance has it's own random state and will not affect
+        other instances.
+
+        Args:
+            seed: the seed to use
+        """
+        self._random.seed(seed)
+
+    def noise(self, x: float, y: float = 0, z: float = 0) -> float:
+        """Returns the Perlin noise value at specified coordinates.
+
+        This function can compute 1D, 2D or 3D noise, depending on the number of coordinates
+        given. See `Processing's description <https://processing.org/reference/noise_.html>`_
+        of Perlin noise for background information.
+
+        For a given :class:`Vsketch` instance, a coordinate tuple will always lead to the same
+        pseudo-random value, unless another seed is set (:func:`noiseSeed`).
+
+        .. seealso::
+
+            * :func:`noiseSeed`
+            * :func:`noiseDetail`
+
+        Args:
+            x: X coordinate in the noise space
+            y: Y coordinate in the noise space (if provided)
+            z: Z coordinate in the noise space (if provided)
+
+        Returns:
+            noise value between 0.0 and 1.0
+        """
+
+        # We use simplex noise instead of perlin noise because it can be computed for all
+        # inputs (as opposed to [0, 1]) so it behaves in a way that is closer to Processing
+        return (
+            noise.snoise4(
+                x,
+                y,
+                z,
+                self._noise_seed,
+                octaves=self._noise_lod,
+                persistence=self._noise_falloff,
+            )
+            + 0.5
+        )
+
+    def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
+        """Adjusts parameters of the Perlin noise function.
+
+        By default, noise is computed over 4 octaves with each octave contributing exactly half
+        of it s predecessors. This falloff as well as the number of octaves can be adjusted
+        with this function
+
+        .. seealso::
+
+            * :func:`noise`
+            * Processing
+              `noiseDetail() doc <https://processing.org/reference/noiseDetail_.html>`_
+
+        Args:
+            lod: number of octaves to use
+            falloff: ratio of amplitude of one octave with respect to the previous one
+        """
+        self._noise_lod = lod
+        if falloff is not None:
+            self._noise_falloff = falloff
+
+    def noiseSeed(self, seed: int) -> None:
+        """Set the random seed for :func:`noise`.
+
+        .. seealso::
+
+            :func:`noise`
+
+        Args:
+            seed: the seed
+        """
+        rng = random.Random()
+        rng.seed(seed)
+        self._noise_seed = rng.uniform(0, 1)
+
+    #######################
+    # STATELESS UTILITIES #
+    #######################
+
+    @staticmethod
+    def map(
+        value: Union[float, np.ndarray],
+        start1: float,
+        stop1: float,
+        start2: float,
+        stop2: float,
+    ) -> Union[float, np.ndarray]:
+        """Re-map a value from one range to the other.
+
+        Input values are not clamped. This function accept float or NumPy array, in which case
+        it also returns a Numpy array.
+
+        Examples::
+
+            >>> vsk = Vsketch()
+            >>> vsk.map(5, 0, 10, 40, 60)
+            50
+            >>> vsk.map(-1, 0, 1, 0, 30)
+            -30
+            >>> vsk.map(np.arange(5), 0, 5, 10, 30)
+            array([10., 14., 18., 22., 26.])
+
+        Args:
+            value: value or array of value to re-map
+            start1: low bound of the value's current range
+            stop1: high bound of the value's current range
+            start2: low bound of the target range
+            stop2: high bound of the target range
+
+        Returns:
+            the re-maped value or array
+        """
+
+        return ((value - start1) * (stop2 - start2)) / (stop1 - start1) + start2
