@@ -26,6 +26,7 @@ def test_rect_mode_rect_success(
     assert line_exists(vsk, np.array(expected, dtype=complex), strict=False)
 
 
+# noinspection DuplicatedCode
 @pytest.mark.parametrize(
     ["data", "mode", "expected"],
     [

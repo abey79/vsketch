@@ -14,6 +14,7 @@ def test_square_default_success(vsk: vsketch.Vsketch):
     assert line_exists(vsk, np.array([2 + 2j, 4.5 + 2j, 4.5 + 4.5j, 2 + 4.5j, 2 + 2j]))
 
 
+# noinspection DuplicatedCode
 @pytest.mark.parametrize(
     ["data", "mode", "expected"],
     [
