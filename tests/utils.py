@@ -78,7 +78,7 @@ def line_exists(
             for line_ in vsk.vector_data.layers[layer_id]:
                 if len(line_) == len(line):
                     if strict:
-                        if len(line_) == len(line) and np.all(line_ == line):
+                        if np.all(line_ == line):
                             return True
                     else:
                         # closed lines case

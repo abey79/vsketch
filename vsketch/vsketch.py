@@ -28,6 +28,7 @@ class Vsketch:
         self._detail = vp.convert_length("0.1mm")
         self._pen_width: Dict[int, float] = {}
         self._default_pen_width = vp.convert_length("0.3mm")
+        self._rect_mode = "corner"
         self.resetMatrix()
 
         # we cache the processed vector data to make sequence of plot() and write() faster
@@ -434,7 +435,7 @@ class Vsketch:
         tr: Optional[float] = None,
         br: Optional[float] = None,
         bl: Optional[float] = None,
-        mode: Optional[str] = "corner",
+        mode: Optional[str] = None,
     ) -> None:
         """Draw a rectangle.
 
@@ -470,6 +471,9 @@ class Vsketch:
         if (tl + bl) > h or (tr + br) > h:
             raise ValueError("sum of corner radius cannot exceed height")
 
+        if mode is None:
+            mode = self._rect_mode
+
         if mode == "corner":
             line = vp.rect(x, y, w, h)
         elif mode == "corners":
@@ -488,7 +492,7 @@ class Vsketch:
 
         self._add_polygon(line)
 
-    def square(self, x: float, y: float, extent: float) -> None:
+    def square(self, x: float, y: float, extent: float, mode: Optional[str] = None) -> None:
         """Draw a square.
 
         Example:
@@ -500,11 +504,43 @@ class Vsketch:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
             extent: width and height of the square
+            mode: One of "corner", "corners", "center", "radius" (default: "corner"). 
+                "corners" will be treated the same as "corner".
         """
+        if mode == "corners" or (mode is None and self._rect_mode == "corners"):
+            mode = "corner"
+        self.rect(x, y, extent, extent, mode=mode)
 
-        line = vp.rect(x, y, extent, extent)
+    def rectMode(self, mode: str) -> None:
+        """Change the way parameters are interpreted to draw rectangles.
 
-        self._add_polygon(line)
+        Default is "corner", where the first two parameters are the top-left corner coordinates,
+        and the third (and fourth) are the bottom-right corner coordinates.
+
+        In `rect()`, "corners" interprets the first two parameters as the coordinates of a corner,
+        and the third and fourth parameters as the opposite corner coordinates. 
+        In `square()`, "corners" is equivalent to "corner".
+
+        "center" interprets the first two parameters as the shape's center coordinates, and the third
+        and fourth parameters as the shape's width and height.
+
+        "radius" interprets the first two parameters as the shape's center coordinates, and the third
+        and fourth parameters as half of the shape's width and height.
+
+        Example:
+            
+            >>> vsk = Vsketch()
+            >>> vsk.rectMode("center")
+            >>> vsk.square(3, 3, 1.5)
+            >>> vsk.rect(2, 2, 3.5, 1)
+        
+        Args:
+            mode: one of "corner", "corners", "center", "radius".
+        """
+        if mode in ["corner", "corners", "center", "radius"]:
+            self._rect_mode = mode
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
 
     def quad(
         self,
