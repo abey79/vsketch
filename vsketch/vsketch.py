@@ -1,7 +1,7 @@
 import math
 import random
 import shlex
-from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Union, cast
+from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
 
 import noise
 import numpy as np
@@ -276,8 +276,8 @@ class Vsketch:
             self._default_pen_width = w
 
     @property
-    def strokePenWidth(self) -> Optional[float]:
-        """Returns the pen width to be used for stroke, or None in :func:`noStroke` mode.
+    def strokePenWidth(self) -> float:
+        """Returns the pen width to be used for stroke, or 0 in :func:`noStroke` mode.
 
         Returns:
             the current stroke pen width
@@ -287,7 +287,7 @@ class Vsketch:
                 return self._pen_width[self._cur_stroke]
             else:
                 return self._default_pen_width
-        return None
+        return 0.0
 
     @property
     def fillPenWidth(self) -> Optional[float]:
@@ -824,7 +824,7 @@ class Vsketch:
                     stylize_path(
                         line,
                         weight=self._stroke_weight,
-                        pen_width=cast(float, self.strokePenWidth),
+                        pen_width=self.strokePenWidth,
                         detail=self._detail,
                     )
                 )
@@ -835,7 +835,9 @@ class Vsketch:
                 complex_to_2d(transformed_exterior),
                 holes=[complex_to_2d(hole) for hole in transformed_holes],
             )
-            lc = generate_fill(p, cast(float, self.fillPenWidth))
+            lc = generate_fill(
+                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth,
+            )
             self._vector_data.add(lc, self._cur_fill)
 
     def pipeline(self, s: str) -> None:
@@ -854,6 +856,7 @@ class Vsketch:
         axes: bool = False,
         grid: bool = False,
         unit: str = "px",
+        fig_size: Optional[Tuple[float, float]] = None,
     ) -> None:
         """Display the sketch on screen.
 
@@ -900,6 +903,7 @@ class Vsketch:
             axes: (``"matplotlib"`` only) if True, labelled axes are displayed (default: False)
             grid: (``"matplotlib"`` only) if True, a grid is displayed (default: False)
             unit: (``"matplotlib"`` only) use a specific unit for the axes (default: "px")
+            fig_size: (``"matplotlib"`` only) specify the figure size
         """
         display(
             self.processed_vector_data,
@@ -911,6 +915,7 @@ class Vsketch:
             show_pen_up=pen_up,
             color_mode=color_mode,
             unit=unit,
+            fig_size=fig_size,
         )
 
     def save(

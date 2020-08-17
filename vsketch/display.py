@@ -1,7 +1,7 @@
 import io
 import logging
+import random
 import sys
-import uuid
 from typing import List, Optional, Tuple, Union
 
 import matplotlib
@@ -38,12 +38,15 @@ def display_matplotlib(
     show_pen_up: bool = False,
     colorful: bool = False,
     unit: str = "px",
+    fig_size: Tuple[float, float] = None,
 ) -> None:
     if isinstance(vector_data, vp.LineCollection):
         vector_data = vp.VectorData(vector_data)
 
     scale = 1 / vp.convert(unit)
 
+    if fig_size:
+        plt.figure(figsize=fig_size)
     plt.cla()
 
     # draw page
@@ -183,7 +186,7 @@ def display_ipython(
     """
 
     svg_margin = MARGIN if page_format is not None else 0
-    svg_id = str(uuid.uuid1())
+    svg_id = f"svg_display_{random.randint(0, 10000)}"
 
     IPython.display.display_html(
         f"""<div id="container" style="width: 80%; height: {svg_height + svg_margin}px;">
@@ -219,6 +222,7 @@ def display(
     color_mode: str = "layer",
     unit: str = "px",
     mode: Optional[str] = None,
+    fig_size: Tuple[float, float] = None,
 ) -> None:
     """Display a layout with vector data using the best method given the environment.
 
@@ -240,6 +244,7 @@ def display(
             "path" (one color per path)
         unit: display unit
         mode: if provided, force a specific display mode
+        fig_size: if provided, set the matplotlib figure size
     """
 
     if mode is None:
@@ -250,13 +255,16 @@ def display(
 
     if mode == "ipython":
         if show_axes:
-            logging.warning("show_axis is not supported by IPython display mode")
+            logging.warning("show_axis is not supported by the IPython display mode")
 
         if show_grid:
-            logging.warning("show_grid is not supported by IPython display mode")
+            logging.warning("show_grid is not supported by the IPython display mode")
 
         if unit != "px":
-            logging.warning("custom units are not supported by IPython display mode")
+            logging.warning("custom units are not supported by the IPython display mode")
+
+        if fig_size is not None:
+            logging.warning("setting fig_size is not supported by the IPython display mode")
 
         display_ipython(
             vector_data, page_format, center, show_pen_up=show_pen_up, color_mode=color_mode
@@ -271,6 +279,7 @@ def display(
             show_pen_up=show_pen_up,
             colorful=(color_mode == "path"),
             unit=unit,
+            fig_size=fig_size,
         )
     else:
         raise ValueError(f"unsupported display mode: {mode}")
