@@ -1,7 +1,9 @@
 numpy
+noise
 matplotlib
 git+https://github.com/abey79/vpype#egg=vpype
 shapely
+requests
 
 # jupyter
 jupyterlab

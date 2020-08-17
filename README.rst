@@ -27,7 +27,7 @@ to the first cell to setup the environment::
     !pip install git+https://github.com/abey79/vsketch#egg=vsketch[colab]
 
 Check Colab notebook in the examples folder: open the notebook and press the "Open in Colab" button, or follow this
-`link <https://colab.research.google.com/github/DARKFRACTURES/vsketch/blob/master/examples/vsketch_google_colab_basic_setup.ipynb>`_.
+`link <https://colab.research.google.com/github/abey79/vsketch/blob/master/examples/google_colab.ipynb>`_.
 
 
 Jupyter Lab
@@ -163,7 +163,7 @@ The power of `vpype`_ can be unleashed with a single call::
     
 Displaying your sketch is as easy as::
 
-    vsk.plot()
+    vsk.display()
     
 Finally, you can save a ready-to-plot SVG::
 
