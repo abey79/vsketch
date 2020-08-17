@@ -32,6 +32,7 @@ class Vsketch:
         self._detail = vp.convert_length("0.1mm")
         self._pen_width: Dict[int, float] = {}
         self._default_pen_width = vp.convert_length("0.3mm")
+        self._rect_mode = "corner"
         self._noise_lod = 4
         self._random = random.Random()
         self._noise_falloff = 0.5
@@ -466,20 +467,49 @@ class Vsketch:
         tr: Optional[float] = None,
         br: Optional[float] = None,
         bl: Optional[float] = None,
+        mode: Optional[str] = None,
     ) -> None:
         """Draw a rectangle.
 
-        TODO: implement rectMode()
+        The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
+        current rect
+
+        By default, ``x`` and ``y`` set the location of the upper-left corner, ``w`` sets the
+        width, and ``h`` sets the height. The way these parameters are interpreted can be
+        changed with the :meth:`rectMode` function (which changes the default for subsequent
+        calls to :func:`rect`) or the ``mode`` argument (which only affects this call).
+
+        Note: rounded corners are not yet implemented.
+
+        Examples:
+
+            By default, the argument are interpreted as the top left corner as well as the
+            width and height::
+
+                >>> vsk = Vsketch()
+                >>> vsk.rect(0, 0, 2, 4)  # 2x4 rectangle with top-left corner at (0, 0)
+
+            Alternative rect mode can be set as the default for subsequence calls with
+            :meth:`rectMode`::
+
+                >>> vsk.rectMode(mode="radius")
+                >>> vsk.rect(3, 3, 2, 1)
+                >>> vsk.rect(8, 8, 2, 1)  # both of these call are in "radius" mode
+
+            Or they can be set for a single call only:
+
+                >>> vsk.rect(2, 2, 10, 12, mode="corners")
 
         Args:
-            x: x coordinate of the top-left corner
-            y: y coordinate of the top-left corner
-            w: width
-            h: height (same as width if not provided)
+            x: by default, x coordinate of the top-left corner
+            y: by default, y coordinate of the top-left corner
+            w: by default, the rectangle width
+            h: by default, the rectangle height (same as width if not provided)
             tl: top-left corner radius (0 if not provided)
             tr: top-right corner radius (same as tl if not provided)
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
+            mode: "corner", "corners", "redius", or "center" (see :meth:`rectMode`)
         """
         if not h:
             h = w
@@ -497,13 +527,37 @@ class Vsketch:
         if (tl + bl) > h or (tr + br) > h:
             raise ValueError("sum of corner radius cannot exceed height")
 
-        line = vp.rect(x, y, w, h)
+        if mode is None:
+            mode = self._rect_mode
+
+        if mode == "corner":
+            line = vp.rect(x, y, w, h)
+        elif mode == "corners":
+            #  Find top-left corner
+            tl_x, tl_y = min(x, w), min(y, h)
+            width, height = max(x, w) - tl_x, max(y, h) - tl_y
+            line = vp.rect(tl_x, tl_y, width, height)
+        elif mode == "center":
+            line = vp.rect(x - w / 2, y - h / 2, w, h)
+        elif mode == "radius":
+            line = vp.rect(x - w, y - h, 2 * w, 2 * h)
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
         # TODO: handle round corners
 
         self._add_polygon(line)
 
-    def square(self, x: float, y: float, extent: float) -> None:
+    def square(self, x: float, y: float, extent: float, mode: Optional[str] = None) -> None:
         """Draw a square.
+
+        As for the :meth:`rect` function, the way arguments are interpreted is influenced by
+        the mode set with :meth:`rectMode` or the ``mode`` argument.
+
+        .. seealso::
+
+            * :meth:`rect`
+            * :meth:`rectMode`
 
         Example:
 
@@ -514,11 +568,50 @@ class Vsketch:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
             extent: width and height of the square
+            mode: "corner", "redius", or "center" (see :meth:`rectMode`) — note that the
+                "corners" mode is meaningless for this function, and is interpreted as the
+                "corner" mode
         """
+        if mode == "corners" or (mode is None and self._rect_mode == "corners"):
+            mode = "corner"
+        self.rect(x, y, extent, extent, mode=mode)
 
-        line = vp.rect(x, y, extent, extent)
+    def rectMode(self, mode: str) -> None:
+        """Change the way parameters are interpreted to draw rectangles.
 
-        self._add_polygon(line)
+        The default is "corner", where the first two parameters are the top-left corner
+        coordinates, and the third and fourth are the width, respectively the height of the
+        rectangle.
+
+        In `rect()`, "corners" interprets the first two parameters as the coordinates of a
+        corner, and the third and fourth parameters as the opposite corner coordinates.
+        In `square()`, "corners" is interpreted as "corner".
+
+        "center" interprets the first two parameters as the shape's center coordinates, and the
+        third and fourth parameters as the shape's width and height.
+
+        "radius" interprets the first two parameters as the shape's center coordinates, and the
+        third and fourth parameters as half of the shape's width and height.
+
+        .. seealso::
+
+            * :meth:`rect`
+            * :meth:`square`
+
+        Example:
+            
+            >>> vsk = Vsketch()
+            >>> vsk.rectMode("center")
+            >>> vsk.square(3, 3, 1.5)
+            >>> vsk.rect(2, 2, 3.5, 1)
+        
+        Args:
+            mode: one of "corner", "corners", "center", "radius".
+        """
+        if mode in ["corner", "corners", "center", "radius"]:
+            self._rect_mode = mode
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
 
     def quad(
         self,
