@@ -1,7 +1,7 @@
 import math
 import random
 import shlex
-from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Union, cast
+from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
 
 import noise
 import numpy as np
@@ -11,6 +11,7 @@ from shapely.geometry import Polygon
 
 from .display import display
 from .fill import generate_fill
+from .style import stylize_path
 from .utils import MatrixPopper, complex_to_2d
 
 __all__ = ["Vsketch"]
@@ -21,6 +22,7 @@ class Vsketch:
     def __init__(self):
         self._vector_data = vp.VectorData()
         self._cur_stroke: Optional[int] = 1
+        self._stroke_weight: int = 1
         self._cur_fill: Optional[int] = None
         self._pipeline = ""
         self._figure = None
@@ -205,6 +207,28 @@ class Vsketch:
         """Disable stroke."""
         self._cur_stroke = None
 
+    def strokeWeight(self, weight: int) -> None:
+        """Set the stroke weight.
+
+        By default, stroke are plotted with a single line. Stroke can be made thicker by
+        setting weight greater than 1 using this function. With stroke weight greater than 1,
+        each stroke will be drawn with multiple lines, each spaced by the pen width defined
+        for the current layer. The pen width must thus be properly set for good results.
+
+        .. seealso::
+
+            * :func:`stroke`
+            * :func:`penWidth`
+
+        Args:
+            weight (strictly positive ``int``): number of plotted lines to use for strokes
+
+        """
+
+        if weight < 1:
+            raise ValueError("width should be a strictly positive integer")
+        self._stroke_weight = weight
+
     def fill(self, c: int) -> None:
         """Set the current fill color.
         Args:
@@ -252,8 +276,8 @@ class Vsketch:
             self._default_pen_width = w
 
     @property
-    def strokePenWidth(self) -> Optional[float]:
-        """Returns the pen width to be used for stroke, or None in :func:`noStroke` mode.
+    def strokePenWidth(self) -> float:
+        """Returns the pen width to be used for stroke, or 0 in :func:`noStroke` mode.
 
         Returns:
             the current stroke pen width
@@ -263,7 +287,7 @@ class Vsketch:
                 return self._pen_width[self._cur_stroke]
             else:
                 return self._default_pen_width
-        return None
+        return 0.0
 
     @property
     def fillPenWidth(self) -> Optional[float]:
@@ -794,19 +818,26 @@ class Vsketch:
         transformed_holes = [self._transform_line(hole) for hole in holes]
 
         if self._cur_stroke:
-            self._vector_data.add(
-                vp.LineCollection(
-                    [line for line in [transformed_exterior] + transformed_holes]
-                ),
-                self._cur_stroke,
-            )
+            lc = vp.LineCollection()
+            for line in [transformed_exterior] + transformed_holes:
+                lc.extend(
+                    stylize_path(
+                        line,
+                        weight=self._stroke_weight,
+                        pen_width=self.strokePenWidth,
+                        detail=self._detail,
+                    )
+                )
+            self._vector_data.add(lc, self._cur_stroke)
 
         if self._cur_fill:
             p = Polygon(
                 complex_to_2d(transformed_exterior),
                 holes=[complex_to_2d(hole) for hole in transformed_holes],
             )
-            lc = generate_fill(p, cast(float, self.fillPenWidth))
+            lc = generate_fill(
+                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth,
+            )
             self._vector_data.add(lc, self._cur_fill)
 
     def pipeline(self, s: str) -> None:
@@ -825,6 +856,7 @@ class Vsketch:
         axes: bool = False,
         grid: bool = False,
         unit: str = "px",
+        fig_size: Optional[Tuple[float, float]] = None,
     ) -> None:
         """Display the sketch on screen.
 
@@ -871,6 +903,7 @@ class Vsketch:
             axes: (``"matplotlib"`` only) if True, labelled axes are displayed (default: False)
             grid: (``"matplotlib"`` only) if True, a grid is displayed (default: False)
             unit: (``"matplotlib"`` only) use a specific unit for the axes (default: "px")
+            fig_size: (``"matplotlib"`` only) specify the figure size
         """
         display(
             self.processed_vector_data,
@@ -882,6 +915,7 @@ class Vsketch:
             show_pen_up=pen_up,
             color_mode=color_mode,
             unit=unit,
+            fig_size=fig_size,
         )
 
     def save(
