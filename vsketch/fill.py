@@ -7,11 +7,25 @@ from shapely.geometry import MultiLineString, Polygon
 from .utils import complex_to_2d
 
 
-def generate_fill(poly: Polygon, pen_width: float) -> vp.LineCollection:
-    """Draw a fill pattern for the the input polygon."""
+def generate_fill(poly: Polygon, pen_width: float, stroke_width: float) -> vp.LineCollection:
+    """Draw a fill pattern for the the input polygon.
+
+    The fill pattern should take into account the stroke width.
+
+    Args:
+        poly: polygon to fill
+        pen_width: pen width on paper
+        stroke_width: width of the stroke (accounting for stroke pen width and weight)
+
+    Returns:
+        fill paths
+    """
 
     # we draw the boundary, accounting for pen width
-    p = poly.buffer(-pen_width / 2, join_style=2, mitre_limit=10.0)
+    if stroke_width > 0:
+        p = poly.buffer(-stroke_width / 2, join_style=2, mitre_limit=10.0)
+    else:
+        p = poly
 
     if p.is_empty:
         # too small, nothing to fill

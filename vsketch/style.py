@@ -1,0 +1,52 @@
+import math
+
+import numpy as np
+import vpype as vp
+from shapely.geometry import LineString
+
+
+def _add_to_line_collection(geom, lc: vp.LineCollection) -> None:
+    if hasattr(geom, "exterior"):
+        lc.append(geom.exterior)
+        lc.extend(geom.interiors)
+    else:
+        lc.append(geom)
+
+
+def _calc_buffer_resolution(radius: float, detail: float) -> int:
+    """Compute the ``resolution`` parameter of Shapely's ``buffer()`` based on the radius
+    and desired detail.
+    """
+    return max(math.ceil(0.5 * math.pi * radius / detail) + 1, 3)
+
+
+def stylize_path(
+    line: np.ndarray, weight: int, pen_width: float, detail: float
+) -> vp.LineCollection:
+    """Implement a heavy stroke weight by buffering multiple times the base path.
+
+    Note: recursive buffering is to be avoided to properly control detail!
+    """
+
+    if weight == 1:
+        return vp.LineCollection([line])
+
+    lc = vp.LineCollection()
+
+    # path to be used as starting point for buffering
+    geom = LineString(vp.as_vector(line))
+    if weight % 2 == 0:
+        radius = pen_width / 2
+        _add_to_line_collection(
+            geom.buffer(radius, resolution=_calc_buffer_resolution(radius, detail)), lc
+        )
+    else:
+        radius = 0.0
+        _add_to_line_collection(geom, lc)
+
+    for i in range((weight - 1) // 2):
+        radius += pen_width
+        p = geom.buffer(radius, resolution=_calc_buffer_resolution(radius, detail))
+        _add_to_line_collection(p, lc)
+
+    return lc
