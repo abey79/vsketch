@@ -9,6 +9,7 @@ import vpype as vp
 import vpype_cli
 from shapely.geometry import Polygon
 
+from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
 from .style import stylize_path
@@ -117,6 +118,9 @@ class Vsketch:
         straight segments. Curved geometries (e.g. :func:`circle`) are approximated by many
         small segments. The level of detail controls the maximum size these segments may have.
         The default value is set to 0.1mm, with is good enough for most plotting needs.
+
+        Note: :func:`detail` applies to all primitives, including e.g. :func:`bezier`. As such,
+        it replaces some of Processing's API, such as ``bezierDetail()`` or ``curveDetail()``.
 
         Examples::
 
@@ -375,7 +379,7 @@ class Vsketch:
 
         self.transform = self.transform @ np.diag([sx, sy, 1])
 
-    def rotate(self, angle: float, degrees=False) -> None:
+    def rotate(self, angle: float, degrees: bool = False) -> None:
         """Apply a rotation to the current transformation matrix.
 
         The coordinates are always rotated around their relative position to the origin.
@@ -677,7 +681,7 @@ class Vsketch:
         y: Optional[Iterable[float]] = None,
         holes: Iterable[Iterable[Sequence[float]]] = (),
         close: bool = False,
-    ):
+    ) -> None:
         """Draw a polygon.
 
         Examples:
@@ -766,6 +770,96 @@ class Vsketch:
                 raise ValueError("unsupported Shapely geometry")
         except AttributeError:
             raise ValueError("the input must be a supported Shapely geometry")
+
+    def bezier(
+        self,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        x3: float,
+        y3: float,
+        x4: float,
+        y4: float,
+    ) -> None:
+        """Draws a Bezier curve
+
+        Bezier curves are defined by a series of anchor and control points. The first two
+        arguments specify the first anchor point and the last two arguments specify the other
+        anchor point. The middle arguments specify the control points which define the shape
+        of the curve.
+
+        .. seealso::
+
+            * :func:`bezierPoint`
+            * :func:`bezierTangent`
+            * :func:`detail`
+
+        Args:
+            x1: X coordinate of the first anchor point
+            y1: Y coordinate of the first anchor point
+            x2: X coordinate of the first control point
+            y2: Y coordinate of the first control point
+            x3: X coordinate of the second control point
+            y3: Y coordinate of the second control point
+            x4: X coordinate of the second anchor point
+            y4: Y coordinate of the second anchor point
+        """
+
+        path = quadratic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self.epsilon)
+        self._add_polygon(path)
+
+    # noinspection PyMethodMayBeStatic
+    def bezierPoint(self, a: float, b: float, c: float, d: float, t: float) -> float:
+        """Evaluates the Bezier at point ``t`` for points ``a``, ``b``, ``c``, ``d``. The
+        parameter ``t`` varies between 0 and 1, ``a`` and ``d`` are points on the curve, and
+        ``b`` and ``c`` are the control points. This can be done once with the X coordinates
+        and a second time with the Y coordinates to get the location of a bezier curve at
+        ``t``.
+
+        .. seealso::
+
+            :func:`bezier`
+
+        Args:
+            a: coordinate of the first point of the curve
+            b: coordinate of the first control point
+            c: coordinate of the second control point
+            d: coordinate of the second point of the curve
+            t: value between 0 and 1
+
+        Returns:
+            evaluated coordinate on the bezier curve
+        """
+        x, y = quadratic_bezier_point(a, 0, b, 0, c, 0, d, 0, t)
+        return x
+
+    # noinspection PyMethodMayBeStatic
+    def bezierTangent(self, a: float, b: float, c: float, d: float, t: float) -> float:
+        """Calculates the tangent of a point on a Bezier curve.
+
+        .. seealso::
+
+            * :func:`bezier`
+            * :func:`bezierPoint`
+
+        Args:
+            a: coordinate of the first point of the curve
+            b: coordinate of the first control point
+            c: coordinate of the second control point
+            d: coordinate of the second point of the curve
+            t: value between 0 and 1
+
+        Returns:
+            evaluated tangent on the bezier curve
+        """
+        x, y = quadratic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
+        return x
+
+    def bezierDetail(self, epsilon: float) -> None:
+        raise NotImplementedError(
+            "bezierDetail() is not implemented, see detail() for more information"
+        )
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
@@ -919,7 +1013,7 @@ class Vsketch:
         )
 
     def save(
-        self, file: Union[str, TextIO], color_mode="layer", layer_label: str = "%d"
+        self, file: Union[str, TextIO], color_mode: str = "layer", layer_label: str = "%d"
     ) -> None:
         """Save the current sketch to a SVG file.
 

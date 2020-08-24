@@ -5,10 +5,11 @@ vsketch
 .. start-doc-inclusion-marker
 
 Vsketch is plotter generative art toolkit based based on `vpype`_ and suited
-for use within Jupyter notebooks. Its API is loosely based on that of `Processing <https://processing.org>`_ and
-it plays nicely with `Shapely <https://shapely.readthedocs.io/en/latest/>`_.
+for use within Jupyter notebooks. Its API is loosely based on that of `Processing`_ and it plays nicely with
+`Shapely <https://shapely.readthedocs.io/en/latest/>`_.
 
 .. _vpype: https://github.com/abey79/vpype/
+.. _Processing: https://processing.org
 
 *This project is at the stage of the very early concept/prototype and welcomes contributions.*
 
@@ -88,6 +89,10 @@ The usual primitives are available::
     vsk.rect(10, 10, 5, 8)
     vsk.circle(2, 2, radius=3)
     vsk.triangle(0, 0, 1, 1, 0, 1)
+
+So are the less usual primitives::
+
+    vsk.bezier(1, 1, 3, 1, 3, 3, 1, 3)
     
 By default, vsketch uses CSS pixels as unit, just like SVG. If you'd rather work in some other unit,
 just start your sketch with a scale factor::
@@ -169,19 +174,35 @@ Finally, you can save a ready-to-plot SVG::
 
     vsk.save("my_file.svg")
     
-See also included the multiple examples included in the repository.
+See also the many examples included in the repository.
 
 
 Contributing
 ============
 
-Issues and pull-request are most welcome contributions. Let's get the discussion started on the
+The following helps the project a great deal:
+
+- Use vsketch and let people know about it.
+- Give any type of feedback (what works well, missing features, possible API improvement, bugs, etc.) by opening an
+  issue or contacting the author.
+- Help building a better documentation.
+- Contribute code via pull requests.
+
+
+In case of doubt, let's get the discussion started on the
 `Drawingbots Discord server <https://discordapp.com/invite/XHP3dBg>`_.
 
 
 .. stop-doc-inclusion-marker
 
+Acknowledgments
+===============
+
+Part of this project's documentation is inspired by or copied from the `Processing`_ project.
+
 License
 =======
 
-This project is licensed under the MIT License - see the `LICENSE <LICENSE>`_ file for details.
+This project is licensed under the MIT license. The documentation is licensed under the
+`CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`_ license. See the `LICENSE <LICENSE>`_
+file for details.

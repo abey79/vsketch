@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Tuple
 
 import numpy as np
 import pytest
@@ -18,8 +18,11 @@ from .utils import line_count_equal, line_exists
     ],
 )
 def test_rect_mode_rect_success(
-    vsk: vsketch.Vsketch, data, mode: str, expected: Sequence[float]
-):
+    vsk: vsketch.Vsketch,
+    data: Tuple[float, float, float, float],
+    mode: str,
+    expected: Sequence[float],
+) -> None:
     vsk.rectMode(mode)
     vsk.rect(*data)
     assert line_count_equal(vsk, 1)
@@ -37,14 +40,17 @@ def test_rect_mode_rect_success(
     ],
 )
 def test_rect_mode_square_success(
-    vsk: vsketch.Vsketch, data, mode: str, expected: Sequence[float]
-):
+    vsk: vsketch.Vsketch,
+    data: Tuple[float, float, float],
+    mode: str,
+    expected: Sequence[float],
+) -> None:
     vsk.rectMode(mode)
     vsk.square(*data)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array(expected, dtype=complex), strict=False)
 
 
-def test_rect_mode_fail(vsk: vsketch.Vsketch):
+def test_rect_mode_fail(vsk: vsketch.Vsketch) -> None:
     with pytest.raises(ValueError):
         vsk.rectMode("jumbo")
