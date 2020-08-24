@@ -89,6 +89,10 @@ The usual primitives are available::
     vsk.rect(10, 10, 5, 8)
     vsk.circle(2, 2, radius=3)
     vsk.triangle(0, 0, 1, 1, 0, 1)
+
+So are the less usual primitives::
+
+    vsk.bezier(1, 1, 3, 1, 3, 3, 1, 3)
     
 By default, vsketch uses CSS pixels as unit, just like SVG. If you'd rather work in some other unit,
 just start your sketch with a scale factor::
@@ -170,13 +174,22 @@ Finally, you can save a ready-to-plot SVG::
 
     vsk.save("my_file.svg")
     
-See also included the multiple examples included in the repository.
+See also the many examples included in the repository.
 
 
 Contributing
 ============
 
-Issues and pull-request are most welcome contributions. Let's get the discussion started on the
+The following helps the project a great deal:
+
+- Use vsketch and let people know about it.
+- Give any type of feedback (what works well, missing features, possible API improvement, bugs, etc.) by opening an
+  issue or contacting the author.
+- Help building a better documentation.
+- Contribute code via pull requests.
+
+
+In case of doubt, let's get the discussion started on the
 `Drawingbots Discord server <https://discordapp.com/invite/XHP3dBg>`_.
 
 
