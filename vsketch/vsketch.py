@@ -1195,7 +1195,7 @@ class Vsketch:
         """
         rng = random.Random()
         rng.seed(seed)
-        self._noise_seed = rng.uniform(0, 1)
+        self._noise_seed = rng.uniform(0, 100000)
 
     #######################
     # STATELESS UTILITIES #
