@@ -1,11 +1,12 @@
 import math
+from typing import Any
 
 import numpy as np
 import vpype as vp
 from shapely.geometry import LineString
 
 
-def _add_to_line_collection(geom, lc: vp.LineCollection) -> None:
+def _add_to_line_collection(geom: Any, lc: vp.LineCollection) -> None:
     if hasattr(geom, "exterior"):
         lc.append(geom.exterior)
         lc.extend(geom.interiors)

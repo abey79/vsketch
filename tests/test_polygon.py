@@ -22,14 +22,14 @@ from .utils import line_count_equal, line_exists
 )
 def test_polygon_1arg_success(
     vsk: vsketch.Vsketch, data: Iterable[Sequence[float]], expected: Sequence[complex]
-):
+) -> None:
     # polygon() with a single arg, polygon should accept an iterable of 2-size iterable
     vsk.polygon(data)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array(expected, dtype=complex))
 
 
-def test_polygon_1arg_fail(vsk: vsketch.Vsketch):
+def test_polygon_1arg_fail(vsk: vsketch.Vsketch) -> None:
     # 1D arrays are not
     with pytest.raises(ValueError):
         vsk.polygon([1, 3, 2])
@@ -48,13 +48,13 @@ def test_polygon_1arg_fail(vsk: vsketch.Vsketch):
 )
 def test_polygon_2args_success(
     vsk: vsketch.Vsketch, x: Iterable[float], y: Iterable[float], expected: Sequence[complex]
-):
+) -> None:
     vsk.polygon(x, y)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array(expected, dtype=complex))
 
 
-def test_polygon_2args_fail(vsk: vsketch.Vsketch):
+def test_polygon_2args_fail(vsk: vsketch.Vsketch) -> None:
     # wrong array dimensions
     with pytest.raises(ValueError):
         vsk.polygon(np.random.rand(5, 2), np.random.rand(5, 2))
@@ -64,7 +64,7 @@ def test_polygon_2args_fail(vsk: vsketch.Vsketch):
         vsk.polygon(["red", "blue"], [1, 2])  # type: ignore
 
 
-def test_polygon_close(vsk: vsketch.Vsketch):
+def test_polygon_close(vsk: vsketch.Vsketch) -> None:
     vsk.polygon([(0, 0), (1, 0), (3, 3)], close=True)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array([0, 1, 3 + 3j, 0]))

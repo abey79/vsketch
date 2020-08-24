@@ -1,8 +1,9 @@
+bezier
 numpy
 noise
 matplotlib
 git+https://github.com/abey79/vpype#egg=vpype
-shapely
+shapely[vectorized]
 requests
 
 # jupyter

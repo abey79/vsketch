@@ -5,10 +5,11 @@ vsketch
 .. start-doc-inclusion-marker
 
 Vsketch is plotter generative art toolkit based based on `vpype`_ and suited
-for use within Jupyter notebooks. Its API is loosely based on that of `Processing <https://processing.org>`_ and
-it plays nicely with `Shapely <https://shapely.readthedocs.io/en/latest/>`_.
+for use within Jupyter notebooks. Its API is loosely based on that of `Processing`_ and it plays nicely with
+`Shapely <https://shapely.readthedocs.io/en/latest/>`_.
 
 .. _vpype: https://github.com/abey79/vpype/
+.. _Processing: https://processing.org
 
 *This project is at the stage of the very early concept/prototype and welcomes contributions.*
 
@@ -181,7 +182,14 @@ Issues and pull-request are most welcome contributions. Let's get the discussion
 
 .. stop-doc-inclusion-marker
 
+Acknowledgments
+===============
+
+Part of this project's documentation is inspired by or copied from the `Processing`_ project.
+
 License
 =======
 
-This project is licensed under the MIT License - see the `LICENSE <LICENSE>`_ file for details.
+This project is licensed under the MIT license. The documentation is licensed under the
+`CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`_ license. See the `LICENSE <LICENSE>`_
+file for details.

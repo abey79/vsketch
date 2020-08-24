@@ -140,7 +140,7 @@ def display_ipython(
     center: bool = False,
     show_pen_up: bool = False,
     color_mode: str = "layer",
-):
+) -> None:
     """Implements a SVG previsualisation with pan/zoom support for IPython.
 
     If page_format is provided, a page is displayed and the sketch is laid out on it. Otherwise
