@@ -164,7 +164,7 @@ Multiple sketches can be created and used as reusable sub-sketches::
 
 The power of `vpype`_ can be unleashed with a single call::
 
-    vsk.pipeline("linemerge reloop linesort")
+    vsk.vpype("linesimplify linemerge reloop linesort")
     
 Displaying your sketch is as easy as::
 

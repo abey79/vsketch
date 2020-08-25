@@ -17,6 +17,8 @@ isort
 # dev/test
 pytest
 mypy
+nbconvert
+nbformat
 
 # documentation
 -r docs/requirements.txt
