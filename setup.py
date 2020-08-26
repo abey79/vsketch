@@ -17,6 +17,7 @@ setup(
     license=license_file,
     packages=["vsketch"],
     install_requires=[
+        "bezier",
         "matplotlib",
         "noise",
         "numpy",

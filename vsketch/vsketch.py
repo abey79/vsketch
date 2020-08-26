@@ -9,6 +9,7 @@ import vpype as vp
 import vpype_cli
 from shapely.geometry import Polygon
 
+from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
 from .style import stylize_path
@@ -117,6 +118,9 @@ class Vsketch:
         straight segments. Curved geometries (e.g. :func:`circle`) are approximated by many
         small segments. The level of detail controls the maximum size these segments may have.
         The default value is set to 0.1mm, with is good enough for most plotting needs.
+
+        Note: :func:`detail` applies to all primitives, including e.g. :func:`bezier`. As such,
+        it replaces some of Processing's API, such as ``bezierDetail()`` or ``curveDetail()``.
 
         Examples::
 
@@ -375,7 +379,7 @@ class Vsketch:
 
         self.transform = self.transform @ np.diag([sx, sy, 1])
 
-    def rotate(self, angle: float, degrees=False) -> None:
+    def rotate(self, angle: float, degrees: bool = False) -> None:
         """Apply a rotation to the current transformation matrix.
 
         The coordinates are always rotated around their relative position to the origin.
@@ -677,7 +681,7 @@ class Vsketch:
         y: Optional[Iterable[float]] = None,
         holes: Iterable[Iterable[Sequence[float]]] = (),
         close: bool = False,
-    ):
+    ) -> None:
         """Draw a polygon.
 
         Examples:
@@ -767,6 +771,96 @@ class Vsketch:
         except AttributeError:
             raise ValueError("the input must be a supported Shapely geometry")
 
+    def bezier(
+        self,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        x3: float,
+        y3: float,
+        x4: float,
+        y4: float,
+    ) -> None:
+        """Draws a Bezier curve
+
+        Bezier curves are defined by a series of anchor and control points. The first two
+        arguments specify the first anchor point and the last two arguments specify the other
+        anchor point. The middle arguments specify the control points which define the shape
+        of the curve.
+
+        .. seealso::
+
+            * :func:`bezierPoint`
+            * :func:`bezierTangent`
+            * :func:`detail`
+
+        Args:
+            x1: X coordinate of the first anchor point
+            y1: Y coordinate of the first anchor point
+            x2: X coordinate of the first control point
+            y2: Y coordinate of the first control point
+            x3: X coordinate of the second control point
+            y3: Y coordinate of the second control point
+            x4: X coordinate of the second anchor point
+            y4: Y coordinate of the second anchor point
+        """
+
+        path = quadratic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self.epsilon)
+        self._add_polygon(path)
+
+    # noinspection PyMethodMayBeStatic
+    def bezierPoint(self, a: float, b: float, c: float, d: float, t: float) -> float:
+        """Evaluates the Bezier at point ``t`` for points ``a``, ``b``, ``c``, ``d``. The
+        parameter ``t`` varies between 0 and 1, ``a`` and ``d`` are points on the curve, and
+        ``b`` and ``c`` are the control points. This can be done once with the X coordinates
+        and a second time with the Y coordinates to get the location of a bezier curve at
+        ``t``.
+
+        .. seealso::
+
+            :func:`bezier`
+
+        Args:
+            a: coordinate of the first point of the curve
+            b: coordinate of the first control point
+            c: coordinate of the second control point
+            d: coordinate of the second point of the curve
+            t: value between 0 and 1
+
+        Returns:
+            evaluated coordinate on the bezier curve
+        """
+        x, y = quadratic_bezier_point(a, 0, b, 0, c, 0, d, 0, t)
+        return x
+
+    # noinspection PyMethodMayBeStatic
+    def bezierTangent(self, a: float, b: float, c: float, d: float, t: float) -> float:
+        """Calculates the tangent of a point on a Bezier curve.
+
+        .. seealso::
+
+            * :func:`bezier`
+            * :func:`bezierPoint`
+
+        Args:
+            a: coordinate of the first point of the curve
+            b: coordinate of the first control point
+            c: coordinate of the second control point
+            d: coordinate of the second point of the curve
+            t: value between 0 and 1
+
+        Returns:
+            evaluated tangent on the bezier curve
+        """
+        x, y = quadratic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
+        return x
+
+    def bezierDetail(self, epsilon: float) -> None:
+        raise NotImplementedError(
+            "bezierDetail() is not implemented, see detail() for more information"
+        )
+
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
 
@@ -840,12 +934,75 @@ class Vsketch:
             )
             self._vector_data.add(lc, self._cur_fill)
 
-    def pipeline(self, s: str) -> None:
-        # invalidate the cache
-        if s != self._pipeline:
-            self._processed_vector_data = None
+    def vpype(self, pipeline: str) -> None:
+        """Execute a vpype pipeline on the current sketch.
 
-        self._pipeline = s
+        Calling this function is equivalent to the following pseudo-command::
+
+            $ vpype [load from sketch] pipeline [save to sketch]
+
+        See `vpype's documentation <https://vpype.readthedocs.io/en/latest/>`_ for more
+        information the commands available.
+
+        Notes:
+
+          - vpype is unaware of transforms. This means that any coordinates and length passed
+            to vpype is interpreted as if no transform was applied. vpype does understand
+            units though. If you used transforms to work in a different unit than CSS pixel
+            (e.g. ``vsk.scale("1cm")``, then use the same unit with :func:`vpype` (e.g.
+            ``vsk.vpype("crop 1cm 1cm 10cm 10cm")``.
+          - vpype is unaware of the automatic centering mechanism built in :func:`size`,
+            :func:`display` and :func:`save`. The pipeline is applied on the un-centered
+            geometries. In some case, it may be useful to pass ``center=False`` to
+            :func:`size` to avoid confusion.
+          - It is not recommended to use layer manipulation commands (e.g. ``lmove``,
+            ``ldelete``, and ``lcopy``) as this can lead to discrepancies with some of the
+            metadata vsketch maintains, such as the attached pen widths (see :func:`penWidth`).
+
+        Example:
+
+            The most common use-case for this function is plot optimization::
+
+                >>> import vsketch
+                >>> vsk = vsketch.Vsketch()
+                >>> # draw stuff...
+                >>> vsk.vpype("linesimplify linemerge reloop linesort")
+                >>> vsk.save("output.svg")
+
+            This pipeline does the following:
+
+                - :ref:`cmd_linesimplify`: Reduces the number of segment within all paths to
+                  the minimum needed to ensure quality. This reduces SVG file size and avoid
+                  performance issues while plotting.
+                - :ref:`cmd_linemerge`: Merge lines whose ends are very close to avoid
+                  unnecessary pen-up/pen-down sequences. By default, this command will consider
+                  swapping the path direction for merging.
+                - :ref:`cmd_reloop`: Randomize the location of the seam for closed paths. When
+                  many similar paths are used on a plot (say, circles), having the seam at the
+                  same location can lead to disturbing artefacts on the final plot, which this
+                  command avoids.
+                - :ref:`cmd_linesort`: Reorder the paths to minimize the pen-up travel
+                  distance. By default, this command will consider swapping the path direction
+                  for further optimization.
+
+        Args:
+            pipeline: vpype pipeline to apply to the sketch
+        """
+
+        @vpype_cli.cli.command(group="vsketch")
+        @vp.global_processor
+        def vsketchinput(vector_data):
+            vector_data.extend(self._vector_data)
+            return vector_data
+
+        @vpype_cli.cli.command(group="vsketch")
+        @vp.global_processor
+        def vsketchoutput(vector_data):
+            self._vector_data = vector_data
+            return vector_data
+
+        args = "vsketchinput " + pipeline + " vsketchoutput"
+        vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
 
     def display(
         self,
@@ -919,7 +1076,7 @@ class Vsketch:
         )
 
     def save(
-        self, file: Union[str, TextIO], color_mode="layer", layer_label: str = "%d"
+        self, file: Union[str, TextIO], color_mode: str = "layer", layer_label: str = "%d"
     ) -> None:
         """Save the current sketch to a SVG file.
 
@@ -1101,7 +1258,7 @@ class Vsketch:
         """
         rng = random.Random()
         rng.seed(seed)
-        self._noise_seed = rng.uniform(0, 1)
+        self._noise_seed = rng.uniform(0, 100000)
 
     #######################
     # STATELESS UTILITIES #

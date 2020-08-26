@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Tuple
 
 import numpy as np
 import pytest
@@ -8,7 +8,7 @@ import vsketch
 from .utils import line_count_equal, line_exists
 
 
-def test_rect_default_success(vsk: vsketch.Vsketch):
+def test_rect_default_success(vsk: vsketch.Vsketch) -> None:
     vsk.rect(0, 0, 2, 4)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array([0, 2, 2 + 4j, 4j, 0], dtype=complex))
@@ -28,14 +28,17 @@ def test_rect_default_success(vsk: vsketch.Vsketch):
     ],
 )
 def test_rect_mode_success(
-    vsk: vsketch.Vsketch, data, mode: str, expected: Sequence[float],
-):
+    vsk: vsketch.Vsketch,
+    data: Tuple[float, float, float, float],
+    mode: str,
+    expected: Sequence[float],
+) -> None:
     vsk.rect(*data, mode=mode)  # type: ignore
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array(expected, dtype=complex), strict=False)
 
 
-def test_rect_arg_fail(vsk: vsketch.Vsketch):
+def test_rect_arg_fail(vsk: vsketch.Vsketch) -> None:
     # vsk.rect() expects 3 float args + optional `h` float and `mode` arg
     with pytest.raises(TypeError):
         # noinspection PyArgumentList
