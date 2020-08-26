@@ -25,6 +25,7 @@ class Vsketch:
         self._cur_stroke: Optional[int] = 1
         self._stroke_weight: int = 1
         self._cur_fill: Optional[int] = None
+        self._pipeline = ""
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self._page_format = vp.convert_page_format("a3")
@@ -41,9 +42,20 @@ class Vsketch:
         self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
 
+        # we cache the processed vector data to make sequence of plot() and write() faster
+        # the cache must be invalidated (ie. _processed_vector_data set to None) each time
+        # _vector_data or _pipeline changes
+        self._processed_vector_data: Optional[vp.VectorData] = None
+
     @property
     def vector_data(self):
         return self._vector_data
+
+    @property
+    def processed_vector_data(self):
+        if self._processed_vector_data is None:
+            self._apply_pipeline()
+        return self._processed_vector_data
 
     @property
     def width(self) -> float:
@@ -868,6 +880,9 @@ class Vsketch:
             sub_sketch: sketch to draw in the current sketch
         """
 
+        # invalidate the cache
+        self._processed_vector_data = None
+
         for layer_id, layer in sub_sketch._vector_data.layers.items():
             lc = vp.LineCollection([self._transform_line(line) for line in layer])
             self._vector_data.add(lc, layer_id)
@@ -890,6 +905,8 @@ class Vsketch:
             exterior (numpy array of complex): polygon external boundary
             holes (iterable of numpy array of complex): interior holes
         """
+        # invalidate the cache
+        self._processed_vector_data = None
 
         transformed_exterior = self._transform_line(exterior)
         transformed_holes = [self._transform_line(hole) for hole in holes]
@@ -954,19 +971,19 @@ class Vsketch:
 
             This pipeline does the following:
 
-                - ``linesimplify`` Reduces the number of segment within all paths to the
-                  minimum needed to ensure quality. This reduces SVG file size and avoid
+                - :ref:`cmd_linesimplify`: Reduces the number of segment within all paths to
+                  the minimum needed to ensure quality. This reduces SVG file size and avoid
                   performance issues while plotting.
-                - ``linemerge`` Merge lines whose ends are very close to avoid unnecessary
-                  pen-up/pen-down sequences. By default, this command will consider swapping
-                  the path direction for merging.
-                - ``reloop`` Randomize the location of the seam for closed paths. When many
-                  similar paths are used on a plot (say, circles), having the seam at the same
-                  location can lead to disturbing artefacts on the final plot, which this
+                - :ref:`cmd_linemerge`: Merge lines whose ends are very close to avoid
+                  unnecessary pen-up/pen-down sequences. By default, this command will consider
+                  swapping the path direction for merging.
+                - :ref:`cmd_reloop`: Randomize the location of the seam for closed paths. When
+                  many similar paths are used on a plot (say, circles), having the seam at the
+                  same location can lead to disturbing artefacts on the final plot, which this
                   command avoids.
-                - ``linesort`` Reorder the paths to minimize the pen-up travel distance. By
-                  default, this command will consider swapping the path direction for further
-                  optimization.
+                - :ref:`cmd_linesort`: Reorder the paths to minimize the pen-up travel
+                  distance. By default, this command will consider swapping the path direction
+                  for further optimization.
 
         Args:
             pipeline: vpype pipeline to apply to the sketch
@@ -1046,7 +1063,7 @@ class Vsketch:
             fig_size: (``"matplotlib"`` only) specify the figure size
         """
         display(
-            self.vector_data,
+            self.processed_vector_data,
             page_format=self._page_format if paper else None,
             mode=mode,
             center=self._center_on_page,
@@ -1080,13 +1097,31 @@ class Vsketch:
 
         vp.write_svg(
             file,
-            self.vector_data,
+            self.processed_vector_data,
             self._page_format,
             self._center_on_page,
             color_mode=color_mode,
             layer_label_format=layer_label,
             source_string="Generated with vsketch",
         )
+
+    def _apply_pipeline(self):
+        """Apply the current pipeline on the current vector data."""
+
+        @vpype_cli.cli.command(group="vsketch")
+        @vp.global_processor
+        def vsketchinput(vector_data):
+            vector_data.extend(self._vector_data)
+            return vector_data
+
+        @vpype_cli.cli.command(group="vsketch")
+        @vp.global_processor
+        def vsketchoutput(vector_data):
+            self._processed_vector_data = vector_data
+            return vector_data
+
+        args = "vsketchinput " + self._pipeline + " vsketchoutput"
+        vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
 
     ####################
     # RANDOM FUNCTIONS #
