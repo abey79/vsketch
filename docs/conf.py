@@ -76,7 +76,10 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 # -- Intersphinx options
-intersphinx_mapping = {"shapely": ("https://shapely.readthedocs.io/en/latest/", None)}
+intersphinx_mapping = {
+    "shapely": ("https://shapely.readthedocs.io/en/latest/", None),
+    "vpype": ("https://vpype.readthedocs.io/en/latest/", None),
+}
 
 
 # -- Napoleon options

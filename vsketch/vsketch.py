@@ -954,19 +954,19 @@ class Vsketch:
 
             This pipeline does the following:
 
-                - ``linesimplify`` Reduces the number of segment within all paths to the
-                  minimum needed to ensure quality. This reduces SVG file size and avoid
+                - :ref:`cmd_linesimplify`: Reduces the number of segment within all paths to
+                  the minimum needed to ensure quality. This reduces SVG file size and avoid
                   performance issues while plotting.
-                - ``linemerge`` Merge lines whose ends are very close to avoid unnecessary
-                  pen-up/pen-down sequences. By default, this command will consider swapping
-                  the path direction for merging.
-                - ``reloop`` Randomize the location of the seam for closed paths. When many
-                  similar paths are used on a plot (say, circles), having the seam at the same
-                  location can lead to disturbing artefacts on the final plot, which this
+                - :ref:`cmd_linemerge`: Merge lines whose ends are very close to avoid
+                  unnecessary pen-up/pen-down sequences. By default, this command will consider
+                  swapping the path direction for merging.
+                - :ref:`cmd_reloop`: Randomize the location of the seam for closed paths. When
+                  many similar paths are used on a plot (say, circles), having the seam at the
+                  same location can lead to disturbing artefacts on the final plot, which this
                   command avoids.
-                - ``linesort`` Reorder the paths to minimize the pen-up travel distance. By
-                  default, this command will consider swapping the path direction for further
-                  optimization.
+                - :ref:`cmd_linesort`: Reorder the paths to minimize the pen-up travel
+                  distance. By default, this command will consider swapping the path direction
+                  for further optimization.
 
         Args:
             pipeline: vpype pipeline to apply to the sketch
