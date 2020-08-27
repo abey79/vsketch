@@ -4,6 +4,7 @@ from .utils import bounds_equal, line_count_equal
 
 
 def test_point_success(vsk):
+    vsk.detail(0.001)
     vsk.point(2, 3.5)
     assert line_count_equal(vsk, 1)
     offset = vsk.strokePenWidth / 2

@@ -1,7 +1,6 @@
 from typing import Iterable, Optional, Tuple, Union
 
 import numpy as np
-
 import vsketch
 
 
@@ -13,10 +12,10 @@ def bounds_equal(
     bounds = vsk.vector_data.bounds()
     return (
         bounds is not None
-        and np.isclose(bounds[0], xmin, rtol=1e-03, atol=1e-03)
-        and np.isclose(bounds[1], ymin, rtol=1e-03, atol=1e-03)
-        and np.isclose(bounds[2], xmax, rtol=1e-03, atol=1e-03)
-        and np.isclose(bounds[3], ymax, rtol=1e-03, atol=1e-03)
+        and np.isclose(bounds[0], xmin, rtol=1e-03)
+        and np.isclose(bounds[1], ymin, rtol=1e-03)
+        and np.isclose(bounds[2], xmax, rtol=1e-03)
+        and np.isclose(bounds[3], ymax, rtol=1e-03)
     )
 
 
