@@ -1,6 +1,7 @@
 from typing import Iterable, Optional, Tuple, Union
 
 import numpy as np
+
 import vsketch
 
 
