@@ -461,6 +461,19 @@ class Vsketch:
         line = vp.circle(x, y, radius, self.epsilon)
         self._add_polygon(line)
 
+    def point(self, x: float, y: float) -> None:
+        """Draw a point.
+
+        Example:
+            >>> vsk = Vsketch()
+            >>> vsk.point(2, 3.5)
+
+        Args:
+            x: x coordinate
+            y: y coordinate
+        """
+        self.circle(x, y, self.strokePenWidth)
+
     def rect(
         self,
         x: float,
