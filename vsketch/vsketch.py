@@ -461,6 +461,23 @@ class Vsketch:
         line = vp.circle(x, y, radius, self.epsilon)
         self._add_polygon(line)
 
+    def point(self, x: float, y: float) -> None:
+        """Draw a point.
+
+        For best plotting results, a tiny circle is actually drawn with diameter set to the
+        current layer's pen width.
+
+        Example::
+
+            >>> vsk = Vsketch()
+            >>> vsk.point(2, 3.5)
+
+        Args:
+            x: X coordinate
+            y: Y coordinate
+        """
+        self.circle(x, y, self.strokePenWidth)
+
     def rect(
         self,
         x: float,
