@@ -461,6 +461,52 @@ class Vsketch:
         line = vp.circle(x, y, radius, self.epsilon)
         self._add_polygon(line)
 
+    def ellipse(
+        self, x: float, y: float, w: float, h: float, mode: Optional[str] = "center"
+    ) -> None:
+        """Draw an ellipse.
+
+        The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
+        current ellipse mode.
+
+        By default, ``x`` and ``y`` set the location of the  ellipse center, ``w`` sets its width,
+        and ``h`` sets its height. The way these parameters are interpreted can be changed with the
+        :meth:`ellipseMode` function (which changes the default for subsequent calls to :func:`ellipse`)
+        or the ``mode`` argument (which only affects this call).
+
+        TODO: ellipseMode()
+
+        Examples:
+            >>> vsk = Vsketch()
+            >>> vsk.ellipse(2, 2, 1, 4)
+            >>> vsk.ellipse(2, 2, 3, 2, mode="radius")
+
+        Args:
+            x: by default, x coordinate of the ellipse center
+            y: by default, y coordinate of the ellipse center
+            w: by default, the ellipse width
+            h: by default, the ellipse height
+            mode: "corner", "corners", "redius", or "center" (see :meth:`ellipseMode`)
+        """
+        if mode == "center":
+            line = vp.ellipse(x, y, w / 2, h / 2)
+        elif mode == "radius":
+            line = vp.ellipse(x, y, w, h)
+        elif mode == "corner":
+            line = vp.ellipse(x + w / 2, y + h / 2, w / 2, h / 2)
+        elif mode == "corners":
+            # Find center
+            xmin, xmax = min(x, w), max(x, w)
+            ymin, ymax = min(y, h), max(y, h)
+            c_x = xmax - 0.5 * (xmax - xmin)
+            c_y = ymax - 0.5 * (ymax - ymin)
+            width, height = xmax - xmin, ymax - ymin
+            line = vp.ellipse(c_x, c_y, width / 2, height / 2)
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
+        self._add_polygon(line)
+
     def point(self, x: float, y: float) -> None:
         """Draw a point.
 
@@ -584,7 +630,7 @@ class Vsketch:
 
             >>> vsk = Vsketch()
             >>> vsk.square(2, 2, 2.5)
-        
+
         Args:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
@@ -620,12 +666,12 @@ class Vsketch:
             * :meth:`square`
 
         Example:
-            
+
             >>> vsk = Vsketch()
             >>> vsk.rectMode("center")
             >>> vsk.square(3, 3, 1.5)
             >>> vsk.rect(2, 2, 3.5, 1)
-        
+
         Args:
             mode: one of "corner", "corners", "center", "radius".
         """
@@ -651,7 +697,7 @@ class Vsketch:
 
             >>> vsk = Vsketch()
             >>> vsk.quad(0, 0, 1, 3.5, 4.5, 4.5, 3.5, 1)
-        
+
         Args:
             x1: X coordinate of the first vertex
             y1: Y coordinate of the first vertex
@@ -947,7 +993,9 @@ class Vsketch:
                 holes=[complex_to_2d(hole) for hole in transformed_holes],
             )
             lc = generate_fill(
-                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth,
+                p,
+                cast(float, self.fillPenWidth),
+                self._stroke_weight * self.strokePenWidth,
             )
             self._vector_data.add(lc, self._cur_fill)
 
