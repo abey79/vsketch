@@ -475,8 +475,6 @@ class Vsketch:
         :meth:`ellipseMode` function (which changes the default for subsequent calls to :func:`ellipse`)
         or the ``mode`` argument (which only affects this call).
 
-        TODO: ellipseMode()
-
         Examples:
 
             By default, the argument are interpreted as the center coordinates as well as the
@@ -501,7 +499,7 @@ class Vsketch:
             y: by default, y coordinate of the ellipse center
             w: by default, the ellipse width
             h: by default, the ellipse height
-            mode: "corner", "corners", "redius", or "center" (see :meth:`ellipseMode`)
+            mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
         """
         if mode is None:
             mode = self._ellipse_mode
@@ -534,11 +532,13 @@ class Vsketch:
         "radius" interprets the first two parameters as the center coordinates, while the
         third and fourth represent half the width and height of the ellipse.
 
-        "corner" interprets the first two parameters as the top-left corner coordinates,
-        while the third and fourth parameters are the ellipse width and height.
+        "corner" interprets the first two parameters as the top-left corner coordinates of
+        the ellipse's bounding box, while the third and fourth parameters are the ellipse width
+        and height.
 
-        "corners" interprets the first two parameters as the coordinates of a corner,
-        and the third and fourth parameters as the opposite corner coordinates.
+        "corners" interprets the first two parameters as the coordinates of a corner of the
+        ellipse's bounding box, and the third and fourth parameters as the opposite corner
+        coordinates.
 
         .. seealso::
             * :meth:`ellipse`
