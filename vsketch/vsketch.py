@@ -34,6 +34,7 @@ class Vsketch:
         self._pen_width: Dict[int, float] = {}
         self._default_pen_width = vp.convert_length("0.3mm")
         self._rect_mode = "corner"
+        self._ellipse_mode = "center"
         self._noise_lod = 4
         self._random = random.Random()
         self._noise_falloff = 0.5
@@ -462,7 +463,7 @@ class Vsketch:
         self._add_polygon(line)
 
     def ellipse(
-        self, x: float, y: float, w: float, h: float, mode: Optional[str] = "center"
+        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None
     ) -> None:
         """Draw an ellipse.
 
@@ -477,9 +478,23 @@ class Vsketch:
         TODO: ellipseMode()
 
         Examples:
-            >>> vsk = Vsketch()
-            >>> vsk.ellipse(2, 2, 1, 4)
-            >>> vsk.ellipse(2, 2, 3, 2, mode="radius")
+
+            By default, the argument are interpreted as the center coordinates as well as the
+            width and height::
+
+                >>> vsk = Vsketch()
+                >>> vsk.ellipse(2, 2, 1, 4)
+
+            Alternative ellipse mode can be set as the default for subsequence calls with
+            :meth:`ellipseMode`::
+
+                >>> vsk.ellipseMode(mode="radius")
+                >>> vsk.ellipse(3, 3, 2, 1)
+                >>> vsk.ellipse(8, 8, 2, 1)  # both of these call are in "radius" mode
+
+            Or they can be set for a single call only::
+
+                >>> vsk.ellipse(2, 2, 10, 12, mode="corners")
 
         Args:
             x: by default, x coordinate of the ellipse center
@@ -488,6 +503,9 @@ class Vsketch:
             h: by default, the ellipse height
             mode: "corner", "corners", "redius", or "center" (see :meth:`ellipseMode`)
         """
+        if mode is None:
+            mode = self._ellipse_mode
+
         if mode == "center":
             line = vp.ellipse(x, y, w / 2, h / 2)
         elif mode == "radius":
@@ -506,6 +524,37 @@ class Vsketch:
             raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
 
         self._add_polygon(line)
+
+    def ellipseMode(self, mode: str) -> None:
+        """Change the way parameters are interpreted to draw ellipses.
+
+        The default is "center", where the first two parameters are the center coordinates,
+        and the third and fourth are the width and height of the ellipse.
+
+        "radius" interprets the first two parameters as the center coordinates, while the
+        third and fourth represent half the width and height of the ellipse.
+
+        "corner" interprets the first two parameters as the top-left corner coordinates,
+        while the third and fourth parameters are the ellipse width and height.
+
+        "corners" interprets the first two parameters as the coordinates of a corner,
+        and the third and fourth parameters as the opposite corner coordinates.
+
+        .. seealso::
+            * :meth:`ellipse`
+
+        Example:
+            >>> vsk = Vsketch()
+            >>> vsk.ellipseMode("radius")
+            >>> vsk.ellipse(2, 2, 3, 5)
+
+        Args:
+            mode: one of "center", "radius", "corner", "corners".
+        """
+        if mode in ["center", "radius", "corner", "corners"]:
+            self._ellipse_mode = mode
+        else:
+            raise ValueError("mode must be one of 'center', 'radius', 'corner', 'corners'")
 
     def point(self, x: float, y: float) -> None:
         """Draw a point.
