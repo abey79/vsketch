@@ -1042,9 +1042,7 @@ class Vsketch:
                 holes=[complex_to_2d(hole) for hole in transformed_holes],
             )
             lc = generate_fill(
-                p,
-                cast(float, self.fillPenWidth),
-                self._stroke_weight * self.strokePenWidth,
+                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth,
             )
             self._vector_data.add(lc, self._cur_fill)
 
