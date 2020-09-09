@@ -435,10 +435,18 @@ class Vsketch:
         y: float,
         diameter: Optional[float] = None,
         radius: Optional[float] = None,
+        mode: Optional[str] = None,
     ) -> None:
         """Draw a circle.
 
         The level of detail used to approximate the circle is controlled by :func:`detail`.
+        As for the :meth:`ellipse` function, the way arguments are interpreted is influenced by
+        the mode set with :meth:`ellipseMode` or the ``mode`` argument.
+
+        .. seealso::
+
+            * :meth:`ellipse`
+            * :meth:`ellipseMode`
 
         Example:
 
@@ -451,6 +459,7 @@ class Vsketch:
             y: y coordinate of the center
             diameter: circle diameter (or None if using radius)
             radius: circle radius (or None if using diameter
+            mode: one of 'center', 'radius', 'corner', 'corners'
         """
 
         if (diameter is None) == (radius is None):
@@ -459,7 +468,18 @@ class Vsketch:
         if radius is None:
             radius = cast(float, diameter) / 2
 
-        line = vp.circle(x, y, radius, self.epsilon)
+        if mode is None:
+            mode = self._ellipse_mode
+
+        if mode == "center":
+            line = vp.circle(x, y, radius, self.epsilon)
+        elif mode == "radius":
+            line = vp.circle(x, y, 2 * radius, self.epsilon)
+        elif mode == "corner" or mode == "corners":
+            line = vp.circle(x + radius, y + radius, radius, self.epsilon)
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
         self._add_polygon(line)
 
     def ellipse(
