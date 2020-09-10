@@ -8,6 +8,7 @@ from .utils import bounds_equal, line_count_equal
 
 
 def test_ellipse_default_success(vsk: vsketch.Vsketch) -> None:
+    vsk.detail(0.01)
     vsk.ellipse(2, 2, 1, 2)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, 1.5, 1, 2.5, 3)
@@ -32,6 +33,7 @@ def test_ellipse_mode_success(
     mode: str,
     expected: Tuple[float, float, float, float],
 ) -> None:
+    vsk.detail(0.01)
     vsk.ellipse(*data, mode=mode)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, *expected)

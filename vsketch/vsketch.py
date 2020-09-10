@@ -471,19 +471,18 @@ class Vsketch:
         if mode is None:
             mode = self._ellipse_mode
 
-        if mode == "center":
-            line = vp.circle(x, y, radius, self.epsilon)
-        elif mode == "radius":
-            line = vp.circle(x, y, 2 * radius, self.epsilon)
-        elif mode == "corner" or mode == "corners":
-            line = vp.circle(x + radius, y + radius, radius, self.epsilon)
-        else:
-            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+        if mode == "corners":
+            mode = "corner"
 
-        self._add_polygon(line)
+        self.ellipse(x, y, 2 * radius, 2 * radius, mode=mode)
 
     def ellipse(
-        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        mode: Optional[str] = None,
     ) -> None:
         """Draw an ellipse.
 
@@ -525,11 +524,11 @@ class Vsketch:
             mode = self._ellipse_mode
 
         if mode == "center":
-            line = vp.ellipse(x, y, w / 2, h / 2)
+            line = vp.ellipse(x, y, w / 2, h / 2, self.epsilon)
         elif mode == "radius":
-            line = vp.ellipse(x, y, w, h)
+            line = vp.ellipse(x, y, w, h, self.epsilon)
         elif mode == "corner":
-            line = vp.ellipse(x + w / 2, y + h / 2, w / 2, h / 2)
+            line = vp.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, self.epsilon)
         elif mode == "corners":
             # Find center
             xmin, xmax = min(x, w), max(x, w)
@@ -537,7 +536,7 @@ class Vsketch:
             c_x = xmax - 0.5 * (xmax - xmin)
             c_y = ymax - 0.5 * (ymax - ymin)
             width, height = xmax - xmin, ymax - ymin
-            line = vp.ellipse(c_x, c_y, width / 2, height / 2)
+            line = vp.ellipse(c_x, c_y, width / 2, height / 2, self.epsilon)
         else:
             raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
 
