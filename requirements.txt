@@ -17,7 +17,7 @@ isort
 # dev/test
 pytest
 mypy
-nbconvert
+nbconvert=5.6.1  # new version failed with py3.8 on Windows
 nbformat
 
 # documentation
