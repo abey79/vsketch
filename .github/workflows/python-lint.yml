@@ -46,7 +46,7 @@ jobs:
         # Extra options: flake8 $(extra-flake8-options) $(python-root-list)
         #extra-flake8-options: # optional, default is
         # Extra options: black --check $(extra-black-options) $(python-root-list)
-        #extra-black-options: # optional, default is
+        extra-black-options: --diff # optional, default is
         # Extra options: mypy $(extra-mypy-options) $(python-root-list)
         #extra-mypy-options: # optional, default is
         # Extra options: isort -rc $(extra-isort-options) $(python-root-list) -c --diff
