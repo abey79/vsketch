@@ -477,12 +477,7 @@ class Vsketch:
         self.ellipse(x, y, 2 * radius, 2 * radius, mode=mode)
 
     def ellipse(
-        self,
-        x: float,
-        y: float,
-        w: float,
-        h: float,
-        mode: Optional[str] = None,
+        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None,
     ) -> None:
         """Draw an ellipse.
 
