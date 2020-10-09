@@ -477,7 +477,12 @@ class Vsketch:
         self.ellipse(x, y, 2 * radius, 2 * radius, mode=mode)
 
     def ellipse(
-        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None,
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        mode: Optional[str] = None,
     ) -> None:
         """Draw an ellipse.
 
@@ -534,6 +539,92 @@ class Vsketch:
             line = vp.ellipse(c_x, c_y, width / 2, height / 2, self.epsilon)
         else:
             raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
+        self._add_polygon(line)
+
+    def arc(
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        start: float,
+        stop: float,
+        degrees: Optional[bool] = False,
+        close: Optional[str] = "no",
+        mode: Optional[str] = None,
+    ) -> None:
+        """Draw an arc.
+
+        The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
+        current ellipse mode.
+
+        The ellipse mode affects the arc's underlying ellipse.
+
+        The "close" parameter controls the arc's closure: "no" keeps it open,
+        "chord" closes it with a straight line, and "pie" connects the 2 endings with the
+        arc center.
+
+        .. seealso::
+            * :meth:`ellipseMode`
+            * :meth:`ellipse`
+
+        Example:
+            >>> vsk = Vsketch()
+            >>> vsk.arc(2, 3, 5, 4, 0, np.pi / 2)
+            >>> vsk.arc(6, 6, 1, 2, np.pi / 2, np.pi, mode="corner", close="pie")
+
+        Args:
+            x: by default, X coordinate of the associated ellipse center
+            y: by default, Y coordinate of the associated ellipse center
+            w: by default, width of the associated ellipse
+            h: by default, height of the associated ellipse
+            start: angle to start the arc (in radians)
+            stop: angle to stop the arc (in radians)
+            degrees: set to True to use degrees for start and stop angles (default: False)
+            close: "no", "chord" or "pie" (default: "no")
+            mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
+
+        """
+        if not degrees:
+            start = start * (180 / np.pi)
+            stop = stop * (180 / np.pi)
+
+        if mode is None:
+            mode = self._ellipse_mode
+
+        if mode == "center":
+            line = vp.arc(x, y, w / 2, h / 2, start, stop, self.epsilon)
+        elif mode == "radius":
+            line = vp.arc(x, y, w, h, start, stop, self.epsilon)
+        elif mode == "corner":
+            line = vp.arc(x + w / 2, y + h / 2, w / 2, h / 2, start, stop, self.epsilon)
+            if close == "pie":
+                line = np.append(line, [complex(x + w / 2, y + h / 2)])
+        elif mode == "corners":
+            # Find center
+            xmin, xmax = min(x, w), max(x, w)
+            ymin, ymax = min(y, h), max(y, h)
+            c_x = xmax - 0.5 * (xmax - xmin)
+            c_y = ymax - 0.5 * (ymax - ymin)
+            width, height = xmax - xmin, ymax - ymin
+            line = vp.arc(c_x, c_y, width / 2, height / 2, start, stop, self.epsilon)
+            if close == "pie":
+                line = np.append(line, [complex(c_x, c_y)])
+        else:
+            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
+        if close == "no":
+            pass
+        elif close == "chord":
+            line = np.append(line, [line[0]])
+        elif close == "pie":
+            if mode in ["center", "radius"]:
+                line = np.append(line, [complex(x, y), line[0]])
+            else:
+                line = np.append(line, [line[0]])
+        else:
+            raise ValueError("close must be one of 'no', 'chord', 'pie'")
 
         self._add_polygon(line)
 
