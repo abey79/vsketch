@@ -25,10 +25,13 @@ def test_arc_default_success(vsk: vsketch.Vsketch) -> None:
     ],
 )
 def test_arc_mode_success(
-    vsk: vsketch.Vsketch, data: Sequence[float], mode: str, expected: Sequence[float]
+    vsk: vsketch.Vsketch,
+    data: Tuple[float, float, float, float, float, float],
+    mode: str,
+    expected: Sequence[float],
 ) -> None:
     vsk.detail(0.01)
-    vsk.arc(*data, mode=mode)  # type: ignore
+    vsk.arc(*data, mode=mode)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, *expected)
 
@@ -42,10 +45,13 @@ def test_arc_mode_success(
     ],
 )
 def test_arc_close_success(
-    vsk: vsketch.Vsketch, data: Sequence[float], close: str, expected: Sequence[float]
+    vsk: vsketch.Vsketch,
+    data: Tuple[float, float, float, float, float, float],
+    close: str,
+    expected: Sequence[float],
 ) -> None:
     vsk.detail(0.01)
-    vsk.arc(*data, close=close)  # type: ignore
+    vsk.arc(*data, close=close)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, *expected)
 
@@ -61,17 +67,18 @@ def test_arc_close_success(
 )
 def test_arc_mode_close_success(
     vsk: vsketch.Vsketch,
-    data: Sequence[float],
+    data: Tuple[float, float, float, float, float, float],
     mode: str,
     close: str,
     expected: Sequence[float],
 ) -> None:
     vsk.detail(0.01)
-    vsk.arc(*data, mode=mode, close=close)  # type: ignore
+    vsk.arc(*data, mode=mode, close=close)
     assert line_count_equal(vsk, 1)
     assert bounds_equal(vsk, *expected)
 
 
+# noinspection PyArgumentList
 def test_arc_bad_args(vsk: vsketch.Vsketch) -> None:
     with pytest.raises(TypeError):
         vsk.arc(2, 3, mode="radius")  # type: ignore

@@ -13,7 +13,7 @@ from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bez
 from .display import display
 from .fill import generate_fill
 from .style import stylize_path
-from .utils import MatrixPopper, complex_to_2d
+from .utils import MatrixPopper, complex_to_2d, compute_ellipse_mode
 
 __all__ = ["Vsketch"]
 
@@ -484,10 +484,10 @@ class Vsketch:
         The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
         current ellipse mode.
 
-        By default, ``x`` and ``y`` set the location of the  ellipse center, ``w`` sets its width,
-        and ``h`` sets its height. The way these parameters are interpreted can be changed with the
-        :meth:`ellipseMode` function (which changes the default for subsequent calls to :func:`ellipse`)
-        or the ``mode`` argument (which only affects this call).
+        By default, ``x`` and ``y`` set the location of the  ellipse center, ``w`` sets its
+        width, and ``h`` sets its height. The way these parameters are interpreted can be
+        changed with the :meth:`ellipseMode` function (which changes the default for subsequent
+        calls to :func:`ellipse`) or the ``mode`` argument (which only affects this call).
 
         Examples:
 
@@ -517,24 +517,7 @@ class Vsketch:
         """
         if mode is None:
             mode = self._ellipse_mode
-
-        if mode == "center":
-            line = vp.ellipse(x, y, w / 2, h / 2, self.epsilon)
-        elif mode == "radius":
-            line = vp.ellipse(x, y, w, h, self.epsilon)
-        elif mode == "corner":
-            line = vp.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, self.epsilon)
-        elif mode == "corners":
-            # Find center
-            xmin, xmax = min(x, w), max(x, w)
-            ymin, ymax = min(y, h), max(y, h)
-            c_x = xmax - 0.5 * (xmax - xmin)
-            c_y = ymax - 0.5 * (ymax - ymin)
-            width, height = xmax - xmin, ymax - ymin
-            line = vp.ellipse(c_x, c_y, width / 2, height / 2, self.epsilon)
-        else:
-            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
-
+        line = vp.ellipse(*compute_ellipse_mode(mode, x, y, w, h), self.epsilon)
         self._add_polygon(line)
 
     def arc(
@@ -552,12 +535,11 @@ class Vsketch:
         """Draw an arc.
 
         The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
-        current ellipse mode.
+        current ellipse mode (see :meth:`ellipse` for a detailed explanation) and refer to the
+        arc's underlying ellipse.
 
-        The ellipse mode affects the arc's underlying ellipse.
-
-        The "close" parameter controls the arc's closure: "no" keeps it open,
-        "chord" closes it with a straight line, and "pie" connects the 2 endings with the
+        The ``close`` parameter controls the arc's closure: ``no`` keeps it open,
+        ``chord`` closes it with a straight line, and ``pie`` connects the two endings with the
         arc center.
 
         .. seealso::
@@ -579,7 +561,6 @@ class Vsketch:
             degrees: set to True to use degrees for start and stop angles (default: False)
             close: "no", "chord" or "pie" (default: "no")
             mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
-
         """
         if not degrees:
             start = start * (180 / np.pi)
@@ -588,37 +569,13 @@ class Vsketch:
         if mode is None:
             mode = self._ellipse_mode
 
-        if mode == "center":
-            line = vp.arc(x, y, w / 2, h / 2, start, stop, self.epsilon)
-        elif mode == "radius":
-            line = vp.arc(x, y, w, h, start, stop, self.epsilon)
-        elif mode == "corner":
-            line = vp.arc(x + w / 2, y + h / 2, w / 2, h / 2, start, stop, self.epsilon)
-            if close == "pie":
-                line = np.append(line, [complex(x + w / 2, y + h / 2)])
-        elif mode == "corners":
-            # Find center
-            xmin, xmax = min(x, w), max(x, w)
-            ymin, ymax = min(y, h), max(y, h)
-            c_x = xmax - 0.5 * (xmax - xmin)
-            c_y = ymax - 0.5 * (ymax - ymin)
-            width, height = xmax - xmin, ymax - ymin
-            line = vp.arc(c_x, c_y, width / 2, height / 2, start, stop, self.epsilon)
-            if close == "pie":
-                line = np.append(line, [complex(c_x, c_y)])
-        else:
-            raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
-
-        if close == "no":
-            pass
-        elif close == "chord":
+        cx, cy, rw, rh = compute_ellipse_mode(mode, x, y, w, h)
+        line = vp.arc(cx, cy, rw, rh, start, stop, self.epsilon)
+        if close == "chord":
             line = np.append(line, [line[0]])
         elif close == "pie":
-            if mode in ["center", "radius"]:
-                line = np.append(line, [complex(x, y), line[0]])
-            else:
-                line = np.append(line, [line[0]])
-        else:
+            line = np.append(line, [complex(cx, cy), line[0]])
+        elif close != "no":
             raise ValueError("close must be one of 'no', 'chord', 'pie'")
 
         self._add_polygon(line)
