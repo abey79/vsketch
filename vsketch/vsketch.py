@@ -878,6 +878,8 @@ class Vsketch:
         Args:
             shape (Shapely geometry): a supported shapely geometry object
         """
+        if getattr(shape, "is_empty", False):
+            return
 
         try:
             if shape.geom_type in ["LineString", "LinearRing"]:

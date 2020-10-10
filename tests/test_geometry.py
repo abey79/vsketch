@@ -51,6 +51,7 @@ from tests.utils import line_count_equal, line_exists
                 [0, 3, 1 + 2j, 0],
             ],
         ],
+        [Point(0, 0).buffer(1).intersection(Point(10, 10).buffer(1)), []],
     ],
 )
 def test_geometry_single_path(vsk, data, expected):

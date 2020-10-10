@@ -35,18 +35,22 @@ def line_count_equal(vsk: vsketch.Vsketch, *args: Union[int, Tuple[int, int]]) -
         args (int or Tuple[int, int]): line number for each layer
     """
 
-    target_layer_counts = set()
+    target_layer_counts = {}
     for i, p in enumerate(args):
 
         if isinstance(p, int):
-            desc = (i + 1, p)
+            target_layer_counts[i + 1] = p
         else:
-            desc = p
-        target_layer_counts.add(desc)
+            target_layer_counts[p[0]] = p[1]
 
-    actual_layer_counts = set()
+    actual_layer_counts = {}
     for layer_id, layer in vsk.vector_data.layers.items():
-        actual_layer_counts.add((layer_id, len(layer)))
+        actual_layer_counts[layer_id] = len(layer)
+
+    # this is needed when some layer are explicitly specified to 0
+    for k in target_layer_counts:
+        if k not in actual_layer_counts:
+            actual_layer_counts[k] = 0
 
     return target_layer_counts == actual_layer_counts
 
