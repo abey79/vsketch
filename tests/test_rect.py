@@ -11,7 +11,7 @@ from .utils import bounds_equal, line_count_equal, line_exists
 def test_rect_default_success(vsk: vsketch.Vsketch) -> None:
     vsk.rect(0, 0, 2, 4)
     assert line_count_equal(vsk, 1)
-    assert line_exists(vsk, np.array([0, 2, 2 + 4j, 4j, 0], dtype=complex))
+    assert line_exists(vsk, np.array([0, 2, 2 + 4j, 4j, 0], dtype=complex), strict=False)
 
 
 @pytest.mark.parametrize(
@@ -53,7 +53,17 @@ def test_rect_arg_fail(vsk: vsketch.Vsketch) -> None:
         vsk.rect(0, 0, 2, 4, mode="jumbo")
 
 
-def test_rect_round_corners(vsk: vsketch.Vsketch) -> None:
-    vsk.rect(0, 0, 2, 4, 1, 0, 1.5, 1)
+@pytest.mark.parametrize(
+    ["data", "expected"],
+    [
+        [(0, 0, 2, 4, 1, 0, 1.5, 1), (0, 0, 2, 4)],
+        # radii should be scaled to fit
+        [(0, 0, 5, 4, 8), (0, 0, 5, 4)],
+    ],
+)
+def test_rect_round_corners_success(
+    vsk: vsketch.Vsketch, data: Sequence[float], expected: Tuple[float, float, float, float]
+) -> None:
+    vsk.rect(*data)  # type: ignore
     assert line_count_equal(vsk, 1)
-    assert bounds_equal(vsk, 0, 0, 2, 4)
+    assert bounds_equal(vsk, *expected)
