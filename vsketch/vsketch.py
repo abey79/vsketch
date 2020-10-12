@@ -707,16 +707,16 @@ class Vsketch:
             mode = self._rect_mode
 
         if mode == "corner":
-            line = vp.rect(x, y, w, h, tl, tr, br, bl)
+            line = vp.rect(x, y, w, h, tl, tr, br, bl, self.epsilon)
         elif mode == "corners":
             #  Find top-left corner
             tl_x, tl_y = min(x, w), min(y, h)
             width, height = max(x, w) - tl_x, max(y, h) - tl_y
-            line = vp.rect(tl_x, tl_y, width, height, tl, tr, br, bl)
+            line = vp.rect(tl_x, tl_y, width, height, tl, tr, br, bl, self.epsilon)
         elif mode == "center":
-            line = vp.rect(x - w / 2, y - h / 2, w, h, tl, tr, br, bl)
+            line = vp.rect(x - w / 2, y - h / 2, w, h, tl, tr, br, bl, self.epsilon)
         elif mode == "radius":
-            line = vp.rect(x - w, y - h, 2 * w, 2 * h, tl, tr, br, bl)
+            line = vp.rect(x - w, y - h, 2 * w, 2 * h, tl, tr, br, bl, self.epsilon)
         else:
             raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
 
