@@ -11,7 +11,9 @@ from .utils import line_count_equal, line_exists
 def test_square_default_success(vsk: vsketch.Vsketch) -> None:
     vsk.square(2, 2, 2.5)
     assert line_count_equal(vsk, 1)
-    assert line_exists(vsk, np.array([2 + 2j, 4.5 + 2j, 4.5 + 4.5j, 2 + 4.5j, 2 + 2j]))
+    assert line_exists(
+        vsk, np.array([2 + 2j, 4.5 + 2j, 4.5 + 4.5j, 2 + 4.5j, 2 + 2j]), strict=False
+    )
 
 
 # noinspection DuplicatedCode
