@@ -635,8 +635,9 @@ class Vsketch:
         x: float,
         y: float,
         w: float,
-        h: Optional[float] = None,
-        tl: Optional[float] = 0,
+        h: float,
+        *radii: float,
+        tl: Optional[float] = None,
         tr: Optional[float] = None,
         br: Optional[float] = None,
         bl: Optional[float] = None,
@@ -678,8 +679,9 @@ class Vsketch:
             
             Drawing rectangles with rounded corners:
 
-                >>> vsk.rect(0, 0, 5, 5, tl=1)  # all corners are rounded with a radius of 1
-                >>> vsk.rect(0, 0, 4, 4, tl=1, br=1.5)  # top corners rounded to 1, bottom corners rounded to 1.5
+                >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 1
+                >>> vsk.rect(0, 0, 4, 4, 1.5, 0.5, 1.5, 1)  # all corner radii specified
+                >>> vsk.rect(5, 5, 20, 20, tr=3, bl=5)  # specified corners rounded, others default to 0
 
         Args:
             x: by default, x coordinate of the top-left corner
@@ -692,16 +694,20 @@ class Vsketch:
             bl: bottom-left corner radius (same as br if not provided)
             mode: "corner", "corners", "redius", or "center" (see :meth:`rectMode`)
         """
-        if not h:
-            h = w
-        if not tl:
-            tl = 0
-        if not tr:
-            tr = tl
-        if not br:
-            br = tr
-        if not bl:
-            bl = br
+        if len(radii) == 0:
+            radii = (0, 0, 0, 0)
+        elif len(radii) == 1:
+            radii *= 4
+        elif len(radii) != 4:
+            raise ValueError("only 0, 1, or 4 corner radii may be implicitely specified, use keyword notation")
+        if tl is None:
+            tl = radii[0]
+        if tr is None:
+            tr = radii[1]
+        if br is None:
+            br = radii[2]
+        if bl is None:
+            bl = radii[3]
 
         if mode is None:
             mode = self._rect_mode
