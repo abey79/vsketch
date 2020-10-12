@@ -5,7 +5,7 @@ import pytest
 
 import vsketch
 
-from .utils import line_count_equal, line_exists
+from .utils import bounds_equal, line_count_equal, line_exists
 
 
 def test_rect_default_success(vsk: vsketch.Vsketch) -> None:
@@ -53,4 +53,7 @@ def test_rect_arg_fail(vsk: vsketch.Vsketch) -> None:
         vsk.rect(0, 0, 2, 4, mode="jumbo")
 
 
-# TODO: test round corners
+def test_rect_round_corners(vsk: vsketch.Vsketch) -> None:
+    vsk.rect(0, 0, 2, 4, 1, 0, 1.5, 1)
+    assert line_count_equal(vsk, 1)
+    assert bounds_equal(vsk, 0, 0, 2, 4)
