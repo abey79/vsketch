@@ -699,7 +699,9 @@ class Vsketch:
         elif len(radii) == 1:
             radii *= 4
         elif len(radii) != 4:
-            raise ValueError("only 0, 1, or 4 corner radii may be implicitely specified, use keyword notation")
+            raise ValueError(
+                "only 0, 1, or 4 corner radii may be implicitely specified, use keyword notation"
+            )
         if tl is None:
             tl = radii[0]
         if tr is None:
