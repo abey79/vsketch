@@ -1,4 +1,5 @@
 import math
+import os
 import random
 import shlex
 from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
@@ -362,7 +363,17 @@ class Vsketch:
     def scale(self, sx: Union[float, str], sy: Optional[Union[float, str]] = None) -> None:
         """Apply a scale factor to the current transformation matrix.
 
-        TODO: add examples
+        Examples:
+
+            Set sketch units to centimeters::
+
+                >>> vsk = Vsketch()
+                >>> vsk.scale("1cm")
+                >>> vsk.square(5, 5, 2)  # square with 2cm-long sides
+
+            Apply a non-homogeneous scale transformation::
+
+                >>> vsk.scale(2, 3)
 
         Args:
             sx: scale factor along x axis (can be a string with units)
@@ -654,9 +665,9 @@ class Vsketch:
         calls to :func:`rect`) or the ``mode`` argument (which only affects this call).
 
         The optional parameters ``tl``, ``tr``, ``br`` and ``bl`` define the radius used for
-        each corner (default: 0). If some corner radius is not specified, it will be set equal to
-        the previous corner radius. If the sum of two consecutive corner radii are greater than 
-        their associated edge lenght, their values will be rescaled to fit the rectangle.
+        each corner (default: 0). If some corner radius is not specified, it will be set equal
+        to the previous corner radius. If the sum of two consecutive corner radii are greater
+        than their associated edge lenght, their values will be rescaled to fit the rectangle.
 
         Examples:
 
@@ -679,9 +690,10 @@ class Vsketch:
             
             Drawing rectangles with rounded corners:
 
-                >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 1
+                >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 5
                 >>> vsk.rect(0, 0, 4, 4, 1.5, 0.5, 1.5, 1)  # all corner radii specified
-                >>> vsk.rect(5, 5, 20, 20, tr=3, bl=5)  # specified corners rounded, others default to 0
+                >>> vsk.rect(5, 5, 20, 20, tr=3, bl=5)  # specified corners rounded, others
+                                                        # default to 0
 
         Args:
             x: by default, x coordinate of the top-left corner
@@ -700,7 +712,8 @@ class Vsketch:
             radii *= 4
         elif len(radii) != 4:
             raise ValueError(
-                "only 0, 1, or 4 corner radii may be implicitely specified, use keyword notation"
+                "only 1 or 4 corner radii may be implicitly specified, use keyword "
+                "arguments instead"
             )
         if tl is None:
             tl = radii[0]
@@ -1255,35 +1268,114 @@ class Vsketch:
             fig_size=fig_size,
         )
 
+    # noinspection PyShadowingBuiltins
     def save(
-        self, file: Union[str, TextIO], color_mode: str = "layer", layer_label: str = "%d"
+        self,
+        file: Union[str, TextIO],
+        device: Optional[str] = None,
+        *,
+        format: Optional[str] = None,
+        color_mode: str = "layer",
+        layer_label: str = "%d",
+        paper_format: Optional[str] = None,
+        velocity: Optional[float] = None,
+        quiet: bool = False,
     ) -> None:
-        """Save the current sketch to a SVG file.
+        """Save the current sketch to a SVG or HPGL file.
 
         ``file`` may  either be a file path or a IO stream handle (such as the one returned
         by Python's ``open()`` built-in).
 
         This function uses the page layout as defined by :func:`size`.
 
+        Due to the nature of HPGL (which much be generated for a specific plotter device/paper
+        format combination), the device name must always be specified. If ``paper_format`` is
+        not provided, :meth:`save` attempts to infer which paper configuration to use based
+        on the page format provided to :meth:`size`. If multiple configurations match the page
+        format, the first one is used. In case of ambiguity, it is recommendande to specify
+        ``paper_format``. See `vpype's documentation
+        <https://vpype.readthedocs.io/en/latest/>`_ for more information on HPGL generation.
+
+        Examples:
+
+            Save the sketch to a SVG file::
+
+                >>> vsk = Vsketch()
+                >>> vsk.size("a4", landscape=True)
+                >>> # draw stuff...
+                >>> vsk.save("output.svg")
+
+            Save to a SVG file with customization::
+
+                >>> vsk.save("output.svg", color_mode="path", layer_label="layer %d")
+
+            Save to a HPGL file::
+
+                >>> vsk.save("output.hpgl", "hp7475a")
+
+            Save to a HPGL file with customization::
+
+                >>> vsk.save("output.hpgl", "hp7475a", paper_format="a4", veolocty=30)
+
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
-            color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
-                display (``"none"``: black and white, ``"layer"``: one color per layer,
-                ``"path"``: one color per path — default: ``"layer"``)
-            layer_label: define a template for layer naming (use %d for layer ID)
+            device: (HPGL only) target device for the HPGL output
+            format (``"svg"``, ``"hpgl"``): specify the format of the output file (default is
+                inferred from the file extension)
+            color_mode (``"none"``, ``"layer"``, or ``"path"``): (SVG only) controls how color
+                is used for display (``"none"``: black and white, ``"layer"``: one color per
+                layer, ``"path"``: one color per path — default: ``"layer"``)
+            layer_label: (SVG only) define a template for layer naming (use %d for layer ID)
+            paper_format: (HPGL only) name of the paper format to use, as configured for the
+                specified ``device`` (if omitted, the paper format will be inferred based on
+                the page size specified with :meth:`size`)
+            velocity: (HPGL only) if provided, a VS command will be emitted with the provided
+                velocity
+            quiet: (HPGL only) if set to True, silence plotter configuration and paper loading
+                instructions
         """
+        if format is None:
+            _, ext = os.path.splitext(file.name if isinstance(file, TextIO) else file)
+            format = ext.lstrip(".").lower()
+
         if isinstance(file, str):
             file = open(file, "w")
 
-        vp.write_svg(
-            file,
-            self.processed_vector_data,
-            self._page_format,
-            self._center_on_page,
-            color_mode=color_mode,
-            layer_label_format=layer_label,
-            source_string="Generated with vsketch",
-        )
+        if format == "svg":
+            vp.write_svg(
+                file,
+                self.processed_vector_data,
+                self._page_format,
+                self._center_on_page,
+                color_mode=color_mode,
+                layer_label_format=layer_label,
+                source_string="Generated with vsketch",
+            )
+        elif format == "hpgl":
+            if device is None:
+                raise ValueError(f"'device' must be provided")
+            if paper_format is None:
+                config = vp.CONFIG_MANAGER.get_plotter_config(device)
+                paper_config = config.paper_config_from_format(self._page_format)
+                if paper_config:
+                    paper_format = paper_config.name
+                else:
+                    raise ValueError(f"page format is not available for device {device}")
+
+            vp.write_hpgl(
+                file,
+                self.processed_vector_data,
+                page_format=paper_format,
+                landscape=self._page_format[0] > self._page_format[1],
+                center=self._center_on_page,
+                device=device,
+                velocity=velocity,
+                quiet=quiet,
+            )
+        else:
+            raise ValueError(
+                f"unknown format '{format}', specify format with 'format' argument "
+            )
 
     def _apply_pipeline(self):
         """Apply the current pipeline on the current vector data."""
