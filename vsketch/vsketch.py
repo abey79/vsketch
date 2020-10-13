@@ -881,6 +881,10 @@ class Vsketch:
 
                 >>> vsk = Vsketch()
                 >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
+            
+            A single complex iterable of size 1 can also be used::
+
+                >>> vsk.polygon(np.array([3 + 3j, 2 + 5j, 4 + 7j]))
 
             Alternatively, two iterables of float can be passed::
 
@@ -927,7 +931,6 @@ class Vsketch:
                 raise ValueError(
                     "when both X and Y are provided, they must be sequences o float"
                 )
-
 
         hole_lines = []
         try:
