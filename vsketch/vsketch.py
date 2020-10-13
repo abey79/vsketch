@@ -881,6 +881,10 @@ class Vsketch:
 
                 >>> vsk = Vsketch()
                 >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
+            
+            A 1-dimension iterable of complex can also be used::
+
+                >>> vsk.polygon([3 + 3j, 2 + 5j, 4 + 7j])
 
             Alternatively, two iterables of float can be passed::
 
@@ -903,11 +907,17 @@ class Vsketch:
         """
         if y is None:
             try:
-                # noinspection PyTypeChecker
-                line = np.array(
-                    [complex(c[0], c[1]) for c in cast(Iterable[Sequence[float]], x)],
-                    dtype=complex,
-                )
+                if hasattr(x, "__len__"):
+                    data = np.array(x)
+                else:
+                    data = np.array(list(x))
+
+                if len(data.shape) == 1 and data.dtype == complex:
+                    line = data
+                elif len(data.shape) == 2 and data.shape[1] == 2:
+                    line = data[:, 0] + 1j * data[:, 1]
+                else:
+                    raise ValueError()
             except:
                 raise ValueError(
                     "when Y is not provided, X must contain an iterable of size 2+ sequences"
