@@ -13,11 +13,11 @@ from .utils import line_count_equal, line_exists
     [
         [[(0, 0), (1, 2), (3, 2)], (0, 1 + 2j, 3 + 2j)],
         [[[0, 0], [1, 2], [3, 2]], (0, 1 + 2j, 3 + 2j)],
-        # extra coords must be ignored
-        [[[0, 0, 4], [1, 2, 3, 2], [3, 2]], (0, 1 + 2j, 3 + 2j)],
         [np.array([(3, 2), (4, 3), (1, 2)]), (3 + 2j, 4 + 3j, 1 + 2j)],
         # pure iterable should be accepted
         [zip([3, 2, 4], [3, 5, 7]), (3 + 3j, 2 + 5j, 4 + 7j)],
+        # one complex arg should be accepted
+        [np.array([3 + 3j, 2 + 5j, 4 + 7j]), (3 + 3j, 2 + 5j, 4 + 7j)],
     ],
 )
 def test_polygon_1arg_success(

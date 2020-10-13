@@ -903,11 +903,17 @@ class Vsketch:
         """
         if y is None:
             try:
-                # noinspection PyTypeChecker
-                line = np.array(
-                    [complex(c[0], c[1]) for c in cast(Iterable[Sequence[float]], x)],
-                    dtype=complex,
-                )
+                if hasattr(x, "__len__"):
+                    data = np.array(x)
+                else:
+                    data = np.array(list(x))
+
+                if len(data.shape) == 1 and data.dtype == complex:
+                    line = data
+                elif len(data.shape) == 2 and data.shape[1] == 2:
+                    line = data[:, 0] + 1j * data[:, 1]
+                else:
+                    raise ValueError()
             except:
                 raise ValueError(
                     "when Y is not provided, X must contain an iterable of size 2+ sequences"
@@ -921,6 +927,7 @@ class Vsketch:
                 raise ValueError(
                     "when both X and Y are provided, they must be sequences o float"
                 )
+
 
         hole_lines = []
         try:
