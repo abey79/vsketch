@@ -882,9 +882,9 @@ class Vsketch:
                 >>> vsk = Vsketch()
                 >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
             
-            A single complex iterable of size 1 can also be used::
+            A 1-dimension iterable of complex can also be used::
 
-                >>> vsk.polygon(np.array([3 + 3j, 2 + 5j, 4 + 7j]))
+                >>> vsk.polygon([3 + 3j, 2 + 5j, 4 + 7j])
 
             Alternatively, two iterables of float can be passed::
 
