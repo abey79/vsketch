@@ -363,7 +363,17 @@ class Vsketch:
     def scale(self, sx: Union[float, str], sy: Optional[Union[float, str]] = None) -> None:
         """Apply a scale factor to the current transformation matrix.
 
-        TODO: add examples
+        Examples:
+
+            Set sketch units to centimeters::
+
+                >>> vsk = Vsketch()
+                >>> vsk.scale("1cm")
+                >>> vsk.square(5, 5, 2)  # square with 2cm-long sides
+
+            Apply a non-homogeneous scale transformation::
+
+                >>> vsk.scale(2, 3)
 
         Args:
             sx: scale factor along x axis (can be a string with units)
@@ -655,9 +665,9 @@ class Vsketch:
         calls to :func:`rect`) or the ``mode`` argument (which only affects this call).
 
         The optional parameters ``tl``, ``tr``, ``br`` and ``bl`` define the radius used for
-        each corner (default: 0). If some corner radius is not specified, it will be set equal to
-        the previous corner radius. If the sum of two consecutive corner radii are greater than 
-        their associated edge lenght, their values will be rescaled to fit the rectangle.
+        each corner (default: 0). If some corner radius is not specified, it will be set equal
+        to the previous corner radius. If the sum of two consecutive corner radii are greater
+        than their associated edge lenght, their values will be rescaled to fit the rectangle.
 
         Examples:
 
@@ -680,9 +690,10 @@ class Vsketch:
             
             Drawing rectangles with rounded corners:
 
-                >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 1
+                >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 5
                 >>> vsk.rect(0, 0, 4, 4, 1.5, 0.5, 1.5, 1)  # all corner radii specified
-                >>> vsk.rect(5, 5, 20, 20, tr=3, bl=5)  # specified corners rounded, others default to 0
+                >>> vsk.rect(5, 5, 20, 20, tr=3, bl=5)  # specified corners rounded, others
+                                                        # default to 0
 
         Args:
             x: by default, x coordinate of the top-left corner
@@ -701,7 +712,8 @@ class Vsketch:
             radii *= 4
         elif len(radii) != 4:
             raise ValueError(
-                "only 0, 1, or 4 corner radii may be implicitely specified, use keyword notation"
+                "only 1 or 4 corner radii may be implicitly specified, use keyword "
+                "arguments instead"
             )
         if tl is None:
             tl = radii[0]
@@ -1300,6 +1312,10 @@ class Vsketch:
             Save to a HPGL file::
 
                 >>> vsk.save("output.hpgl", "hp7475a")
+
+            Save to a HPGL file with customization::
+
+                >>> vsk.save("output.hpgl", "hp7475a", paper_format="a4", veolocty=30)
 
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
