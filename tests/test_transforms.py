@@ -19,7 +19,7 @@ POLYGON = np.array([0, 1, 3 + 1j, 4 - 2j])
 )
 def test_scale(vsk, scale, expected):
     vsk.scale(*scale)
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
 
     assert line_count_equal(vsk, 1)
     # noinspection PyTypeChecker
@@ -28,7 +28,7 @@ def test_scale(vsk, scale, expected):
 
 def test_scale_no_y(vsk):
     vsk.scale(2)
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
 
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, 2 * POLYGON)
@@ -36,7 +36,7 @@ def test_scale_no_y(vsk):
 
 def test_translate(vsk):
     vsk.translate(12, 23)
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
 
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON + 12 + 23j)
@@ -53,7 +53,7 @@ def test_rotate_radians(vsk):
 def test_rotate_deg_rad(vsk):
     vsk.rotate(np.pi / 2)
     vsk.rotate(-90, degrees=True)
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
 
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON)
@@ -62,7 +62,7 @@ def test_rotate_deg_rad(vsk):
 def test_resetMatrix(vsk):
     vsk.scale(10, 2)
     vsk.resetMatrix()
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
 
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON)
@@ -84,7 +84,7 @@ def test_pushMatrix(vsk):
     vsk.rotate(34)
     vsk.popMatrix()
 
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON)
 
@@ -94,6 +94,6 @@ def test_pushMatrix_context(vsk):
         vsk.scale(100, 200)
         vsk.rotate(34)
 
-    vsk.polygon(POLYGON.real, POLYGON.imag)
+    vsk.polygon(POLYGON)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON)
