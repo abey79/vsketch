@@ -311,7 +311,10 @@ class Vsketch:
 
     def resetMatrix(self) -> None:
         """Reset the current transformation matrix."""
+        self._transform_stack.append(self.transform.copy())
         self.transform = np.identity(3)
+
+        return MatrixPopper(self)
 
     def pushMatrix(self) -> MatrixPopper:
         """Push the current transformation matrix onto the matrix stack.
