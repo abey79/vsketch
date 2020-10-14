@@ -68,6 +68,16 @@ def test_resetMatrix(vsk):
     assert line_exists(vsk, POLYGON)
 
 
+def test_resetMatrix_context(vsk):
+    vsk.scale(10, 2)
+    vsk.rotate(42)
+    with vsk.resetMatrix():
+        vsk.polygon(POLYGON)
+
+    assert line_count_equal(vsk, 1)
+    assert line_exists(vsk, POLYGON)
+
+
 def test_pushMatrix(vsk):
     vsk.pushMatrix()
     vsk.scale(100, 200)
