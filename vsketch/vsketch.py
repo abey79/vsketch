@@ -331,7 +331,7 @@ class Vsketch:
                 >>> vsk = Vsketch()
                 >>> vsk.rotate(42)
                 >>> with vsk.resetMatrix():
-                >>>     vsk.rect(5, 4, 20, 15)  # won't be rotated by 42° rotation
+                ...     vsk.rect(5, 4, 20, 15)  # won't be rotated by 42° rotation
                 >>> vsk.rect(2, 2, 10, 10)  # will be rotated by 42°
 
         .. seealso::
