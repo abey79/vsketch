@@ -312,13 +312,32 @@ class Vsketch:
     def resetMatrix(self) -> ResetMatrixContextManager:
         """Reset the current transformation matrix.
 
+        It can also be used as a context manager. In this case, :func:`pushMatrix`
+        and its associated :func:`popMatrix` will be called automatically.
+
         Examples:
+
+            Using :func:`resetMatrix` as is::
+
+                >>> vsk = Vsketch()
+                >>> vsk.rotate(45)
+                >>> vsk.scale(20, 3)
+                >>> vsk.rect(0, 0, 4, 5)  # will be rotated and scaled
+                >>> vsk.resetMatrix()
+                >>> vsk.rect(0, 0, 2, 3)  # won't be rotated and scaled
+
+            Using context manager::
+
+                >>> vsk = Vsketch()
+                >>> vsk.rotate(42)
+                >>> with vsk.resetMatrix():
+                >>>     vsk.rect(5, 4, 20, 15)  # won't be rotated by 42° rotation
+                >>> vsk.rect(2, 2, 10, 10)  # will be rotated by 42°
 
         .. seealso::
 
             * :func:`pushMatrix`
 
-        
         Returns:
             context manager object: a context manager object for use with a ``with`` statement    
         """
