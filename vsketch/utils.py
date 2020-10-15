@@ -17,6 +17,26 @@ class MatrixPopper:
         self._vsk.popMatrix()
 
 
+class ResetMatrixContextManager:
+    """The constructor will be called in both scenarii. __enter__() and
+    __exit__() will only be called if used as a context manager (`with` statement)
+    """
+
+    def __init__(self, vsk: "vsketch.Vsketch"):
+        self._vsk = vsk
+        self._old_transform = vsk.transform
+        self._vsk.transform = np.identity(3)
+
+    def __enter__(self):
+        # undo what we did in the contstructor and redo it after pushing the matrix
+        self._vsk.transform = self._old_transform
+        self._vsk.pushMatrix()
+        self._vsk.transform = np.identity(3)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._vsk.popMatrix()
+
+
 def complex_to_2d(line: np.ndarray) -> np.ndarray:
     return np.vstack([line.real, line.imag]).T
 

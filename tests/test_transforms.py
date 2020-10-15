@@ -60,10 +60,12 @@ def test_rotate_deg_rad(vsk):
 
 
 def test_resetMatrix(vsk):
+    stack_depth = vsk._transform_stack
     vsk.scale(10, 2)
     vsk.resetMatrix()
     vsk.polygon(POLYGON)
 
+    assert vsk._transform_stack == stack_depth
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, POLYGON)
 

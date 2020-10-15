@@ -14,7 +14,7 @@ from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bez
 from .display import display
 from .fill import generate_fill
 from .style import stylize_path
-from .utils import MatrixPopper, complex_to_2d, compute_ellipse_mode
+from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
 
 __all__ = ["Vsketch"]
 
@@ -309,12 +309,20 @@ class Vsketch:
                 return self._default_pen_width
         return None
 
-    def resetMatrix(self) -> None:
-        """Reset the current transformation matrix."""
-        self._transform_stack.append(self.transform.copy())
-        self.transform = np.identity(3)
+    def resetMatrix(self) -> ResetMatrixContextManager:
+        """Reset the current transformation matrix.
 
-        return MatrixPopper(self)
+        Examples:
+
+        .. seealso::
+
+            * :func:`pushMatrix`
+
+        
+        Returns:
+            context manager object: a context manager object for use with a ``with`` statement    
+        """
+        return ResetMatrixContextManager(self)
 
     def pushMatrix(self) -> MatrixPopper:
         """Push the current transformation matrix onto the matrix stack.
