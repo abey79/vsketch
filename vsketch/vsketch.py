@@ -671,12 +671,7 @@ class Vsketch:
         """
         if self._cur_stroke:
             center = self._transform_line(np.array([complex(x, y)]))
-            circle = vp.circle(
-                center.real,
-                center.imag,
-                self.strokePenWidth / 2,
-                self.epsilon,
-            )
+            circle = vp.circle(center.real, center.imag, self.strokePenWidth / 2, self.epsilon)
             lc = vp.LineCollection(
                 stylize_path(
                     circle,
