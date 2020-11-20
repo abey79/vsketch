@@ -23,3 +23,4 @@ with vsk.pushMatrix():
     vsk.square(0, 0, 150, mode="center")
 
 vsk.display(mode="matplotlib")
+vsk.save("points_transform.svg")
