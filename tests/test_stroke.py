@@ -27,7 +27,7 @@ def test_stroke_weight_detail(vsk, weight, detail_mm):
 
     assert line_count_equal(vsk, weight)
 
-    for line in vsk.vector_data.layers[1]:
+    for line in vsk.document.layers[1]:
         seg_length = np.abs(np.diff(line))
         idx = (seg_length <= detail_px) | (seg_length > 140)
         assert np.all(idx)

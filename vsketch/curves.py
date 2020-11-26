@@ -55,8 +55,7 @@ def quadratic_bezier_point(
     y4: float,
     t: float,
 ) -> Tuple[float, float]:
-    """Evaluate a bezier curve at a given point, based on t in [0, 1].
-    """
+    """Evaluate a bezier curve at a given point, based on t in [0, 1]."""
 
     curve = bezier.Curve(np.array([[x1, x2, x3, x4], [y1, y2, y3, y4]]), degree=3, copy=False)
     [x], [y] = curve.evaluate(t)
@@ -74,8 +73,7 @@ def quadratic_bezier_tangent(
     y4: float,
     t: float,
 ) -> Tuple[float, float]:
-    """Evaluate a bezier curve at a given point, based on t in [0, 1].
-    """
+    """Evaluate a bezier curve at a given point, based on t in [0, 1]."""
 
     curve = bezier.Curve(np.array([[x1, x2, x3, x4], [y1, y2, y3, y4]]), degree=3, copy=False)
     [x], [y] = curve.evaluate_hodograph(t)

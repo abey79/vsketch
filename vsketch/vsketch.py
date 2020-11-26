@@ -22,14 +22,13 @@ __all__ = ["Vsketch"]
 # noinspection PyPep8Naming
 class Vsketch:
     def __init__(self):
-        self._vector_data = vp.VectorData()
+        self._document = vp.Document(page_size=vp.convert_page_size("a3"))
         self._cur_stroke: Optional[int] = 1
         self._stroke_weight: int = 1
         self._cur_fill: Optional[int] = None
         self._pipeline = ""
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
-        self._page_format = vp.convert_page_format("a3")
         self._center_on_page = True
         self._detail = vp.convert_length("0.1mm")
         self._pen_width: Dict[int, float] = {}
@@ -44,20 +43,9 @@ class Vsketch:
         self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
 
-        # we cache the processed vector data to make sequence of plot() and write() faster
-        # the cache must be invalidated (ie. _processed_vector_data set to None) each time
-        # _vector_data or _pipeline changes
-        self._processed_vector_data: Optional[vp.VectorData] = None
-
     @property
-    def vector_data(self):
-        return self._vector_data
-
-    @property
-    def processed_vector_data(self):
-        if self._processed_vector_data is None:
-            self._apply_pipeline()
-        return self._processed_vector_data
+    def document(self):
+        return self._document
 
     @property
     def width(self) -> float:
@@ -66,7 +54,7 @@ class Vsketch:
         Returns:
             page width
         """
-        return self._page_format[0]
+        return cast(float, self.document.page_size[0])
 
     @property
     def height(self) -> float:
@@ -75,7 +63,7 @@ class Vsketch:
         Returns:
             page height
         """
-        return self._page_format[1]
+        return cast(float, self.document.page_size[1])
 
     @property
     def transform(self) -> np.ndarray:
@@ -152,9 +140,9 @@ class Vsketch:
 
         If floats are for width and height, they are interpreted as CSS pixel (same as SVG).
         Alternatively, strings can be passed and may contain units. The string form accepts
-        both two parameters, or a single, vpype-like page format specifier.
+        both two parameters, or a single, vpype-like page size specifier.
 
-        Page format specifier can either be a known page format (see ``vpype write --help`` for
+        Page size specifier can either be a known page size (see ``vpype write --help`` for
         a list) or a string in the form of `WxH`, where both W and H may have units (e.g.
         `15inx10in`.
 
@@ -162,12 +150,12 @@ class Vsketch:
         ``center=False``. In this case, the sketch's absolute coordinates are used, with (0, 0)
         corresponding to the page's top-left corener and Y coordinates increasing downwards.
 
-        The current page format (in CSS pixels) can be obtained with :py:attr:`width` and
+        The current page size (in CSS pixels) can be obtained with :py:attr:`width` and
         :py:attr:`height` properties.
 
         Examples:
 
-            Known page format can be used directly::
+            Known page size can be used directly::
 
                 >>> vsk = Vsketch()
                 >>> vsk.size("a4")
@@ -183,19 +171,19 @@ class Vsketch:
         Args:
             width: page width or page forwat specifier if ``h`` is omitted
             height: page height
-            landscape: rotate page format by 90 degrees if True
+            landscape: rotate page size by 90 degrees if True
             center: if False, automatic centering is disabled
         """
 
         if height is None:
-            width, height = vp.convert_page_format(width)
+            width, height = vp.convert_page_size(width)
         else:
             width, height = vp.convert_length(width), vp.convert_length(height)
 
         if landscape:
-            self._page_format = (height, width)
+            self.document.page_size = (height, width)
         else:
-            self._page_format = (width, height)
+            self.document.page_size = (width, height)
         self._center_on_page = center
 
     def stroke(self, c: int) -> None:
@@ -339,7 +327,7 @@ class Vsketch:
             * :func:`pushMatrix`
 
         Returns:
-            context manager object: a context manager object for use with a ``with`` statement    
+            context manager object: a context manager object for use with a ``with`` statement
         """
         return ResetMatrixContextManager(self)
 
@@ -467,7 +455,6 @@ class Vsketch:
             y2: Y coordinate of ending point
         """
 
-        # TODO: handle transformation
         self._add_polygon(np.array([x1 + y1 * 1j, x2 + y2 * 1j], dtype=complex))
 
     def circle(
@@ -518,7 +505,7 @@ class Vsketch:
         self.ellipse(x, y, 2 * radius, 2 * radius, mode=mode)
 
     def ellipse(
-        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None,
+        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None
     ) -> None:
         """Draw an ellipse.
 
@@ -680,7 +667,7 @@ class Vsketch:
                     detail=self._detail,
                 )
             )
-            self._vector_data.add(lc, self._cur_stroke)
+            self._document.add(lc, self._cur_stroke)
 
     def rect(
         self,
@@ -728,7 +715,7 @@ class Vsketch:
             Or they can be set for a single call only:
 
                 >>> vsk.rect(2, 2, 10, 12, mode="corners")
-            
+
             Drawing rectangles with rounded corners:
 
                 >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 5
@@ -909,7 +896,7 @@ class Vsketch:
 
     def polygon(
         self,
-        x: Union[Iterable[float], Iterable[Sequence[float]]],
+        x: Union[Iterable[float], Iterable[complex], Iterable[Sequence[float]]],
         y: Optional[Iterable[float]] = None,
         holes: Iterable[Iterable[Sequence[float]]] = (),
         close: bool = False,
@@ -922,7 +909,7 @@ class Vsketch:
 
                 >>> vsk = Vsketch()
                 >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
-            
+
             A 1-dimension iterable of complex can also be used::
 
                 >>> vsk.polygon([3 + 3j, 2 + 5j, 4 + 7j])
@@ -1124,12 +1111,9 @@ class Vsketch:
             sub_sketch: sketch to draw in the current sketch
         """
 
-        # invalidate the cache
-        self._processed_vector_data = None
-
-        for layer_id, layer in sub_sketch._vector_data.layers.items():
+        for layer_id, layer in sub_sketch._document.layers.items():
             lc = vp.LineCollection([self._transform_line(line) for line in layer])
-            self._vector_data.add(lc, layer_id)
+            self._document.add(lc, layer_id)
 
     def _transform_line(self, line: np.ndarray) -> np.ndarray:
         """Apply the current transformation matrix to a line."""
@@ -1149,8 +1133,6 @@ class Vsketch:
             exterior (numpy array of complex): polygon external boundary
             holes (iterable of numpy array of complex): interior holes
         """
-        # invalidate the cache
-        self._processed_vector_data = None
 
         transformed_exterior = self._transform_line(exterior)
         transformed_holes = [self._transform_line(hole) for hole in holes]
@@ -1166,7 +1148,7 @@ class Vsketch:
                         detail=self._detail,
                     )
                 )
-            self._vector_data.add(lc, self._cur_stroke)
+            self._document.add(lc, self._cur_stroke)
 
         if self._cur_fill:
             p = Polygon(
@@ -1174,9 +1156,9 @@ class Vsketch:
                 holes=[complex_to_2d(hole) for hole in transformed_holes],
             )
             lc = generate_fill(
-                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth,
+                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth
             )
-            self._vector_data.add(lc, self._cur_fill)
+            self._document.add(lc, self._cur_fill)
 
     def vpype(self, pipeline: str) -> None:
         """Execute a vpype pipeline on the current sketch.
@@ -1235,15 +1217,15 @@ class Vsketch:
 
         @vpype_cli.cli.command(group="vsketch")
         @vp.global_processor
-        def vsketchinput(vector_data):
-            vector_data.extend(self._vector_data)
-            return vector_data
+        def vsketchinput(document):
+            document.extend(self._document)
+            return document
 
         @vpype_cli.cli.command(group="vsketch")
         @vp.global_processor
-        def vsketchoutput(vector_data):
-            self._vector_data = vector_data
-            return vector_data
+        def vsketchoutput(document):
+            self._document = document
+            return document
 
         args = "vsketchinput " + pipeline + " vsketchoutput"
         vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
@@ -1270,7 +1252,7 @@ class Vsketch:
 
         The default options are the following:
 
-            * The sketch is laid out on the desired page format, the boundary of which are
+            * The sketch is laid out on the desired page size, the boundary of which are
               displayed.
             * The path are colored layer by layer.
             * Pen-up trajectories are not displayed.
@@ -1296,7 +1278,7 @@ class Vsketch:
 
         Args:
             mode (``"matplotlib"`` or ``"ipython"``): override the default display mode
-            paper: if True, the sketch is laid out on the desired page format (default: True)
+            paper: if True, the sketch is laid out on the desired page size (default: True)
             pen_up: if True, the pen-up trajectories will be displayed (default: False)
             color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
                 display (``"none"``: black and white, ``"layer"``: one color per layer,
@@ -1307,8 +1289,8 @@ class Vsketch:
             fig_size: (``"matplotlib"`` only) specify the figure size
         """
         display(
-            self.processed_vector_data,
-            page_format=self._page_format if paper else None,
+            self.document,
+            page_size=self.document.page_size if paper else None,
             mode=mode,
             center=self._center_on_page,
             show_axes=axes,
@@ -1328,7 +1310,7 @@ class Vsketch:
         format: Optional[str] = None,
         color_mode: str = "layer",
         layer_label: str = "%d",
-        paper_format: Optional[str] = None,
+        paper_size: Optional[str] = None,
         velocity: Optional[float] = None,
         quiet: bool = False,
     ) -> None:
@@ -1340,11 +1322,11 @@ class Vsketch:
         This function uses the page layout as defined by :func:`size`.
 
         Due to the nature of HPGL (which much be generated for a specific plotter device/paper
-        format combination), the device name must always be specified. If ``paper_format`` is
+        size combination), the device name must always be specified. If ``paper_size`` is
         not provided, :meth:`save` attempts to infer which paper configuration to use based
-        on the page format provided to :meth:`size`. If multiple configurations match the page
-        format, the first one is used. In case of ambiguity, it is recommendande to specify
-        ``paper_format``. See `vpype's documentation
+        on the page size provided to :meth:`size`. If multiple configurations match the page
+        size, the first one is used. In case of ambiguity, it is recommendande to specify
+        ``paper_size``. See `vpype's documentation
         <https://vpype.readthedocs.io/en/latest/>`_ for more information on HPGL generation.
 
         Examples:
@@ -1366,7 +1348,7 @@ class Vsketch:
 
             Save to a HPGL file with customization::
 
-                >>> vsk.save("output.hpgl", "hp7475a", paper_format="a4", veolocty=30)
+                >>> vsk.save("output.hpgl", "hp7475a", paper_size="a4", veolocty=30)
 
         Args:
             file: destination SVG file (can be a file path or text-based IO stream)
@@ -1377,8 +1359,8 @@ class Vsketch:
                 is used for display (``"none"``: black and white, ``"layer"``: one color per
                 layer, ``"path"``: one color per path — default: ``"layer"``)
             layer_label: (SVG only) define a template for layer naming (use %d for layer ID)
-            paper_format: (HPGL only) name of the paper format to use, as configured for the
-                specified ``device`` (if omitted, the paper format will be inferred based on
+            paper_size: (HPGL only) name of the paper size to use, as configured for the
+                specified ``device`` (if omitted, the paper size will be inferred based on
                 the page size specified with :meth:`size`)
             velocity: (HPGL only) if provided, a VS command will be emitted with the provided
                 velocity
@@ -1395,9 +1377,8 @@ class Vsketch:
         if format == "svg":
             vp.write_svg(
                 file,
-                self.processed_vector_data,
-                self._page_format,
-                self._center_on_page,
+                self.document,
+                center=self._center_on_page,
                 color_mode=color_mode,
                 layer_label_format=layer_label,
                 source_string="Generated with vsketch",
@@ -1405,19 +1386,19 @@ class Vsketch:
         elif format == "hpgl":
             if device is None:
                 raise ValueError(f"'device' must be provided")
-            if paper_format is None:
+            if paper_size is None:
                 config = vp.CONFIG_MANAGER.get_plotter_config(device)
-                paper_config = config.paper_config_from_format(self._page_format)
+                paper_config = config.paper_config_from_size(self.document.page_size)
                 if paper_config:
-                    paper_format = paper_config.name
+                    paper_size = paper_config.name
                 else:
-                    raise ValueError(f"page format is not available for device {device}")
+                    raise ValueError(f"page size is not available for device {device}")
 
             vp.write_hpgl(
                 file,
-                self.processed_vector_data,
-                page_format=paper_format,
-                landscape=self._page_format[0] > self._page_format[1],
+                self.document,
+                page_size=paper_size,
+                landscape=self.document.page_size[0] > self.document.page_size[1],
                 center=self._center_on_page,
                 device=device,
                 velocity=velocity,
@@ -1427,24 +1408,6 @@ class Vsketch:
             raise ValueError(
                 f"unknown format '{format}', specify format with 'format' argument "
             )
-
-    def _apply_pipeline(self):
-        """Apply the current pipeline on the current vector data."""
-
-        @vpype_cli.cli.command(group="vsketch")
-        @vp.global_processor
-        def vsketchinput(vector_data):
-            vector_data.extend(self._vector_data)
-            return vector_data
-
-        @vpype_cli.cli.command(group="vsketch")
-        @vp.global_processor
-        def vsketchoutput(vector_data):
-            self._processed_vector_data = vector_data
-            return vector_data
-
-        args = "vsketchinput " + self._pipeline + " vsketchoutput"
-        vpype_cli.cli.main(prog_name="vpype", args=shlex.split(args), standalone_mode=False)
 
     ####################
     # RANDOM FUNCTIONS #
