@@ -327,7 +327,7 @@ class Vsketch:
             * :func:`pushMatrix`
 
         Returns:
-            context manager object: a context manager object for use with a ``with`` statement    
+            context manager object: a context manager object for use with a ``with`` statement
         """
         return ResetMatrixContextManager(self)
 
@@ -505,7 +505,7 @@ class Vsketch:
         self.ellipse(x, y, 2 * radius, 2 * radius, mode=mode)
 
     def ellipse(
-        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None,
+        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None
     ) -> None:
         """Draw an ellipse.
 
@@ -715,7 +715,7 @@ class Vsketch:
             Or they can be set for a single call only:
 
                 >>> vsk.rect(2, 2, 10, 12, mode="corners")
-            
+
             Drawing rectangles with rounded corners:
 
                 >>> vsk.rect(0, 0, 5, 5, 5)  # all corners are rounded with a radius of 5
@@ -909,7 +909,7 @@ class Vsketch:
 
                 >>> vsk = Vsketch()
                 >>> vsk.polygon([(0, 0), (2, 3), (3, 2)])
-            
+
             A 1-dimension iterable of complex can also be used::
 
                 >>> vsk.polygon([3 + 3j, 2 + 5j, 4 + 7j])
@@ -1156,7 +1156,7 @@ class Vsketch:
                 holes=[complex_to_2d(hole) for hole in transformed_holes],
             )
             lc = generate_fill(
-                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth,
+                p, cast(float, self.fillPenWidth), self._stroke_weight * self.strokePenWidth
             )
             self._document.add(lc, self._cur_fill)
 

@@ -57,9 +57,7 @@ def display_matplotlib(
             "k",
             alpha=0.3,
         )
-        plt.plot(
-            np.array([0, 1, 1, 0, 0]) * w, np.array([0, 0, 1, 1, 0]) * h, "-k", lw=0.25,
-        )
+        plt.plot(np.array([0, 1, 1, 0, 0]) * w, np.array([0, 0, 1, 1, 0]) * h, "-k", lw=0.25)
 
     # compute offset
     offset = complex(0, 0)
@@ -77,9 +75,9 @@ def display_matplotlib(
     collections = {}
     for layer_id, lc in document.layers.items():
         if colorful:
-            color: Union[
-                Tuple[float, float, float], List[Tuple[float, float, float]]
-            ] = COLORS[color_idx:] + COLORS[:color_idx]
+            color: Union[Tuple[float, float, float], List[Tuple[float, float, float]]] = (
+                COLORS[color_idx:] + COLORS[:color_idx]
+            )
             color_idx += len(lc)
         else:
             color = COLORS[color_idx]
