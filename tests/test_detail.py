@@ -19,7 +19,7 @@ def test_detail_circle_epsilon_ok(vsk, scale):
     vsk.circle(0, 0, radius=1)
 
     assert line_count_equal(vsk, 1)
-    assert _max_segment_length(vsk.vector_data.layers[1][0]) < DETAIL
+    assert _max_segment_length(vsk.document.layers[1][0]) < DETAIL
 
 
 PREVIOUSLY_FAILING_POINTS = [
@@ -65,4 +65,4 @@ def test_detail_bezier_epsilon_ok(vsk, scale, points):
     )
 
     assert line_count_equal(vsk, 1)
-    assert _max_segment_length(vsk.vector_data.layers[1][0]) < DETAIL
+    assert _max_segment_length(vsk.document.layers[1][0]) < DETAIL

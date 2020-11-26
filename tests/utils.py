@@ -10,7 +10,7 @@ def bounds_equal(
 ) -> bool:
     """Asserts that sketch bounds are approximately equal to those provided"""
 
-    bounds = vsk.vector_data.bounds()
+    bounds = vsk.document.bounds()
     return (
         bounds is not None
         and np.isclose(bounds[0], xmin, rtol=1e-03)
@@ -44,7 +44,7 @@ def line_count_equal(vsk: vsketch.Vsketch, *args: Union[int, Tuple[int, int]]) -
             target_layer_counts[p[0]] = p[1]
 
     actual_layer_counts = {}
-    for layer_id, layer in vsk.vector_data.layers.items():
+    for layer_id, layer in vsk.document.layers.items():
         actual_layer_counts[layer_id] = len(layer)
 
     # this is needed when some layer are explicitly specified to 0
@@ -75,11 +75,11 @@ def line_exists(
     if isinstance(layer_ids, int):
         layer_ids = [layer_ids]
     elif layer_ids is None:
-        layer_ids = list(vsk.vector_data.layers.keys())
+        layer_ids = list(vsk.document.layers.keys())
 
     for layer_id in layer_ids:
-        if layer_id in vsk.vector_data.layers:
-            for line_ in vsk.vector_data.layers[layer_id]:
+        if layer_id in vsk.document.layers:
+            for line_ in vsk.document.layers[layer_id]:
                 if len(line_) == len(line):
                     if strict:
                         if np.all(line_ == line):

@@ -30,8 +30,8 @@ COLORS = [
 
 
 def display_matplotlib(
-    vector_data: Union[vp.LineCollection, vp.VectorData],
-    page_format: Tuple[float, float] = None,
+    document: vp.Document,
+    page_size: Tuple[float, float] = None,
     center: bool = False,
     show_axes: bool = True,
     show_grid: bool = False,
@@ -40,9 +40,6 @@ def display_matplotlib(
     unit: str = "px",
     fig_size: Tuple[float, float] = None,
 ) -> None:
-    if isinstance(vector_data, vp.LineCollection):
-        vector_data = vp.VectorData(vector_data)
-
     scale = 1 / vp.convert(unit)
 
     if fig_size:
@@ -50,9 +47,9 @@ def display_matplotlib(
     plt.cla()
 
     # draw page
-    if page_format is not None:
-        w = page_format[0] * scale
-        h = page_format[1] * scale
+    if page_size is not None:
+        w = page_size[0] * scale
+        h = page_size[1] * scale
         dw = 10 * scale
         plt.fill(
             np.array([w, w + dw, w + dw, dw, dw, w]),
@@ -66,19 +63,19 @@ def display_matplotlib(
 
     # compute offset
     offset = complex(0, 0)
-    if center and page_format:
-        bounds = vector_data.bounds()
+    if center and page_size:
+        bounds = document.bounds()
         if bounds is not None:
             offset = complex(
-                (page_format[0] - (bounds[2] - bounds[0])) / 2.0 - bounds[0],
-                (page_format[1] - (bounds[3] - bounds[1])) / 2.0 - bounds[1],
+                (page_size[0] - (bounds[2] - bounds[0])) / 2.0 - bounds[0],
+                (page_size[1] - (bounds[3] - bounds[1])) / 2.0 - bounds[1],
             )
     offset_ndarr = np.array([offset.real, offset.imag])
 
     # plot all layers
     color_idx = 0
     collections = {}
-    for layer_id, lc in vector_data.layers.items():
+    for layer_id, lc in document.layers.items():
         if colorful:
             color: Union[
                 Tuple[float, float, float], List[Tuple[float, float, float]]
@@ -135,15 +132,15 @@ def display_matplotlib(
 
 
 def display_ipython(
-    vector_data: Union[vp.LineCollection, vp.VectorData],
-    page_format: Optional[Tuple[float, float]],
+    document: vp.Document,
+    page_size: Optional[Tuple[float, float]],
     center: bool = False,
     show_pen_up: bool = False,
     color_mode: str = "layer",
 ) -> None:
     """Implements a SVG previsualisation with pan/zoom support for IPython.
 
-    If page_format is provided, a page is displayed and the sketch is laid out on it. Otherwise
+    If page_size is provided, a page is displayed and the sketch is laid out on it. Otherwise
     the sketch is displayed using its intrinsic boundaries.
     """
     if "IPython" not in sys.modules:
@@ -152,8 +149,8 @@ def display_ipython(
     svg_io = io.StringIO()
     vp.write_svg(
         svg_io,
-        vector_data,
-        page_format if page_format is not None else (0, 0),
+        document,
+        page_size if page_size is not None else (0, 0),
         center,
         show_pen_up=show_pen_up,
         color_mode=color_mode,
@@ -161,8 +158,8 @@ def display_ipython(
 
     MARGIN = 10
 
-    if page_format is None:
-        bounds = vector_data.bounds()
+    if page_size is None:
+        bounds = document.bounds()
         if bounds:
             svg_width = bounds[2] - bounds[0]
             svg_height = bounds[3] - bounds[1]
@@ -170,8 +167,8 @@ def display_ipython(
             svg_width = 0
             svg_height = 0
     else:
-        svg_width = page_format[0]
-        svg_height = page_format[1]
+        svg_width = page_size[0]
+        svg_height = page_size[1]
 
     page_boundaries = f"""
         <polygon points="{svg_width},{MARGIN}
@@ -185,7 +182,7 @@ def display_ipython(
             style="fill:none;stroke-width:1;stroke:rgb(0,0,0)" />
     """
 
-    svg_margin = MARGIN if page_format is not None else 0
+    svg_margin = MARGIN if page_size is not None else 0
     svg_id = f"svg_display_{random.randint(0, 10000)}"
 
     IPython.display.display_html(
@@ -193,7 +190,7 @@ def display_ipython(
             <svg id="{svg_id}" width="{svg_width + svg_margin}px"
                     height={svg_height + svg_margin}
                     viewBox="0 0 {svg_width + svg_margin} {svg_height + svg_margin}">
-                {page_boundaries if page_format is not None else ""}
+                {page_boundaries if page_size is not None else ""}
                 {svg_io.getvalue()}
             </svg>
         </div>
@@ -213,8 +210,8 @@ def display_ipython(
 
 
 def display(
-    vector_data: Union[vp.LineCollection, vp.VectorData],
-    page_format: Optional[Tuple[float, float]],
+    document: vp.Document,
+    page_size: Optional[Tuple[float, float]],
     center: bool = False,
     show_axes: bool = True,
     show_grid: bool = False,
@@ -234,8 +231,8 @@ def display(
     Note: all options are not necessarily implemented by all display modes.
 
     Args:
-        vector_data: the vector data to display
-        page_format: size of the page in pixels
+        document: the document to display
+        page_size: size of the page in pixels
         center: if True, the geometries are centered on the page
         show_axes: if True, display axes
         show_grid: if True, display a grid
@@ -267,12 +264,12 @@ def display(
             logging.warning("setting fig_size is not supported by the IPython display mode")
 
         display_ipython(
-            vector_data, page_format, center, show_pen_up=show_pen_up, color_mode=color_mode
+            document, page_size, center, show_pen_up=show_pen_up, color_mode=color_mode
         )
     elif mode == "matplotlib":
         display_matplotlib(
-            vector_data,
-            page_format,
+            document,
+            page_size,
             center=center,
             show_axes=show_axes,
             show_grid=show_grid,

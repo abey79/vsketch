@@ -20,5 +20,5 @@ def test_bezier_endpoints_included(vsk, points):
     )
 
     assert line_count_equal(vsk, 1)
-    assert vsk.vector_data.layers[1][0][0] == points[0]
-    assert vsk.vector_data.layers[1][0][-1] == points[-1]
+    assert vsk.document.layers[1][0][0] == points[0]
+    assert vsk.document.layers[1][0][-1] == points[-1]
