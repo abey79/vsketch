@@ -27,6 +27,7 @@ from .curves import cubic_bezier_path, cubic_bezier_point, cubic_bezier_tangent
 from .display import display
 from .easing import EASING_FUNCTIONS
 from .fill import generate_fill
+from .shape import Shape
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
 
@@ -49,7 +50,6 @@ class Vsketch:
         self._stroke_weight: int = 1
         self._join_style: str = "round"
         self._cur_fill: Optional[int] = None
-        self._pipeline = ""
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self._center_on_page = True
@@ -1158,6 +1158,14 @@ class Vsketch:
         """
         x, y = cubic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
         return x
+
+    def createShape(self) -> Shape:
+        return Shape(self)
+
+    def shape(self, shp: Shape):
+        p, mls = shp.compile()
+        self.geometry(p)
+        self.geometry(mls)
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
