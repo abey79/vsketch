@@ -50,6 +50,7 @@ jobs:
   # TESTS #
   #########
   tests:
+    name: macOS/Linux Tests
     needs: linting
     strategy:
       fail-fast: true
@@ -106,6 +107,7 @@ jobs:
   # TESTS WINDOWS #
   #################
   tests-windows:
+    name: Windows Tests
     needs: linting
     strategy:
       fail-fast: true
