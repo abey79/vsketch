@@ -62,15 +62,28 @@ Finally, launch the Jupyter Lab environment with the following command::
 Standalone
 ----------
 
-Vsketch being a regular Python package, you can use it with your favourite Python development environment.::
+Vsketch is a regular Python package that yo can install it with `pip` and use from your favorite development
+environment.::
+
+    pip install git+https://github.com/abey79/vsketch#egg=vsketch
+
+
+Development environment
+-----------------------
+
+If you intend to modify vsketch (either for your own purpose or contribute improvements), you will need to properly
+setup a development environment. Vsketch uses `Poetry <https://python-poetry.org>`_ for project management (see
+`installation instructions <https://python-poetry.org/docs/#installation>`_). Then, run the following commands::
 
     git clone https://github.com/abey79/vsketch
-    cd vsketch
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install --upgrade pip
-    pip install -e .
-    
+    poetry install  # installs everything needed including vsketch in editable mode
+
+Poetry will automatically create a virtual environment. You can spawn a shell with the virtual environment activated
+with the following command::
+
+    poetry shell
+
+
 Overview
 ========
 
