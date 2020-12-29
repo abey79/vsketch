@@ -63,6 +63,12 @@ docs = ["Sphinx", "sphinx-click", "sphinx-autodoc-typehints", "sphinx-rtd-theme"
 jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "ipympl", "black", "isort"]
 colab = ["requests"]
 
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
 [tool.black]
 line-length = 95
 target-version = ["py36", "py37", "py38"]
