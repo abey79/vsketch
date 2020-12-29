@@ -1471,27 +1471,32 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "vpype"
-version = "1.2.1"
+version = "1.3.0-alpha.0"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 category = "main"
 optional = false
-python-versions = ">=3.6,<3.9"
+python-versions = ">=3.6, <3.9"
+develop = true
 
 [package.dependencies]
-attrs = ">=20.3.0,<20.4.0"
-click = ">=7.1.2,<7.2.0"
-click-plugins = ">=1.1.1,<1.2.0"
-matplotlib = ">=3.3.2,<3.4.0"
-multiprocess = ">=0.70.11,<0.71.0"
+attrs = "~20.3.0"
+click = "~7.1.2"
+click-plugins = "~1.1.1"
+matplotlib = "~3.3.2"
+multiprocess = "^0.70.11"
 numpy = "1.19.3"
-scipy = ">=1.5.4,<1.6.0"
-Shapely = {version = ">=1.7.1,<1.8.0", extras = ["vectorized"]}
+scipy = "~1.5.4"
+Shapely = {version = "~1.7.1", extras = ["vectorized"]}
 svgelements = "1.3.5"
-svgwrite = ">=1.4,<1.5"
-toml = ">=0.10.2,<0.11.0"
+svgwrite = "~1.4"
+toml = "~0.10.2"
 
 [package.extras]
-docs = ["Sphinx (>=3.3.0,<4.0.0)", "recommonmark (>=0.6.0,<0.7.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)", "sphinx-click (>=2.5.0,<3.0.0)", "sphinx-rtd-theme (>=0.5.0,<0.6.0)"]
+docs = ["Sphinx (>=3.3.0,<4.0.0)", "sphinx-click (>=2.5.0,<3.0.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)", "sphinx-rtd-theme (>=0.5.0,<0.6.0)", "recommonmark (>=0.6,<0.8)"]
+
+[package.source]
+type = "directory"
+url = "../vpype"
 
 [[package]]
 name = "wcwidth"
@@ -1540,7 +1545,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2, <3.9"
-content-hash = "476ea75d7e18e672a6b847ca3250fdbf674837f390ef980c0d5e979c9ca35d84"
+content-hash = "3e993a46d7865a1cd5df1d27894808d4bc49a0013554eb4ecc2ef2c50fc99a8b"
 
 [metadata.files]
 alabaster = [
@@ -2467,10 +2472,7 @@ urllib3 = [
     {file = "urllib3-1.26.2-py2.py3-none-any.whl", hash = "sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473"},
     {file = "urllib3-1.26.2.tar.gz", hash = "sha256:19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08"},
 ]
-vpype = [
-    {file = "vpype-1.2.1-py3-none-any.whl", hash = "sha256:b22d3c652e3df2ccfad3144d8df33613cc21ae48370ed97574f351e7c4df571b"},
-    {file = "vpype-1.2.1.tar.gz", hash = "sha256:f7428324871322e7ad351c4e82a87a5f62711c958992c692c7848f01a644abdd"},
-]
+vpype = []
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
