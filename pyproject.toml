@@ -22,7 +22,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.6.2, <3.9"
-numpy = "^1.19.3"
+numpy = "1.19.3"
 bezier = "^2020.5.19"
 noise = "^1.2.2"
 matplotlib = "^3.3.3"
