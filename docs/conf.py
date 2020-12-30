@@ -86,10 +86,10 @@ intersphinx_mapping = {
 
 napoleon_include_init_with_doc = True
 
-# def setup(app):
-#     app.add_config_value('recommonmark_config', {
+# def setup(cli):
+#     cli.add_config_value('recommonmark_config', {
 #             'auto_toc_tree_section': 'Contents',
 #             'enable_auto_doc_ref': True,
 #             'enable_eval_rst': True,
 #             }, True)
-#     app.add_transform(AutoStructify)
+#     cli.add_transform(AutoStructify)

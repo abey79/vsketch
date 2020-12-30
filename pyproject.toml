@@ -14,20 +14,27 @@ classifiers = [
 ]
 packages = [
     { include = "vsketch" },
+    { include = "vsketch_cli" },
 ]
 include = [
     "README.rst",
     "LICENSE",
 ]
 
+[tool.poetry.scripts]
+vsketch = "vsketch_cli.cli:cli"
+
 [tool.poetry.dependencies]
 python = ">=3.6.2, <3.9"
-numpy = "^1.19.3"
+numpy = "1.19.3"
 bezier = "^2020.5.19"
 noise = "^1.2.2"
 matplotlib = "^3.3.3"
 vpype = "^1.2.1"
 Shapely = {extras = ["vectorized"], version = "^1.7.1"}
+typer = "^0.3.2"
+dearpygui = "^0.6.42"
+watchgod = "^0.6"
 
 # colab
 requests = {version = "^2.25.1", optional = true}
