@@ -369,7 +369,7 @@ test = ["pytest (!=5.3.4)", "pytest-cov", "flaky", "nose"]
 
 [[package]]
 name = "ipympl"
-version = "0.5.8"
+version = "0.6.2"
 description = "Matplotlib Jupyter Extension"
 category = "main"
 optional = true
@@ -377,7 +377,7 @@ python-versions = "*"
 
 [package.dependencies]
 ipykernel = ">=4.7"
-ipywidgets = ">=7.5.0"
+ipywidgets = ">=7.6.0"
 matplotlib = ">=2.0.0"
 
 [[package]]
@@ -1539,7 +1539,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2, <3.9"
-content-hash = "c90bbc8b9eeede4ce858a5c75e5b757387e0e46b1a2674f0f40ce77e4a0740d5"
+content-hash = "ad64f5c2880818498d436e0e7737554f3dc403507d6514aedbfc7a0089fc0d05"
 
 [metadata.files]
 alabaster = [
@@ -1751,8 +1751,8 @@ ipykernel = [
     {file = "ipykernel-5.4.2.tar.gz", hash = "sha256:e20ceb7e52cb4d250452e1230be76e0b2323f33bd46c6b2bc7abb6601740e182"},
 ]
 ipympl = [
-    {file = "ipympl-0.5.8-py2.py3-none-any.whl", hash = "sha256:d510a3eb5ecc707fd3ab553fdfcda0ef0f7229e0f97341584161f1da7604287a"},
-    {file = "ipympl-0.5.8.tar.gz", hash = "sha256:0e2f2e540a2dfea61524b7993fc8552c9236b1aaa3826e1f382c75cb2fa5c382"},
+    {file = "ipympl-0.6.2-py2.py3-none-any.whl", hash = "sha256:f5c451fdc19b7aedd0303f1aa5583a64b91d1ab1dbf998237d06d9925d517cc7"},
+    {file = "ipympl-0.6.2.tar.gz", hash = "sha256:e285e399f9e0e1c3332a7c135c8ce14358f234e3309e9c0d937bf0cb131dd9cc"},
 ]
 ipython = [
     {file = "ipython-7.16.1-py3-none-any.whl", hash = "sha256:2dbcc8c27ca7d3cfe4fcdff7f45b27f9a8d3edfa70ff8024a71c7a8eb5f09d64"},
