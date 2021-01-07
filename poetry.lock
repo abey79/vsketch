@@ -660,15 +660,14 @@ test = ["pytest (>=6.0)", "pytest-cov", "pytest-console-scripts", "pytest-check-
 
 [[package]]
 name = "jupyterlab-code-formatter"
-version = "1.3.8"
-description = "Server extension to power `@ryantam626/jupyterlab_code_formatter` npm package."
+version = "1.4.1"
+description = "Code formatter for JupyterLab"
 category = "main"
 optional = true
-python-versions = "*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-notebook = "*"
-packaging = "*"
+jupyterlab = ">=3.0,<4.0"
 
 [[package]]
 name = "jupyterlab-server"
@@ -1540,7 +1539,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2, <3.9"
-content-hash = "1b7b143c49174e18e464f9070a5eb48256b5d4a134ea2f722598931ab3dbd590"
+content-hash = "c90bbc8b9eeede4ce858a5c75e5b757387e0e46b1a2674f0f40ce77e4a0740d5"
 
 [metadata.files]
 alabaster = [
@@ -1820,7 +1819,8 @@ jupyterlab = [
     {file = "jupyterlab-3.0.0.tar.gz", hash = "sha256:15228dff3f77b0bca795fd232cb25f02121510cec83f1d25856b3bc8e585b087"},
 ]
 jupyterlab-code-formatter = [
-    {file = "jupyterlab_code_formatter-1.3.8.tar.gz", hash = "sha256:7c415caff528e55027e82c96b60dcab0537aa5cda168997f03a4964c51e2b7b5"},
+    {file = "jupyterlab_code_formatter-1.4.1-py3-none-any.whl", hash = "sha256:bde405f8ab8c4fa949c3fbd4750fd8c528617a0224eac4c2ce042b2b195ba0c0"},
+    {file = "jupyterlab_code_formatter-1.4.1.tar.gz", hash = "sha256:fee065a8818a81fab8fa155f238be5e56fb4ac6b05f7df8becfea5a79de9e7a5"},
 ]
 jupyterlab-server = [
     {file = "jupyterlab_server-2.0.0-py3-none-any.whl", hash = "sha256:20a4e495276956528783c0befab58e409d9f6258589caccb4c0591387caadc84"},
