@@ -1,8 +1,14 @@
 from runpy import run_path
 
+import vpype as vp
 import watchgod
 
 import vsketch
+
+BORDER = 15
+
+origin = [0, 0]
+scale = [1, 1]
 
 
 def load_and_save(path: str):
@@ -12,6 +18,9 @@ def load_and_save(path: str):
     sketch["draw"](vsk)
     sketch["finalize"](vsk)
     vsk.display()
+
+
+# def watch
 
 
 def run_directory(path: str):
