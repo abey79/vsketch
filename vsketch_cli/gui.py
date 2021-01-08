@@ -1,78 +1,66 @@
-import math
+from typing import List
 
-import vpype as vp
-from dearpygui.core import *
-from dearpygui.simple import *
+from dearpygui import core, simple
 
-BORDER = 5
-
-origin = [0, 0]
-scale = [1, 1]
-
-filename = "/Users/hhip/Desktop/TEST_SVG/spirograph-grid-cropped-a3.svg"
-
-lc, width, height = vp.read_svg(filename, 1, return_size=True)
-print(width)
-print(height)
-
-with window("Tutorial", no_scrollbar=True):
-    add_drawing(
-        "Drawing_1",
-        width=BORDER * 2 + math.ceil(width),
-        height=BORDER * 2 + math.ceil(height),
-    )
-
-lc.translate(BORDER, BORDER)
-for line in lc:
-    draw_polyline("Drawing_1", vp.as_vector(line).tolist(), [255, 255, 255])
-
-draw_polyline(
-    "Drawing_1",
-    [
-        [BORDER, BORDER],
-        [width + BORDER, BORDER],
-        [width + BORDER, height + BORDER],
-        [BORDER, height + BORDER],
-    ],
-    closed=True,
-    color=[128, 0, 128],
-)
-
-with window("Plot Window"):
-    add_plot("Plot", no_legend=True, yaxis_invert=True, anti_aliased=True, crosshairs=True)
-
-for i, line in enumerate(lc):
-    add_line_series("Plot", f"##{i}", vp.as_vector(line).tolist(), color=[255, 255, 255])
-
-add_line_series(
-    "Plot",
-    "BORDER",
-    [
-        [BORDER, BORDER],
-        [width + BORDER, BORDER],
-        [width + BORDER, height + BORDER],
-        [BORDER, height + BORDER],
-        [BORDER, BORDER],
-    ],
-    color=[128, 0, 128],
-)
+import vsketch
 
 
-def drag_callback(sender, data):
-    print(sender, get_mouse_pos(local=True))
-    if sender == "Tutorial":
-        origin[0] += data[1]
-        origin[1] -= data[2]
-        set_drawing_origin("Drawing_1", *origin)
+class GUI:
+    def __init__(self):
+        self.series: List[str] = []
 
+        with simple.window("main", width=600, height=600):
+            core.add_plot(
+                "Plot",
+                no_legend=True,
+                yaxis_invert=True,
+                anti_aliased=True,
+                crosshairs=True,
+                equal_aspects=True,
+            )
 
-def mouse_wheel_callback(sender, data):
-    print(sender, data)
+        core.set_primary_window("main", True)
 
+        def redraw(sender, data):
+            core.render_dearpygui_frame()
 
-show_debug()
+        def post_init(sender, data):
+            core.set_resize_callback(redraw)
 
-set_mouse_drag_callback(drag_callback, 10)
-# set_mouse_wheel_callback(mouse_wheel_callback)
+        core.set_start_callback(post_init)
 
-start_dearpygui()
+    # noinspection PyMethodMayBeStatic
+    def run(self) -> None:
+        core.start_dearpygui()
+
+    def refresh_plot(self, vsk: vsketch.Vsketch) -> None:
+        for i, line in enumerate(lc):
+            series_id = f"##{i}"
+            self.series.append(series_id)
+            core.add_line_series(
+                "Plot",
+                series_id,
+                line.real.tolist(),
+                line.imag.tolist(),
+                color=[255, 255, 255],
+            )
+
+        core.add_shade_series(
+            "Plot",
+            "##shade",
+            x=[BORDER, width, width, width + BORDER],
+            y1=[height, height, BORDER, BORDER],
+            y2=[height + BORDER, height + BORDER, height + BORDER, height + BORDER],
+            fill=[128, 0, 128],
+        )
+        self.series.append("##shade")
+
+        core.add_line_series(
+            "Plot",
+            "##frame",
+            [0, 0, width, width, 0],
+            [0, height, height, 0, 0],
+            color=[128, 0, 128],
+        )
+
+        self.series.append("##frame")
