@@ -40,7 +40,7 @@ def display_matplotlib(
     unit: str = "px",
     fig_size: Tuple[float, float] = None,
 ) -> None:
-    scale = 1 / vp.convert(unit)
+    scale = 1 / vp.convert_length(unit)
 
     if fig_size:
         plt.figure(figsize=fig_size)
