@@ -640,7 +640,7 @@ test = ["coverage", "requests", "pytest", "pytest-cov", "pytest-tornasync", "pyt
 
 [[package]]
 name = "jupyterlab"
-version = "3.0.1"
+version = "3.0.3"
 description = "The JupyterLab server extension."
 category = "main"
 optional = true
@@ -650,7 +650,7 @@ python-versions = ">=3.6"
 ipython = "*"
 jinja2 = ">=2.10"
 jupyter-core = "*"
-jupyter-server = ">=1.1,<2.0"
+jupyter-server = ">=1.2,<2.0"
 jupyterlab-server = ">=2.0,<3.0"
 nbclassic = ">=0.2,<1.0"
 packaging = "*"
@@ -1540,7 +1540,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2, <3.9"
-content-hash = "16fb229912c280ebc82dd8077ef3ae6613c16aa3ab200fb43bbd7a7400174da4"
+content-hash = "bbd3f57e604ecb704d0f676f53d37b307371784860d221d8c9bc6a922de05f80"
 
 [metadata.files]
 alabaster = [
@@ -1816,8 +1816,8 @@ jupyter-server = [
     {file = "jupyter_server-1.2.0.tar.gz", hash = "sha256:34ae64b53efe5d99e1e55b0313bc57bb8811cc30e9b338c42000fce6dbfff924"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-3.0.1-py3-none-any.whl", hash = "sha256:ee8c8abb32f7be1fc7294980d66493cdd55ab449ceceffd4ed639efbb7b1601d"},
-    {file = "jupyterlab-3.0.1.tar.gz", hash = "sha256:72759e43d6063d4b3bf5bc4fa5ef72dd970bc43bdcb82d87affee73bbdb5be34"},
+    {file = "jupyterlab-3.0.3-py3-none-any.whl", hash = "sha256:2a044e3e0c5b402dc80755024a513132611142ae12749ca93dd29bc45312f3e8"},
+    {file = "jupyterlab-3.0.3.tar.gz", hash = "sha256:505220e6d812e267aecacb12a310a6044c526cf67f85eb22917685fc8824edb6"},
 ]
 jupyterlab-code-formatter = [
     {file = "jupyterlab_code_formatter-1.4.1-py3-none-any.whl", hash = "sha256:bde405f8ab8c4fa949c3fbd4750fd8c528617a0224eac4c2ce042b2b195ba0c0"},
@@ -2293,6 +2293,7 @@ send2trash = [
     {file = "Send2Trash-1.5.0.tar.gz", hash = "sha256:60001cc07d707fe247c94f74ca6ac0d3255aabcb930529690897ca2a39db28b2"},
 ]
 shapely = [
+    {file = "Shapely-1.7.1-1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:46da0ea527da9cf9503e66c18bab6981c5556859e518fe71578b47126e54ca93"},
     {file = "Shapely-1.7.1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:4c10f317e379cc404f8fc510cd9982d5d3e7ba13a9cfd39aa251d894c6366798"},
     {file = "Shapely-1.7.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:17df66e87d0fe0193910aeaa938c99f0b04f67b430edb8adae01e7be557b141b"},
     {file = "Shapely-1.7.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:da38ed3d65b8091447dc3717e5218cc336d20303b77b0634b261bc5c1aa2bae8"},
@@ -2310,6 +2311,9 @@ shapely = [
     {file = "Shapely-1.7.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:90a3e2ae0d6d7d50ff2370ba168fbd416a53e7d8448410758c5d6a5920646c1d"},
     {file = "Shapely-1.7.1-cp38-cp38-win32.whl", hash = "sha256:a3774516c8a83abfd1ddffb8b6ec1b0935d7fe6ea0ff5c31a18bfdae567b4eba"},
     {file = "Shapely-1.7.1-cp38-cp38-win_amd64.whl", hash = "sha256:6593026cd3f5daaea12bcc51ae5c979318070fefee210e7990cb8ac2364e79a1"},
+    {file = "Shapely-1.7.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:b40cc7bb089ae4aa9ddba1db900b4cd1bce3925d2a4b5837b639e49de054784f"},
+    {file = "Shapely-1.7.1-cp39-cp39-win32.whl", hash = "sha256:2df5260d0f2983309776cb41bfa85c464ec07018d88c0ecfca23d40bfadae2f1"},
+    {file = "Shapely-1.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:a5c3a50d823c192f32615a2a6920e8c046b09e07a58eba220407335a9cd2e8ea"},
     {file = "Shapely-1.7.1.tar.gz", hash = "sha256:1641724c1055459a7e2b8bbe47ba25bdc89554582e62aec23cb3f3ca25f9b129"},
 ]
 six = [
