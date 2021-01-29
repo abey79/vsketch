@@ -33,7 +33,7 @@ Shapely = {extras = ["vectorized"], version = "^1.7.1"}
 requests = {version = "^2.25.1", optional = true}
 
 # jupyterlab
-jupyterlab = {version = "^3.0.1", optional = true}
+jupyterlab = {version = "^3.0.6", optional = true}
 jupyter_nbextensions_configurator = {version = "^0.4.1", optional = true}
 jupyterlab-code-formatter = {version = "^1.4.1", optional = true}
 ipympl = {version = "^0.6.2", optional = true}
