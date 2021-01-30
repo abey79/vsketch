@@ -1,66 +1,65 @@
-from typing import List
+from runpy import run_path
 
-from dearpygui import core, simple
+import vpype as vp
+import watchgod
+from PySide2.QtCore import Qt, QThread, Signal
+from PySide2.QtWidgets import QApplication
+from vpype_viewer.qtviewer import QtViewer
 
 import vsketch
 
 
-class GUI:
-    def __init__(self):
-        self.series: List[str] = []
+def execute_sketch(path: str) -> vp.Document:
+    sketch = run_path(path)
+    vsk = vsketch.Vsketch()
+    sketch["setup"](vsk)
+    sketch["draw"](vsk)
+    sketch["finalize"](vsk)
+    return vsk.document
 
-        with simple.window("main", width=600, height=600):
-            core.add_plot(
-                "Plot",
-                no_legend=True,
-                yaxis_invert=True,
-                anti_aliased=True,
-                crosshairs=True,
-                equal_aspects=True,
-            )
 
-        core.set_primary_window("main", True)
+class _WatcherThread(QThread):
+    document_changed = Signal(vp.Document)
 
-        def redraw(sender, data):
-            core.render_dearpygui_frame()
+    def __init__(self, path: str, parent=None):
+        QThread.__init__(self, parent)
 
-        def post_init(sender, data):
-            core.set_resize_callback(redraw)
+        self._path = path
 
-        core.set_start_callback(post_init)
+    def run(self):
+        for changes in watchgod.watch(self._path):
+            for change in changes:
+                if change[1] == self._path and change[0] == watchgod.Change.modified:
+                    print("Modified)")
+                    doc = execute_sketch(self._path)
+                    print(doc)
+                    # noinspection PyUnresolvedReferences
+                    self.document_changed.emit(doc)
 
-    # noinspection PyMethodMayBeStatic
-    def run(self) -> None:
-        core.start_dearpygui()
 
-    def refresh_plot(self, vsk: vsketch.Vsketch) -> None:
-        for i, line in enumerate(lc):
-            series_id = f"##{i}"
-            self.series.append(series_id)
-            core.add_line_series(
-                "Plot",
-                series_id,
-                line.real.tolist(),
-                line.imag.tolist(),
-                color=[255, 255, 255],
-            )
+def show(path: str) -> int:
+    if not QApplication.instance():
+        app = QApplication()
+    else:
+        app = QApplication.instance()
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-        core.add_shade_series(
-            "Plot",
-            "##shade",
-            x=[BORDER, width, width, width + BORDER],
-            y1=[height, height, BORDER, BORDER],
-            y2=[height + BORDER, height + BORDER, height + BORDER, height + BORDER],
-            fill=[128, 0, 128],
-        )
-        self.series.append("##shade")
+    doc = execute_sketch(path)
+    widget = QtViewer(doc)
+    sz = app.primaryScreen().availableSize()
+    widget.move(int(sz.width() * 0.05), int(sz.height() * 0.1))
+    widget.resize(int(sz.width() * 0.9), int(sz.height() * 0.8))
 
-        core.add_line_series(
-            "Plot",
-            "##frame",
-            [0, 0, width, width, 0],
-            [0, height, height, 0, 0],
-            color=[128, 0, 128],
-        )
+    # watch source file
+    watcher = _WatcherThread(path)
+    # noinspection PyUnresolvedReferences
+    watcher.document_changed.connect(widget.set_document)
 
-        self.series.append("##frame")
+    watcher.start()
+    widget.show()
+
+    return app.exec_()
+
+
+if __name__ == "__main__":
+    show("/Users/hhip/src/vsketch/examples/simple_sketch/sketch.py")
