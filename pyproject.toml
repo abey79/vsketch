@@ -35,6 +35,7 @@ Shapely = {extras = ["vectorized"], version = "^1.7.1"}
 typer = "^0.3.2"
 watchgod = "^0.6"
 PySide2 = "^5.15.2"
+cookiecutter = "^1.7.2"
 
 # colab
 requests = {version = "^2.25.1", optional = true}

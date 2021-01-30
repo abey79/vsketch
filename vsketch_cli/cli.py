@@ -2,6 +2,7 @@ import pathlib
 from typing import Optional
 
 import typer
+from cookiecutter.main import cookiecutter
 
 from .gui import show
 
@@ -50,19 +51,47 @@ def _find_sketch_script(path: Optional[str]) -> str:
 
 
 @cli.command()
-def init(name: str = typer.Argument(..., help="project name")):
-    typer.echo(f"Init project {name}")
+def init(
+    name: str = typer.Argument(..., help="project name"),
+    page_size: str = typer.Option("a4", "--page-size", "-p", prompt=True, help="page size"),
+    landscape: bool = typer.Option(
+        False, "--landscape", "-l", prompt=True, help="use landscape orientation"
+    ),
+):
+    slug = name.replace(" ", "_")
+    cookiecutter(
+        "https://github.com/abey79/cookiecutter-vsketch-sketch.git",
+        no_input=True,
+        extra_context={
+            "sketch_name": name,
+            "sketch_slug": slug,
+            "page_size": page_size,
+            "landscape": str(landscape),
+        },
+    )
 
 
 @cli.command()
-def run(target: Optional[str] = typer.Argument(default=None, help="project name")):
+def run(target: Optional[str] = typer.Argument(default=None, help="sketch directory or file")):
+    """Show and monitor a sketch.
+
+    TARGET may either point at a Python file or at a directory. If omitted, the current
+    directory is assumed. When TARGET points at a directory, this command looks for a single
+    Python file whose name starts wit `sketch_`. If none are found, it will look for a single
+    Python file with arbitrary name. If no or multiple candidates are found, the command will
+    fail.
+    """
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
         typer.echo(
             typer.style("Sketch could not be found: ", fg=typer.colors.RED, bold=True)
-            + str(err)
+            + str(err),
+            err=True,
         )
         return
 
+    typer.echo(
+        typer.style("Running sketch: ", fg=typer.colors.GREEN, bold=True) + path, err=True
+    )
     show(path)
