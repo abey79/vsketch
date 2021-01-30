@@ -1,18 +1,22 @@
+import os
 import pathlib
-from typing import Optional
+import random
+from typing import Optional, Tuple, Union
 
 import typer
+import vpype as vp
 from cookiecutter.main import cookiecutter
 
 from .gui import show
+from .utils import execute_sketch
 
 cli = typer.Typer()
 
 
-def _find_candidates(path: pathlib.Path, glob: str) -> Optional[str]:
+def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
     candidates = list(path.glob(glob))
     if len(candidates) == 1:
-        return str(candidates[0].absolute())
+        return candidates[0].absolute()
     elif len(candidates) > 1:
         raise ValueError(
             f"target {path.absolute()} is ambiguous, possible scripts:\n"
@@ -22,7 +26,7 @@ def _find_candidates(path: pathlib.Path, glob: str) -> Optional[str]:
         return None
 
 
-def _find_sketch_script(path: Optional[str]) -> str:
+def _find_sketch_script(path: Optional[str]) -> pathlib.Path:
     """Implements the logics of finding the sketch script:
 
     - if path is dir, look for a unique ``sketch_*.py`` file (return if exists, fail if many)
@@ -45,7 +49,7 @@ def _find_sketch_script(path: Optional[str]) -> str:
         else:
             return candidate_path
     elif path.suffix == ".py":
-        return str(path.absolute())
+        return path.absolute()
     else:
         raise ValueError(f"target {path.absolute()} is not a Python file")
 
@@ -71,8 +75,30 @@ def init(
     )
 
 
+def _target_not_found_error(err: ValueError):
+    typer.echo(
+        typer.style("Sketch could not be found: ", fg=typer.colors.RED, bold=True) + str(err),
+        err=True,
+    )
+
+
+def _parse_seed(seed: str) -> Tuple[int, int]:
+    seed_parts = seed.split("..")
+    if len(seed_parts) == 1:
+        return int(seed_parts[0]), int(seed_parts[0])
+    elif len(seed_parts) == 2:
+        return int(seed_parts[0]), int(seed_parts[1])
+    else:
+        raise ValueError(f"error parsing seed {seed}")
+
+
 @cli.command()
-def run(target: Optional[str] = typer.Argument(default=None, help="sketch directory or file")):
+def run(
+    target: Optional[str] = typer.Argument(default=None, help="Sketch directory or file."),
+    editor: Optional[str] = typer.Option(
+        None, "-e", "--editor", help="Editor command to use."
+    ),
+):
     """Show and monitor a sketch.
 
     TARGET may either point at a Python file or at a directory. If omitted, the current
@@ -84,14 +110,65 @@ def run(target: Optional[str] = typer.Argument(default=None, help="sketch direct
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
-        typer.echo(
-            typer.style("Sketch could not be found: ", fg=typer.colors.RED, bold=True)
-            + str(err),
-            err=True,
-        )
+        _target_not_found_error(err)
         return
 
     typer.echo(
-        typer.style("Running sketch: ", fg=typer.colors.GREEN, bold=True) + path, err=True
+        typer.style("Running sketch: ", fg=typer.colors.GREEN, bold=True) + str(path), err=True
     )
-    show(path)
+
+    if editor is not None:
+        os.system(f"{editor} {path}")
+
+    show(str(path))
+
+
+@cli.command()
+def save(
+    target: Optional[str] = typer.Argument(default=None, help="sketch directory or file"),
+    name: Optional[str] = typer.Option(
+        None, "-n", "--name", help="output name (without extension)"
+    ),
+    seed: Optional[str] = typer.Option(None, "-s", "--seed", help="Seed to "),
+):
+    try:
+        path = _find_sketch_script(target)
+    except ValueError as err:
+        _target_not_found_error(err)
+        return
+
+    if name is None:
+        name = path.name.lstrip("sketch_").rstrip(".py")
+
+    seed_in_name = seed is not None
+
+    if seed is None:
+        seed_start = seed_end = random.randint(0, 2 ** 31 - 1)
+    else:
+        try:
+            seed_start, seed_end = _parse_seed(seed)
+        except ValueError as err:
+            typer.echo(
+                typer.style(f"Could not parse seed {seed}: ", fg=typer.colors.RED, bold=True)
+                + str(err),
+                err=True,
+            )
+            return
+
+    # TODO: parallelize
+    for seed in range(seed_start, seed_end + 1):
+        output_name = name
+        if seed_in_name:
+            output_name += "_s" + str(seed)
+        output_name += ".svg"
+        output_path = path.parent / output_name
+
+        typer.echo(
+            typer.style("Saving sketch: ", fg=typer.colors.GREEN, bold=True)
+            + str(path)
+            + f" (seed: {seed}, destination: {output_name})",
+            err=True,
+        )
+        doc = execute_sketch(path, finalize=True, seed=seed)
+        with open(output_path, "w") as fp:
+            vp.write_svg(fp, doc, source_string=f"vsketch save -s {seed} {path}")

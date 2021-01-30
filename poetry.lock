@@ -1220,6 +1220,14 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 py = {version = "*", markers = "implementation_name == \"pypy\""}
 
 [[package]]
+name = "qasync"
+version = "0.13.0"
+description = "Implementation of the PEP 3156 Event-Loop with Qt."
+category = "main"
+optional = false
+python-versions = "~=3.6"
+
+[[package]]
 name = "qtconsole"
 version = "5.0.2"
 description = "Jupyter Qt console"
@@ -1703,7 +1711,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2, <3.9"
-content-hash = "8ef3366c580e42328f106f06de441ce5d91d568f471b08181cec7a5f7912f905"
+content-hash = "62692c4296451da7d3f2d29ea62d3984febaa43e2870f7a7f05433ef249ff607"
 
 [metadata.files]
 alabaster = [
@@ -2458,6 +2466,10 @@ pyzmq = [
     {file = "pyzmq-22.0.2-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:841e9563ce9bd33fe9f227ec680ac033e9f1060977d613568c1dcbff09e74cc9"},
     {file = "pyzmq-22.0.2-pp37-pypy37_pp73-win32.whl", hash = "sha256:cc814880ba27f2ea8cea48ff3b480076266d4dd9c3fe29ef6e5a0a807639abe7"},
     {file = "pyzmq-22.0.2.tar.gz", hash = "sha256:d7b82a959e5e22d492f4f5a1e650e909a6c8c76ede178f538313ddb9d1e92963"},
+]
+qasync = [
+    {file = "qasync-0.13.0-py3-none-any.whl", hash = "sha256:1ac4fce7d477e7a9e54d4e6099c9cc94f9464be94eb06e4d01048df6607ed36a"},
+    {file = "qasync-0.13.0.tar.gz", hash = "sha256:07a194a9f17706eec908596b3a40b469d2cbf81c1b9d3395357a4c91044ba2f2"},
 ]
 qtconsole = [
     {file = "qtconsole-5.0.2-py3-none-any.whl", hash = "sha256:0173486b9cd69e17df537fb4f1e0d62a88019f6661700a11fd7236fa89ed900b"},

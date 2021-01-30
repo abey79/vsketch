@@ -35,6 +35,7 @@ Shapely = {extras = ["vectorized"], version = "^1.7.1"}
 typer = "^0.3.2"
 watchgod = "^0.6"
 PySide2 = "^5.15.2"
+qasync = "^0.13.0"
 cookiecutter = "^1.7.2"
 
 # colab
@@ -53,6 +54,7 @@ Sphinx = { version = "^3.4.3", optional = true }
 sphinx-autodoc-typehints = { version = "^1.11.1", optional = true }
 sphinx-rtd-theme = { version = "^0.5.1", optional = true }
 recommonmark = { version = ">=0.6,<0.8", optional = true }
+
 
 
 [tool.poetry.dev-dependencies]
