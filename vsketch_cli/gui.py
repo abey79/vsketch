@@ -2,7 +2,7 @@ import asyncio
 
 import vpype as vp
 import watchgod
-from PySide2.QtCore import Qt, QThread, Signal
+from PySide2.QtCore import QObject, Qt, Signal
 from PySide2.QtWidgets import QApplication
 from qasync import QEventLoop
 from vpype_viewer.qtviewer import QtViewer
@@ -10,33 +10,18 @@ from vpype_viewer.qtviewer import QtViewer
 from .utils import execute_sketch
 
 
-class _WatcherThread(QThread):
+class _FileWatcher(QObject):
     document_changed = Signal(vp.Document)
 
-    def __init__(self, path: str, parent=None):
-        QThread.__init__(self, parent)
-
-        self._path = path
-
-    def run(self):
-        for changes in watchgod.watch(self._path):
-            for change in changes:
-                if change[1] == self._path and change[0] == watchgod.Change.modified:
-                    print("Modified)")
-                    doc = execute_sketch(self._path, finalize=False)
-                    print(doc)
-                    # noinspection PyUnresolvedReferences
-                    self.document_changed.emit(doc)
-
-
-async def watch_file(path: str):
-    try:
-        async for changes in watchgod.awatch(path):
-            for change in changes:
-                if change[1] == path and change[0] == watchgod.Change.modified:
-                    print("Modified")
-    except asyncio.CancelledError:
-        pass
+    # noinspection PyUnresolvedReferences
+    async def watch_file(self, path: str):
+        try:
+            async for changes in watchgod.awatch(path):
+                for change in changes:
+                    if change[1] == path and change[0] == watchgod.Change.modified:
+                        self.document_changed.emit(execute_sketch(path, finalize=False))
+        except asyncio.CancelledError:
+            pass
 
 
 def show(path: str) -> int:
@@ -58,7 +43,10 @@ def show(path: str) -> int:
 
     # show widget and monitor path
     widget.show()
-    task = loop.create_task(watch_file(path))
+    watcher = _FileWatcher()
+    task = loop.create_task(watcher.watch_file(path))
+    # noinspection PyUnresolvedReferences
+    watcher.document_changed.connect(widget.set_document)
 
     # run and exit gracefully
     status_code = app.exec_()
