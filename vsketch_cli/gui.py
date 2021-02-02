@@ -1,30 +1,29 @@
 import asyncio
+import pathlib
+from typing import Union
 
 import vpype as vp
-import watchgod
 from PySide2.QtCore import QObject, Qt, Signal
 from PySide2.QtWidgets import QApplication
 from qasync import QEventLoop
 from vpype_viewer.qtviewer import QtViewer
 
-from .utils import execute_sketch
+from .sketch_runner import SketchRunner
 
 
-class _FileWatcher(QObject):
+class QtSketchRunner(QObject):
     document_changed = Signal(vp.Document)
 
-    # noinspection PyUnresolvedReferences
-    async def watch_file(self, path: str):
-        try:
-            async for changes in watchgod.awatch(path):
-                for change in changes:
-                    if change[1] == path and change[0] == watchgod.Change.modified:
-                        self.document_changed.emit(execute_sketch(path, finalize=False))
-        except asyncio.CancelledError:
-            pass
+    def __init__(self, path: Union[str, pathlib.Path], **kwargs):
+        super().__init__(**kwargs)
+        self.runner = SketchRunner(path, post_load_callback=self._post_load)
+
+    def _post_load(self, runner: SketchRunner) -> None:
+        # noinspection PyUnresolvedReferences
+        self.document_changed.emit(runner.run())
 
 
-def show(path: str) -> int:
+def show(path: str, second_screen: bool = False) -> int:
     if not QApplication.instance():
         app = QApplication()
     else:
@@ -35,18 +34,25 @@ def show(path: str) -> int:
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
 
-    doc = execute_sketch(path, finalize=False)
-    widget = QtViewer(doc)
-    sz = app.primaryScreen().availableSize()
-    widget.move(int(sz.width() * 0.05), int(sz.height() * 0.1))
-    widget.resize(int(sz.width() * 0.9), int(sz.height() * 0.8))
+    sketch_runner = QtSketchRunner(path)
+    widget = QtViewer(sketch_runner.runner.run())
 
-    # show widget and monitor path
+    screens = app.screens()
+    if second_screen and len(screens) > 1:
+        widget.windowHandle().setScreen(screens[1])
+        r = screens[1].geometry()
+        widget.move(r.topLeft())
+        widget.resize(r.width(), r.height())
+    else:
+        sz = app.primaryScreen().availableSize()
+        widget.move(int(sz.width() * 0.05), int(sz.height() * 0.1))
+        widget.resize(int(sz.width() * 0.9), int(sz.height() * 0.8))
+
     widget.show()
-    watcher = _FileWatcher()
-    task = loop.create_task(watcher.watch_file(path))
+
+    task = loop.create_task(sketch_runner.runner.watch())
     # noinspection PyUnresolvedReferences
-    watcher.document_changed.connect(widget.set_document)
+    sketch_runner.document_changed.connect(widget.set_document)
 
     # run and exit gracefully
     status_code = app.exec_()
@@ -55,4 +61,4 @@ def show(path: str) -> int:
 
 
 if __name__ == "__main__":
-    show("/Users/hhip/src/vsketch/examples/simple_sketch/sketch.py")
+    show("/Users/hhip/src/vsketch/examples/simple_sketch/sketch.py", second_screen=True)

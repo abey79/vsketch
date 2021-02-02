@@ -1,20 +1,21 @@
 import vsketch
 
 
-def setup(vsk: vsketch.Vsketch) -> None:
-    vsk.size("a4")
-    vsk.scale("1cm")
-    vsk.translate(6, 6)
-    vsk.rotate(-90, degrees=True)
-    for _ in range(100):
-        vsk.rect(1, 1, 3, 4)
-        vsk.scale(1.014)
-        vsk.rotate(0.02)
+class SimpleSketch(vsketch.Vsketch):
+    def setup(self) -> None:
+        self.size("a5")
+        self.scale("1cm")
 
+        self.param("type", "circle", choices=["circle", "square"])
+        self.param("x", 5.0, bounds=(0, self.width))
+        self.param("y", 5.0, bounds=(0, self.height))
+        self.param("radius", 2.0, bounds=(0, 6))
 
-def draw(vsk: vsketch.Vsketch) -> None:
-    pass
+    def draw(self) -> None:
+        if self.type == "circle":
+            self.circle(self.x, self.y, self.radius, mode="radius")
+        else:
+            self.square(self.x, self.y, self.radius, mode="radius")
 
-
-def finalize(vsk: vsketch.Vsketch) -> None:
-    vsk.vpype("linemerge linesort")
+    def finalize(self) -> None:
+        self.vpype("reloop")

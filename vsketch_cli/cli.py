@@ -1,14 +1,14 @@
 import os
 import pathlib
 import random
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import typer
 import vpype as vp
 from cookiecutter.main import cookiecutter
 
 from .gui import show
-from .utils import execute_sketch
+from .sketch_runner import SketchRunner
 
 cli = typer.Typer()
 
@@ -120,7 +120,7 @@ def run(
     if editor is not None:
         os.system(f"{editor} {path}")
 
-    show(str(path))
+    show(str(path), second_screen=True)
 
 
 @cli.command()
@@ -169,6 +169,7 @@ def save(
             + f" (seed: {seed}, destination: {output_name})",
             err=True,
         )
-        doc = execute_sketch(path, finalize=True, seed=seed)
+        sketch_runner = SketchRunner(path)
+        doc = sketch_runner.run(finalize=True, seed=seed)
         with open(output_path, "w") as fp:
             vp.write_svg(fp, doc, source_string=f"vsketch save -s {seed} {path}")

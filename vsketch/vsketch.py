@@ -2,7 +2,19 @@ import math
 import os
 import random
 import shlex
-from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    TextIO,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import noise
 import numpy as np
@@ -13,11 +25,14 @@ from shapely.geometry import Polygon
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
+from .param import Param
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
 
 __all__ = ["Vsketch"]
 
+
+T = TypeVar("T")
 
 # noinspection PyPep8Naming
 class Vsketch:
@@ -42,6 +57,7 @@ class Vsketch:
         self._noise_seed = random.uniform(0, 1)
         self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
+        self._params: Dict[str, Param] = {}
 
     @property
     def document(self):
@@ -791,7 +807,7 @@ class Vsketch:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
             extent: width and height of the square
-            mode: "corner", "redius", or "center" (see :meth:`rectMode`) — note that the
+            mode: "corner", "radius", or "center" (see :meth:`rectMode`) — note that the
                 "corners" mode is meaningless for this function, and is interpreted as the
                 "corner" mode
         """
@@ -1086,11 +1102,6 @@ class Vsketch:
         """
         x, y = quadratic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
         return x
-
-    def bezierDetail(self, epsilon: float) -> None:
-        raise NotImplementedError(
-            "bezierDetail() is not implemented, see detail() for more information"
-        )
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
@@ -1545,6 +1556,44 @@ class Vsketch:
         rng = random.Random()
         rng.seed(seed)
         self._noise_seed = rng.uniform(0, 100000)
+
+    #####################
+    # SKETCH MANAGEMENT #
+    #####################
+
+    # Pure virtual functions
+
+    def setup(self) -> None:
+        raise NotImplementedError()
+
+    def draw(self) -> None:
+        raise NotImplementedError()
+
+    def finalize(self) -> None:
+        raise NotImplementedError()
+
+    # Param
+
+    def param(
+        self,
+        name: str,
+        value: T,
+        choices: Optional[Sequence[T]] = None,
+        bounds: Optional[Tuple[T, T]] = None,
+    ):
+        self._params[name] = Param(name, value, choices, bounds)
+
+    def __getattr__(self, name):
+        try:
+            return self._params[name].value
+        except KeyError:
+            raise AttributeError
+
+    # def __setattr__(self, name, value):
+    #     try:
+    #         self._params[name].value = value
+    #     except KeyError:
+    #         raise AttributeError
 
     #######################
     # STATELESS UTILITIES #
