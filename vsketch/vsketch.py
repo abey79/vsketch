@@ -2,19 +2,7 @@ import math
 import os
 import random
 import shlex
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    TextIO,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, TypeVar, Union, cast
 
 import noise
 import numpy as np
@@ -33,6 +21,7 @@ __all__ = ["Vsketch"]
 
 
 T = TypeVar("T")
+
 
 # noinspection PyPep8Naming
 class Vsketch:
@@ -57,7 +46,24 @@ class Vsketch:
         self._noise_seed = random.uniform(0, 1)
         self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
-        self._params: Dict[str, Param] = {}
+
+        # extract params
+        self._params = self.get_params()
+
+    @classmethod
+    def get_params(cls) -> Dict[str, Param]:
+        res = {}
+        for name in cls.__dict__:
+            param = getattr(cls, name)
+            if isinstance(param, Param):
+                res[name] = param
+        return res
+
+    @classmethod
+    def set_param_set(cls, param_set: Dict[str, Any]) -> None:
+        for name, value in param_set.items():
+            if name in cls.__dict__ and isinstance(cls.__dict__[name], Param):
+                cls.__dict__[name].set_value_with_validation(value)
 
     @property
     def document(self):
@@ -1563,9 +1569,6 @@ class Vsketch:
 
     # Pure virtual functions
 
-    def setup(self) -> None:
-        raise NotImplementedError()
-
     def draw(self) -> None:
         raise NotImplementedError()
 
@@ -1574,26 +1577,13 @@ class Vsketch:
 
     # Param
 
-    def param(
-        self,
-        name: str,
-        value: T,
-        choices: Optional[Sequence[T]] = None,
-        bounds: Optional[Tuple[T, T]] = None,
-    ):
-        self._params[name] = Param(name, value, choices, bounds)
+    @property
+    def params(self) -> Iterable[Param]:
+        return self._params.values()
 
-    def __getattr__(self, name):
-        try:
-            return self._params[name].value
-        except KeyError:
-            raise AttributeError
-
-    # def __setattr__(self, name, value):
-    #     try:
-    #         self._params[name].value = value
-    #     except KeyError:
-    #         raise AttributeError
+    @property
+    def param_set(self) -> Dict[str, Any]:
+        return {name: param.value for name, param in self._params.items()}
 
     #######################
     # STATELESS UTILITIES #

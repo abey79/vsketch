@@ -171,7 +171,7 @@ d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
 name = "bleach"
-version = "3.2.3"
+version = "3.3.0"
 description = "An easy safelist-based HTML-sanitizing tool."
 category = "main"
 optional = false
@@ -525,7 +525,7 @@ testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
 
 [[package]]
 name = "jinja2"
-version = "2.11.2"
+version = "2.11.3"
 description = "A very fast and expressive template engine."
 category = "main"
 optional = false
@@ -650,7 +650,7 @@ testing_utils = ["nose", "mock"]
 
 [[package]]
 name = "jupyter-core"
-version = "4.7.0"
+version = "4.7.1"
 description = "Jupyter core package. A base package on which Jupyter projects rely."
 category = "main"
 optional = false
@@ -708,7 +708,7 @@ test = ["coverage", "requests", "pytest", "pytest-cov", "pytest-tornasync", "pyt
 
 [[package]]
 name = "jupyterlab"
-version = "3.0.6"
+version = "3.0.7"
 description = "The JupyterLab server extension."
 category = "main"
 optional = true
@@ -730,7 +730,7 @@ test = ["pytest (>=6.0)", "pytest-cov", "pytest-console-scripts", "pytest-check-
 
 [[package]]
 name = "jupyterlab-code-formatter"
-version = "1.4.2"
+version = "1.4.3"
 description = "Code formatter for JupyterLab"
 category = "main"
 optional = true
@@ -809,7 +809,7 @@ python-versions = "*"
 
 [[package]]
 name = "moderngl"
-version = "5.6.2"
+version = "5.6.3"
 description = "ModernGL: High performance rendering for Python 3"
 category = "main"
 optional = false
@@ -1177,7 +1177,7 @@ unidecode = ["Unidecode (>=1.1.1)"]
 
 [[package]]
 name = "pytz"
-version = "2020.5"
+version = "2021.1"
 description = "World timezone definitions, modern and historical"
 category = "main"
 optional = true
@@ -1499,7 +1499,7 @@ test = ["pytest"]
 
 [[package]]
 name = "svgelements"
-version = "1.4.5"
+version = "1.4.7"
 description = "Svg Elements Parsing"
 category = "main"
 optional = false
@@ -1629,7 +1629,7 @@ version = "1.4.0-alpha.0"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 category = "main"
 optional = false
-python-versions = ">=3.6.1, <3.9"
+python-versions = ">=3.6.1, !=3.9.0, <3.10"
 develop = true
 
 [package.dependencies]
@@ -1645,7 +1645,7 @@ Pillow = "^8.1.0"
 PySide2 = "^5.15.2"
 scipy = "~1.5.4"
 Shapely = {version = "~1.7.1", extras = ["vectorized"]}
-svgelements = "1.4.5"
+svgelements = "1.4.7"
 svgwrite = "~1.4"
 toml = "~0.10.2"
 
@@ -1800,8 +1800,8 @@ black = [
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
 ]
 bleach = [
-    {file = "bleach-3.2.3-py2.py3-none-any.whl", hash = "sha256:2d3b3f7e7d69148bb683b26a3f21eabcf62fa8fb7bc75d0e7a13bcecd9568d4d"},
-    {file = "bleach-3.2.3.tar.gz", hash = "sha256:c6ad42174219b64848e2e2cd434e44f56cd24a93a9b4f8bc52cfed55a1cd5aad"},
+    {file = "bleach-3.3.0-py2.py3-none-any.whl", hash = "sha256:6123ddc1052673e52bab52cdc955bcb57a015264a1c57d37bea2f6b817af0125"},
+    {file = "bleach-3.3.0.tar.gz", hash = "sha256:98b3170739e5e83dd9dc19633f074727ad848cbedb6026708c8ac2d3b697a433"},
 ]
 cachetools = [
     {file = "cachetools-4.2.1-py3-none-any.whl", hash = "sha256:1d9d5f567be80f7c07d765e21b814326d78c61eb0c3a637dffc0e5d1796cb2e2"},
@@ -1989,8 +1989,8 @@ jedi = [
     {file = "jedi-0.18.0.tar.gz", hash = "sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707"},
 ]
 jinja2 = [
-    {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},
-    {file = "Jinja2-2.11.2.tar.gz", hash = "sha256:89aab215427ef59c34ad58735269eb58b1a5808103067f7bb9d5836c651b3bb0"},
+    {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
+    {file = "Jinja2-2.11.3.tar.gz", hash = "sha256:a6d58433de0ae800347cab1fa3043cebbabe8baa9d29e668f1c768cb87a333c6"},
 ]
 jinja2-time = [
     {file = "jinja2-time-0.2.0.tar.gz", hash = "sha256:d14eaa4d315e7688daa4969f616f226614350c48730bfa1692d2caebd8c90d40"},
@@ -2022,8 +2022,8 @@ jupyter-contrib-core = [
     {file = "jupyter_contrib_core-0.3.3.tar.gz", hash = "sha256:e65bc0e932ff31801003cef160a4665f2812efe26a53801925a634735e9a5794"},
 ]
 jupyter-core = [
-    {file = "jupyter_core-4.7.0-py3-none-any.whl", hash = "sha256:0a451c9b295e4db772bdd8d06f2f1eb31caeec0e81fbb77ba37d4a3024e3b315"},
-    {file = "jupyter_core-4.7.0.tar.gz", hash = "sha256:aa1f9496ab3abe72da4efe0daab0cb2233997914581f9a071e07498c6add8ed3"},
+    {file = "jupyter_core-4.7.1-py3-none-any.whl", hash = "sha256:8c6c0cac5c1b563622ad49321d5ec47017bd18b94facb381c6973a0486395f8e"},
+    {file = "jupyter_core-4.7.1.tar.gz", hash = "sha256:79025cb3225efcd36847d0840f3fc672c0abd7afd0de83ba8a1d3837619122b4"},
 ]
 jupyter-nbextensions-configurator = [
     {file = "jupyter_nbextensions_configurator-0.4.1.tar.gz", hash = "sha256:e5e86b5d9d898e1ffb30ebb08e4ad8696999f798fef3ff3262d7b999076e4e83"},
@@ -2033,12 +2033,12 @@ jupyter-server = [
     {file = "jupyter_server-1.2.3.tar.gz", hash = "sha256:d8a723668725be65cc81c2bfe8a805d3e53d26dbe29953cb0fe4d8ae69d71b00"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-3.0.6-py3-none-any.whl", hash = "sha256:f87d3534da2b281e147cb32b9dfaf8f7208715f337db972f0048715a5177d79f"},
-    {file = "jupyterlab-3.0.6.tar.gz", hash = "sha256:50a5344b7aee8ee420947698061ee26163a351f16409925c6d6ed9dc13fa9a48"},
+    {file = "jupyterlab-3.0.7-py3-none-any.whl", hash = "sha256:8946b41091816d651629eab729cee0e7a7d09b6b1a449bfba7353026d0ad9f38"},
+    {file = "jupyterlab-3.0.7.tar.gz", hash = "sha256:1d531765932f95bf756c088867714efe75bd906e332c0375178f1d905d0ccccf"},
 ]
 jupyterlab-code-formatter = [
-    {file = "jupyterlab_code_formatter-1.4.2-py3-none-any.whl", hash = "sha256:1d0aa13efcd9d21609cf741ef78dc79fb626ef489aa7fb88dfe4f25eb9db5f6b"},
-    {file = "jupyterlab_code_formatter-1.4.2.tar.gz", hash = "sha256:eef751e8c86023a095c63e1e9c5efaa3b10ec2878f70695ed1826ab9099a56a2"},
+    {file = "jupyterlab_code_formatter-1.4.3-py3-none-any.whl", hash = "sha256:ffac8733d686d4d271dd8b12ed8fed3594e7ea03d2a8607ce015a5832441aa26"},
+    {file = "jupyterlab_code_formatter-1.4.3.tar.gz", hash = "sha256:6f099a286b429208e990f194af1047edabe2bae328a7d9505fd4fd763c343421"},
 ]
 jupyterlab-server = [
     {file = "jupyterlab_server-2.1.3-py3-none-any.whl", hash = "sha256:9d459d5aba43e626f41cce76d9d00c025e4591fa85feee2d36670295ed1a51fa"},
@@ -2149,26 +2149,30 @@ mistune = [
     {file = "mistune-0.8.4.tar.gz", hash = "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e"},
 ]
 moderngl = [
-    {file = "moderngl-5.6.2-cp35-cp35m-macosx_10_9_intel.whl", hash = "sha256:140fbdfb092266efc1f7b6d27112d0db13c72005e5d65c600be8cbd60aa9dd1c"},
-    {file = "moderngl-5.6.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:b0cd1d867560c86fcd9a3f50ab2624769d97eaaf814e936dba0d09c0804675ef"},
-    {file = "moderngl-5.6.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:8bd9ead42d14b44a7e48b05b992587607340558270ec67f4f3eff806a66ad24b"},
-    {file = "moderngl-5.6.2-cp35-cp35m-win32.whl", hash = "sha256:413e23649f33dd54f278079279ba7e1afb47ce1528f60eeb01be3f83e6816930"},
-    {file = "moderngl-5.6.2-cp35-cp35m-win_amd64.whl", hash = "sha256:5c655311cb55263a1a6fa1bec68faf9ccb0159a467afd24e3846b930346d2fce"},
-    {file = "moderngl-5.6.2-cp36-cp36m-macosx_10_9_intel.whl", hash = "sha256:9eb3236c17facae205a7363e24cc91fde488967e216dd8419072a3f14bdd01a1"},
-    {file = "moderngl-5.6.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:edbbeafd0647dc94c181008bffc9f22e958bffd6ccb3691af73b68b1ace59b93"},
-    {file = "moderngl-5.6.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:f650d93508ff22fca328a7c28b9dccc1d78ea18e7a36dac74e905da91b8f2467"},
-    {file = "moderngl-5.6.2-cp36-cp36m-win32.whl", hash = "sha256:9c613b4e00863e057ffb615ff2c08625b1cc5856597ba06a046f2882405e5658"},
-    {file = "moderngl-5.6.2-cp36-cp36m-win_amd64.whl", hash = "sha256:15bd4a9cab0b42de179c2ca32e685785ba948fbd026394953489ed6c8b577a41"},
-    {file = "moderngl-5.6.2-cp37-cp37m-macosx_10_9_intel.whl", hash = "sha256:a23c5b3496080bc31f1350f57ccb4a3beedf63ac0ccd7ec293a95ad363f25f96"},
-    {file = "moderngl-5.6.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:fda7b8dbf4e97ff3b17d413761dec5d2e459f75c8c7266f4af60c378f749c757"},
-    {file = "moderngl-5.6.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:6d545c27edace30892ca012659d3084d9c208aeb15700e44648242b2ea7d0d52"},
-    {file = "moderngl-5.6.2-cp37-cp37m-win32.whl", hash = "sha256:e5be428e62b906151e39a3545b194bdebd81c2ea56f5584fe3285a33cc4aa233"},
-    {file = "moderngl-5.6.2-cp37-cp37m-win_amd64.whl", hash = "sha256:ac16c92227e09a938d59d06f94d6b79bdd4f9b40fdbc132b66e851903ed745b7"},
-    {file = "moderngl-5.6.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d74985b854921c159cd3135a4a6584a9095752cdc3e466917a886d0d99c7cc9a"},
-    {file = "moderngl-5.6.2-cp38-cp38-manylinux1_i686.whl", hash = "sha256:2b46ff521435a15474afee5cfb397886770650f4aff594e669c029c239cdf98e"},
-    {file = "moderngl-5.6.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:36af4eee35d97281ee40d61389deb1883c5bac286786a018691436a87c0be502"},
-    {file = "moderngl-5.6.2-cp38-cp38-win32.whl", hash = "sha256:17778ad759c9360e0f22bb728e6e7addb48adae2d4ae29987c2e6ed9a8f2d861"},
-    {file = "moderngl-5.6.2-cp38-cp38-win_amd64.whl", hash = "sha256:0903d4d8d891a96bb2b80091be8544c3876e39433fb35f26710b4b8d1e031cfa"},
+    {file = "moderngl-5.6.3-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:19c90bbbc007523eade0b3cdfa0f0c37b0e0f6f81c61b583b444814f7aedcd51"},
+    {file = "moderngl-5.6.3-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:c5d664ed88e6955a76dd8f928d47e1d9f311a6bf704dad7b7b35461e0a984549"},
+    {file = "moderngl-5.6.3-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:5ef6a239f5032ea853d854139581f77f2d41d4385f8a5bd556303e439cd87595"},
+    {file = "moderngl-5.6.3-cp35-cp35m-win32.whl", hash = "sha256:e8f09e1cb64f4289d50529d78ac475e9722347222db3d9daba5f909514d60cc2"},
+    {file = "moderngl-5.6.3-cp35-cp35m-win_amd64.whl", hash = "sha256:66d12d9ba34e29a9c95f2d68276fbb43d2c402bc9b13fb24bcc4c20efb05042d"},
+    {file = "moderngl-5.6.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:35cde6729a3064ebb7f5ee648f550ecc804afd5c90ec6a5268dbfb2c976d8e73"},
+    {file = "moderngl-5.6.3-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:b3e6c11afb98380d4c29c4b186a555dc622a445ba692e9a7826252c4d4af4f63"},
+    {file = "moderngl-5.6.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:5030d771d98f90bbf9407a41cae9af91d4a0aa17571fea9b8f89a3d165dd0583"},
+    {file = "moderngl-5.6.3-cp36-cp36m-win32.whl", hash = "sha256:06a23be54b4a074376ab1cb07f01ff8e69049ef42ce6e2307835dfd7cb2173d1"},
+    {file = "moderngl-5.6.3-cp36-cp36m-win_amd64.whl", hash = "sha256:93f533f589b7e2187e6f5f25df70da79ede9d842d366c4f1d1c1fb4900a7424d"},
+    {file = "moderngl-5.6.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:46ebbb16a30587ba6e736b0e615e9df72ecd5f6c21396ccb69c3c8f9d42391c8"},
+    {file = "moderngl-5.6.3-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:8d03b92605ba2ee8f479d17783dcc9f9b6ffd07139cbc628c9de04e08b1d5866"},
+    {file = "moderngl-5.6.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:f17e8ed6c51629abceadd1229303df72273254ac2099e013b694c32250d36fad"},
+    {file = "moderngl-5.6.3-cp37-cp37m-win32.whl", hash = "sha256:098440c892dbb18fb15bfe10a6397383cb13261ac70034112269484af7e13a9e"},
+    {file = "moderngl-5.6.3-cp37-cp37m-win_amd64.whl", hash = "sha256:6bb07e8d0f53a430a2704946567329d31787792f157624bdbcdb20c78475cba3"},
+    {file = "moderngl-5.6.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:7be625b4cf47eb5c64ddfb13fb494e0b81358fb15c8494507dda167386ac176d"},
+    {file = "moderngl-5.6.3-cp38-cp38-manylinux1_i686.whl", hash = "sha256:505da992031932c39c4782d83b58b504f6b20a39e99b466fa52aed75d637415c"},
+    {file = "moderngl-5.6.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:6110a341d14135ca26674d2105306cf4e3723e0acc1a56dde546dfba70f89f9a"},
+    {file = "moderngl-5.6.3-cp38-cp38-win32.whl", hash = "sha256:4245d74687fd271f609186e8584cb5a9dec50d43ed2d383753fddddbce4e9453"},
+    {file = "moderngl-5.6.3-cp38-cp38-win_amd64.whl", hash = "sha256:de314e698ba9535f6916a5f8762e5361291c53625aad62fb12aba56ef211f230"},
+    {file = "moderngl-5.6.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:1684e8088a6fdd4b3c10b65a430f7b216f83f230a13cd74bdbc2946c11827b35"},
+    {file = "moderngl-5.6.3-cp39-cp39-win32.whl", hash = "sha256:f2619fc24585322a101e07cc3442ebbbaaa57fc014ffe656cd7ef2cf36d25f72"},
+    {file = "moderngl-5.6.3-cp39-cp39-win_amd64.whl", hash = "sha256:1ca62e287cd930eb70a560044446a907b4ed724624819f72b28de801c9b29f37"},
+    {file = "moderngl-5.6.3.tar.gz", hash = "sha256:5b8c5f4032c17e80daf11e0366ca9dec88e94c5a3f24527400d61f933abe8f5c"},
 ]
 multiprocess = [
     {file = "multiprocess-0.70.11.1-cp27-cp27m-macosx_10_8_x86_64.whl", hash = "sha256:8f0d0640642acc654fe2fb5cb529ebbe116468a1dd1544d484db6e79033767c8"},
@@ -2383,8 +2387,8 @@ python-slugify = [
     {file = "python-slugify-4.0.1.tar.gz", hash = "sha256:69a517766e00c1268e5bbfc0d010a0a8508de0b18d30ad5a1ff357f8ae724270"},
 ]
 pytz = [
-    {file = "pytz-2020.5-py2.py3-none-any.whl", hash = "sha256:16962c5fb8db4a8f63a26646d8886e9d769b6c511543557bc84e9569fb9a9cb4"},
-    {file = "pytz-2020.5.tar.gz", hash = "sha256:180befebb1927b16f6b57101720075a984c019ac16b1b7575673bea42c6c3da5"},
+    {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
+    {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
 ]
 pywin32 = [
     {file = "pywin32-300-cp35-cp35m-win32.whl", hash = "sha256:1c204a81daed2089e55d11eefa4826c05e604d27fe2be40b6bf8db7b6a39da63"},
@@ -2638,8 +2642,8 @@ sphinxcontrib-serializinghtml = [
     {file = "sphinxcontrib_serializinghtml-1.1.4-py2.py3-none-any.whl", hash = "sha256:f242a81d423f59617a8e5cf16f5d4d74e28ee9a66f9e5b637a18082991db5a9a"},
 ]
 svgelements = [
-    {file = "svgelements-1.4.5-py2.py3-none-any.whl", hash = "sha256:46cdf187b6c1546e1850c18c16b9abbdd0fc33f690b9001d524a094820e00991"},
-    {file = "svgelements-1.4.5.tar.gz", hash = "sha256:bbf80d1cb045919c1a4c9ef51f9d9e842b9cab56ac806e8ab817fcbf7b0949eb"},
+    {file = "svgelements-1.4.7-py2.py3-none-any.whl", hash = "sha256:ddfb192533e7254f90eb292b56c12e2b449cda163ce5cc8ee8b90acc245d56c6"},
+    {file = "svgelements-1.4.7.tar.gz", hash = "sha256:b85cc67348e734d0347a94152504c25cf88348a849b60765e8533b976f700793"},
 ]
 svgwrite = [
     {file = "svgwrite-1.4.1-py3-none-any.whl", hash = "sha256:4b21652a1d9c543a6bf4f9f2a54146b214519b7540ca60cb99968ad09ef631d0"},
