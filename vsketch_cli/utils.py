@@ -33,4 +33,15 @@ def execute_sketch(
     if finalize:
         vsk.finalize()
 
+    # vsk is not reused, so we can just hack into it's document instead of using a deep copy
+    # like vsk.display() and vsk.save()
+    if vsk.centered and vsk.document.page_size is not None:
+        bounds = vsk.document.bounds()
+        if bounds is not None:
+            width, height = vsk.document.page_size
+            vsk.document.translate(
+                (width - (bounds[2] - bounds[0])) / 2.0 - bounds[0],
+                (height - (bounds[3] - bounds[1])) / 2.0 - bounds[1],
+            )
+
     return vsk

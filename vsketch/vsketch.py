@@ -88,6 +88,14 @@ class Vsketch:
         return cast(float, self.document.page_size[1])
 
     @property
+    def centered(self) -> bool:
+        return self._center_on_page
+
+    @centered.setter
+    def centered(self, centered: bool):
+        self._center_on_page = centered
+
+    @property
     def transform(self) -> np.ndarray:
         """Get the current transform matrix.
 

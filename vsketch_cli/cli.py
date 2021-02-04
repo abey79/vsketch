@@ -301,7 +301,7 @@ def save(
             _write_output(s)
     else:
         with Pool() as p:
-            p.map(_write_output, seed_range)
+            list(p.imap(_write_output, seed_range))
 
 
 if __name__ == "__main__":
