@@ -6,11 +6,32 @@ from typing import Optional, Tuple
 import typer
 import vpype as vp
 from cookiecutter.main import cookiecutter
+from multiprocess.pool import Pool
 
 from .gui import show
-from .sketch_runner import SketchRunner
+from .utils import execute_sketch, load_sketch_class
 
 cli = typer.Typer()
+
+
+def _print_error(title_str: str, detail_str: str = "") -> None:
+    typer.echo(
+        typer.style(title_str, fg=typer.colors.RED, bold=True) + str(detail_str), err=True
+    )
+
+
+def _print_info(title_str: str, detail_str: str = "") -> None:
+    typer.echo(
+        typer.style(title_str, fg=typer.colors.GREEN, bold=True) + str(detail_str), err=True
+    )
+
+
+def _remove_prefix(s: str, prefix: str) -> str:
+    return s[len(prefix) :] if s.startswith(prefix) else s
+
+
+def _remove_postfix(s: str, postfix: str) -> str:
+    return s[: -len(postfix)] if s.endswith(postfix) else s
 
 
 def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
@@ -54,17 +75,75 @@ def _find_sketch_script(path: Optional[str]) -> pathlib.Path:
         raise ValueError(f"target {path.absolute()} is not a Python file")
 
 
-@cli.command()
+INIT_HELP = f"""Create a new sketch project.
+
+This command creates a new directory named NAME and containing the structure for a new
+sketch project. If not provided, the page size and orientation is requested with an
+interactive prompt.
+
+The page size may be one of:
+
+    {', '.join(vp.PAGE_SIZES.keys())}
+
+Alternatively, a custom size can be specified in the form of WIDTHxHEIGHT. WIDTH and
+HEIGHT may include units. If only one has an unit, the other is assumed to have the
+same unit. If none have units, both are assumed to be pixels by default. Here are some
+examples:
+
+\b
+    --page-size 11x14in     # 11in by 14in
+    --page-size 1024x768    # 1024px by 768px
+    --page-size 13.5inx4cm  # 13.5in by 4cm
+
+Portrait orientation is enforced, unless --landscape is used, in which case landscape
+orientation is enforced.
+
+By default, the new project is based on the official template located here:
+
+    https://github.com/abey79/cookiecutter-vsketch-sketch
+
+You can provide an alternative template address with the --template option.
+ 
+Most options can use environment variables to set their default values. For example, the
+default template can be set with the VSK_TEMPLATE variable and the default page size with the
+VSK_PAGE_SIZE variable.
+"""
+
+
+@cli.command(help=INIT_HELP)
 def init(
     name: str = typer.Argument(..., help="project name"),
-    page_size: str = typer.Option("a4", "--page-size", "-p", prompt=True, help="page size"),
-    landscape: bool = typer.Option(
-        False, "--landscape", "-l", prompt=True, help="use landscape orientation"
+    page_size: str = typer.Option(
+        "a4",
+        "--page-size",
+        "-p",
+        prompt=True,
+        metavar="PAGESIZE",
+        envvar="VSK_PAGE_SIZE",
+        help="page size",
     ),
-):
-    slug = name.replace(" ", "_")
-    cookiecutter(
+    landscape: bool = typer.Option(
+        False,
+        "--landscape",
+        "-l",
+        prompt=True,
+        envvar="VSK_LANDSCAPE",
+        help="use landscape orientation",
+    ),
+    template: str = typer.Option(
         "https://github.com/abey79/cookiecutter-vsketch-sketch.git",
+        envvar="VSK_TEMPLATE",
+        metavar="TEMPLATE",
+        show_default=False,
+        help="project template",
+    ),
+) -> None:
+    """Init command."""
+
+    slug = name.replace(" ", "_")
+
+    cookiecutter(
+        template,
         no_input=True,
         extra_context={
             "sketch_name": name,
@@ -72,13 +151,6 @@ def init(
             "page_size": page_size,
             "landscape": str(landscape),
         },
-    )
-
-
-def _target_not_found_error(err: ValueError):
-    typer.echo(
-        typer.style("Sketch could not be found: ", fg=typer.colors.RED, bold=True) + str(err),
-        err=True,
     )
 
 
@@ -94,12 +166,24 @@ def _parse_seed(seed: str) -> Tuple[int, int]:
 
 @cli.command()
 def run(
-    target: Optional[str] = typer.Argument(default=None, help="Sketch directory or file."),
+    target: Optional[str] = typer.Argument(default=None, help="sketch directory or file"),
     editor: Optional[str] = typer.Option(
-        None, "-e", "--editor", help="Editor command to use."
+        None,
+        "-e",
+        "--editor",
+        metavar="EDITOR",
+        envvar="VSK_EDITOR",
+        help="open the sketch file in EDITOR",
     ),
-):
-    """Show and monitor a sketch.
+) -> None:
+    """Execute, display and monitor changes on a sketch.
+
+    This command loads a sketch and opens an interactive viewer display the result. The viewer
+    will refresh the display each time the sketch file is saved. If the sketch defines any
+    parameters, they will be displayed by the viewer and may be interactively changed.
+
+    If the --editor option is provided or the VSK_EDITOR environment variable set, the sketch
+    file will be openned with the corresponding editor.
 
     TARGET may either point at a Python file or at a directory. If omitted, the current
     directory is assumed. When TARGET points at a directory, this command looks for a single
@@ -110,12 +194,10 @@ def run(
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
-        _target_not_found_error(err)
+        _print_error("Sketch could not be found: ", str(err))
         return
 
-    typer.echo(
-        typer.style("Running sketch: ", fg=typer.colors.GREEN, bold=True) + str(path), err=True
-    )
+    _print_info("Running sketch: ", str(path))
 
     if editor is not None:
         os.system(f"{editor} {path}")
@@ -129,16 +211,35 @@ def save(
     name: Optional[str] = typer.Option(
         None, "-n", "--name", help="output name (without extension)"
     ),
-    seed: Optional[str] = typer.Option(None, "-s", "--seed", help="Seed to "),
-):
+    seed: Optional[str] = typer.Option(None, "-s", "--seed", help="seed or seed range to use"),
+    multiprocessing: bool = typer.Option(
+        True, envvar="VSK_MULTIPROCESSING", help="enable multiprocessing"
+    ),
+) -> None:
+    """Save the sketch to a SVG file.
+
+    By default, the output is named after the sketch. An alternative name my be provided with
+    the --name option.
+
+    By default, a random seed is used for Vsketch's random number generator. A seed may be
+    provided with the --seed option.
+
+    The --seed option also accepts seed range in the form of FIRST..LAST, e.g. 0..100. In this
+    case, one output file per seed is generated.
+
+    If the number of files to generate is greater than 4, all available cores are used for the
+    process. This behaviour can be disabled with --no-multiprocessing or the
+    VSK_MULTIPROCESSING variable.
+    """
+
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
-        _target_not_found_error(err)
+        _print_error("Sketch could not be found: ", str(err))
         return
 
     if name is None:
-        name = path.name.lstrip("sketch_").rstrip(".py")
+        name = _remove_postfix(_remove_prefix(path.name, "sketch_"), ".py")
 
     seed_in_name = seed is not None
 
@@ -148,28 +249,52 @@ def save(
         try:
             seed_start, seed_end = _parse_seed(seed)
         except ValueError as err:
-            typer.echo(
-                typer.style(f"Could not parse seed {seed}: ", fg=typer.colors.RED, bold=True)
-                + str(err),
-                err=True,
-            )
+            _print_error(f"Could not parse seed {seed}: ", str(err))
             return
 
-    # TODO: parallelize
-    for seed in range(seed_start, seed_end + 1):
+    # prepare output path
+    output_path = path.parent / "output"
+    if not output_path.exists():
+        output_path.mkdir()
+    elif not output_path.is_dir():
+        _print_error("Could not create output directory: ", str(output_path))
+        return
+
+    # noinspection PyShadowingNames
+    def _write_output(seed: int) -> None:
+        # this needs to be there because the sketch class cannot be pickled apparently
+        sketch_class = load_sketch_class(path)
+        if sketch_class is None:
+            _print_error("Could not load script: ", str(path))
+            return
+
         output_name = name
         if seed_in_name:
-            output_name += "_s" + str(seed)
-        output_name += ".svg"
-        output_path = path.parent / output_name
+            output_name += "_s" + str(seed)  # type: ignore
+        output_name += ".svg"  # type: ignore
 
-        typer.echo(
-            typer.style("Saving sketch: ", fg=typer.colors.GREEN, bold=True)
-            + str(path)
-            + f" (seed: {seed}, destination: {output_name})",
-            err=True,
-        )
-        sketch_runner = SketchRunner(path)
-        doc = sketch_runner.run(finalize=True, seed=seed)
-        with open(output_path, "w") as fp:
+        output_file = output_path / output_name
+
+        vsk = execute_sketch(sketch_class, finalize=True, seed=seed)
+
+        if vsk is None:
+            _print_error("Could not execute script: ", str(path))
+            return
+
+        doc = vsk.document
+        with open(output_file, "w") as fp:
+            _print_info("Exporting SVG: ", str(output_file))
             vp.write_svg(fp, doc, source_string=f"vsketch save -s {seed} {path}")
+
+    seed_range = range(seed_start, seed_end + 1)
+
+    if len(seed_range) < 4 or not multiprocessing:
+        for s in seed_range:
+            _write_output(s)
+    else:
+        with Pool() as p:
+            p.map(_write_output, seed_range)
+
+
+if __name__ == "__main__":
+    save(target="examples/simple_sketch", name=None, seed="0", multiprocessing=True)

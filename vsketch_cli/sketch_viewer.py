@@ -1,7 +1,5 @@
 import asyncio
-import inspect
 import pathlib
-from runpy import run_path
 from typing import Any, Dict, Optional, Type, Union
 
 import vpype_viewer
@@ -11,12 +9,13 @@ from PySide2.QtCore import Signal
 import vsketch
 
 from .param_widget import ParamsWidget
+from .utils import execute_sketch, load_sketch_class
 
 
 class SketchViewer(vpype_viewer.QtViewer):
     sketchFileChanged = Signal()
 
-    def __init__(self, path: Union[str, pathlib.Path], *args, **kwargs):
+    def __init__(self, path: Union[str, pathlib.Path], *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
         self._sketch_class: Optional[Type[vsketch.Vsketch]] = None
@@ -29,10 +28,10 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._task = asyncio.get_event_loop().create_task(self.watch())
 
         # noinspection PyUnresolvedReferences
-        self.sketchFileChanged.connect(self.reload_sketch_class)
+        self.sketchFileChanged.connect(self.reload_sketch_class)  # type: ignore
 
         self._params_widget = ParamsWidget()
-        self._params_widget.paramUpdated.connect(self.redraw_sketch)
+        self._params_widget.paramUpdated.connect(self.redraw_sketch)  # type: ignore
         self.add_side_widget(self._params_widget)
 
         self.reload_sketch_class()
@@ -42,11 +41,7 @@ class SketchViewer(vpype_viewer.QtViewer):
 
     def reload_sketch_class(self) -> None:
         # extract sketch class from script file
-        self._sketch_class = None
-        sketch_scripts = run_path(self._path)
-        for cls in sketch_scripts.values():
-            if inspect.isclass(cls) and issubclass(cls, vsketch.Vsketch):
-                self._sketch_class = cls
+        self._sketch_class = load_sketch_class(self._path)
 
         # update UI to reflect declared parameter while attempting to save their previous
         # values
@@ -64,22 +59,8 @@ class SketchViewer(vpype_viewer.QtViewer):
         self.redraw_sketch()
 
     def redraw_sketch(self) -> None:
-        if self._sketch_class is not None:
-            self._vsk = self._sketch_class()
-            if self._seed is not None:
-                self._vsk.randomSeed(self._seed)
-                self._vsk.noiseSeed(self._seed)
-            self._vsk.draw()
-            self.set_document(self._vsk.document)
-        else:
-            self.set_document(None)
-
-    def create_sketch(self) -> Optional[vsketch.Vsketch]:
-        sketch_scripts = run_path(self._path)
-        for cls in sketch_scripts.values():
-            if inspect.isclass(cls) and issubclass(cls, vsketch.Vsketch):
-                return cls()
-        return None
+        self._vsk = execute_sketch(self._sketch_class, seed=self._seed, finalize=False)
+        self.set_document(self._vsk.document if self._vsk else None)
 
     async def watch(self):
         try:

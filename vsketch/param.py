@@ -1,27 +1,27 @@
-from typing import Any, Optional, Sequence, Tuple, TypeVar
+from typing import Any, Optional, Sequence, Tuple, TypeVar, Union
 
-T = TypeVar("T")
+ParamType = Union[int, float, str]
 
 
 class Param:
     def __init__(
         self,
-        value: T,
-        choices: Optional[Sequence[T]] = None,
-        bounds: Optional[Tuple[T, T]] = None,
+        value: ParamType,
+        choices: Optional[Sequence[ParamType]] = None,
+        bounds: Optional[Tuple[ParamType, ParamType]] = None,
     ):
-        self.value: T = value
+        self.value: ParamType = value
         self.type = type(value)
 
-        self.choices: Optional[Tuple[T, ...]] = None
+        self.choices: Optional[Tuple[ParamType, ...]] = None
         if choices is not None:
             self.choices = tuple(self.type(choice) for choice in choices)  # type: ignore
 
-        self.bounds: Optional[Tuple[T, T]] = None
+        self.bounds: Optional[Tuple[ParamType, ParamType]] = None
         if bounds is not None:
             self.bounds = self.type(bounds[0]), self.type(bounds[1])  # type: ignore
 
-    def set_value(self, value: T) -> None:
+    def set_value(self, value: ParamType) -> None:
         """Assign a value without validation."""
         self.value = value
 
@@ -44,5 +44,5 @@ class Param:
 
         self.value = value
 
-    def __call__(self) -> T:
+    def __call__(self) -> ParamType:
         return self.value
