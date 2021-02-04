@@ -175,6 +175,11 @@ def run(
         envvar="VSK_EDITOR",
         help="open the sketch file in EDITOR",
     ),
+    fullscreen: bool = typer.Option(
+        False,
+        envvar="VSK_FULLSCREEN",
+        help="display the viewer fullscreen on the second screen if available",
+    ),
 ) -> None:
     """Execute, display and monitor changes on a sketch.
 
@@ -182,14 +187,17 @@ def run(
     will refresh the display each time the sketch file is saved. If the sketch defines any
     parameters, they will be displayed by the viewer and may be interactively changed.
 
-    If the --editor option is provided or the VSK_EDITOR environment variable set, the sketch
-    file will be openned with the corresponding editor.
-
     TARGET may either point at a Python file or at a directory. If omitted, the current
     directory is assumed. When TARGET points at a directory, this command looks for a single
     Python file whose name starts wit `sketch_`. If none are found, it will look for a single
     Python file with arbitrary name. If no or multiple candidates are found, the command will
     fail.
+
+    If the --editor option is provided or the VSK_EDITOR environment variable is set, the
+    sketch file will be opened with the corresponding editor.
+
+    If the --fullscreen option is provided or the VSK_FULLSCREEN environment variable is set,
+    and a second screen is available, the viewer is opened in fullscreen on the second monitor.
     """
     try:
         path = _find_sketch_script(target)
@@ -202,7 +210,7 @@ def run(
     if editor is not None:
         os.system(f"{editor} {path}")
 
-    show(str(path), second_screen=True)
+    show(str(path), second_screen=fullscreen)
 
 
 @cli.command()
