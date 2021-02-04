@@ -1,4 +1,5 @@
 import asyncio
+import pathlib
 
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QApplication
@@ -19,7 +20,7 @@ def show(path: str, second_screen: bool = False) -> int:
     asyncio.set_event_loop(loop)
 
     # create widget
-    widget = SketchViewer(path)
+    widget = SketchViewer(pathlib.Path(path))
 
     # handle window sizing
     screens = app.screens()

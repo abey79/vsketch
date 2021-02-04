@@ -92,7 +92,7 @@ class Vsketch:
         return self._center_on_page
 
     @centered.setter
-    def centered(self, centered: bool):
+    def centered(self, centered: bool) -> None:
         self._center_on_page = centered
 
     @property
