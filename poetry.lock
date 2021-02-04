@@ -741,7 +741,7 @@ jupyterlab = ">=3.0,<4.0"
 
 [[package]]
 name = "jupyterlab-server"
-version = "2.1.3"
+version = "2.1.5"
 description = "JupyterLab Server"
 category = "main"
 optional = true
@@ -1499,7 +1499,7 @@ test = ["pytest"]
 
 [[package]]
 name = "svgelements"
-version = "1.4.7"
+version = "1.3.5"
 description = "Svg Elements Parsing"
 category = "main"
 optional = false
@@ -1625,36 +1625,31 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "vpype"
-version = "1.4.0-alpha.0"
+version = "1.3.0"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 category = "main"
 optional = false
-python-versions = ">=3.6.1, !=3.9.0, <3.10"
-develop = true
+python-versions = ">=3.6.1,<3.9"
 
 [package.dependencies]
-attrs = "~20.3.0"
-cachetools = "^4.2.0"
-click = "~7.1.2"
-click-plugins = "~1.1.1"
-matplotlib = "~3.3.2"
-moderngl = "^5.6.2"
-multiprocess = "^0.70.11"
-numpy = "~1.19.5"
-Pillow = "^8.1.0"
-PySide2 = "^5.15.2"
-scipy = "~1.5.4"
-Shapely = {version = "~1.7.1", extras = ["vectorized"]}
-svgelements = "1.4.7"
-svgwrite = "~1.4"
-toml = "~0.10.2"
+attrs = ">=20.3.0,<20.4.0"
+cachetools = ">=4.2.0,<5.0.0"
+click = ">=7.1.2,<7.2.0"
+click-plugins = ">=1.1.1,<1.2.0"
+matplotlib = ">=3.3.2,<3.4.0"
+moderngl = ">=5.6.2,<6.0.0"
+multiprocess = ">=0.70.11,<0.71.0"
+numpy = ">=1.19.5,<1.20.0"
+Pillow = ">=8.1.0,<9.0.0"
+PySide2 = ">=5.15.2,<6.0.0"
+scipy = ">=1.5.4,<1.6.0"
+Shapely = {version = ">=1.7.1,<1.8.0", extras = ["vectorized"]}
+svgelements = "1.3.5"
+svgwrite = ">=1.4,<1.5"
+toml = ">=0.10.2,<0.11.0"
 
 [package.extras]
-docs = ["Sphinx (>=3.3.0,<4.0.0)", "sphinx-click (>=2.5.0,<3.0.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)", "sphinx-rtd-theme (>=0.5.0,<0.6.0)", "recommonmark (>=0.6,<0.8)"]
-
-[package.source]
-type = "directory"
-url = "../vpype"
+docs = ["Sphinx (>=3.3.0,<4.0.0)", "recommonmark (>=0.6,<0.8)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)", "sphinx-click (>=2.5.0,<3.0.0)", "sphinx-rtd-theme (>=0.5.0,<0.6.0)"]
 
 [[package]]
 name = "watchgod"
@@ -1711,7 +1706,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2, <3.9"
-content-hash = "60f3a3b44f8a1f3850cf1a49f1bd2a7beae33c355f511d76317144465550bb61"
+content-hash = "8ac2e348049c0cf4e7b86ea84309dadc50f07d586955d24392d5bd67a6eff3b5"
 
 [metadata.files]
 alabaster = [
@@ -2041,8 +2036,8 @@ jupyterlab-code-formatter = [
     {file = "jupyterlab_code_formatter-1.4.3.tar.gz", hash = "sha256:6f099a286b429208e990f194af1047edabe2bae328a7d9505fd4fd763c343421"},
 ]
 jupyterlab-server = [
-    {file = "jupyterlab_server-2.1.3-py3-none-any.whl", hash = "sha256:9d459d5aba43e626f41cce76d9d00c025e4591fa85feee2d36670295ed1a51fa"},
-    {file = "jupyterlab_server-2.1.3.tar.gz", hash = "sha256:2af96b04bacf49a17bd2abdd461a219ab62724c39aea2d39ba95ded4be9a171a"},
+    {file = "jupyterlab_server-2.1.5-py3-none-any.whl", hash = "sha256:78ac3a1ea633dedc639b26305d1558e8fb9b2b2250d734045b8a962eb6ff573e"},
+    {file = "jupyterlab_server-2.1.5.tar.gz", hash = "sha256:eab98f9159bde9b329dfe5828bdbab5415e3562f14188a05696b8292c481c6b3"},
 ]
 jupyterlab-widgets = [
     {file = "jupyterlab_widgets-1.0.0-py3-none-any.whl", hash = "sha256:caeaf3e6103180e654e7d8d2b81b7d645e59e432487c1d35a41d6d3ee56b3fef"},
@@ -2650,8 +2645,8 @@ sphinxcontrib-serializinghtml = [
     {file = "sphinxcontrib_serializinghtml-1.1.4-py2.py3-none-any.whl", hash = "sha256:f242a81d423f59617a8e5cf16f5d4d74e28ee9a66f9e5b637a18082991db5a9a"},
 ]
 svgelements = [
-    {file = "svgelements-1.4.7-py2.py3-none-any.whl", hash = "sha256:ddfb192533e7254f90eb292b56c12e2b449cda163ce5cc8ee8b90acc245d56c6"},
-    {file = "svgelements-1.4.7.tar.gz", hash = "sha256:b85cc67348e734d0347a94152504c25cf88348a849b60765e8533b976f700793"},
+    {file = "svgelements-1.3.5-py2.py3-none-any.whl", hash = "sha256:b6e4d440eb4c3e9e1f7479a769d899860d2047ae4f14e7b14ac012003e93cf3b"},
+    {file = "svgelements-1.3.5.tar.gz", hash = "sha256:6d7cf985415ee4ff1fc43cb016056c0307effe213fc1220f8040d6b2b3743bef"},
 ]
 svgwrite = [
     {file = "svgwrite-1.4.1-py3-none-any.whl", hash = "sha256:4b21652a1d9c543a6bf4f9f2a54146b214519b7540ca60cb99968ad09ef631d0"},
@@ -2765,7 +2760,10 @@ urllib3 = [
     {file = "urllib3-1.26.3-py2.py3-none-any.whl", hash = "sha256:1b465e494e3e0d8939b50680403e3aedaa2bc434b7d5af64dfd3c958d7f5ae80"},
     {file = "urllib3-1.26.3.tar.gz", hash = "sha256:de3eedaad74a2683334e282005cd8d7f22f4d55fa690a2a1020a416cb0a47e73"},
 ]
-vpype = []
+vpype = [
+    {file = "vpype-1.3.0-py3-none-any.whl", hash = "sha256:2202188a951a90270754b9989f43140be2c22ffafefc0ab1da018707e47edb87"},
+    {file = "vpype-1.3.0.tar.gz", hash = "sha256:473d3d0b1b3f8ed8838e3ccd6ca63ad094c5a5f5d9caf2140bee532b0eb9ba50"},
+]
 watchgod = [
     {file = "watchgod-0.7-py3-none-any.whl", hash = "sha256:d6c1ea21df37847ac0537ca0d6c2f4cdf513562e95f77bb93abbcf05573407b7"},
     {file = "watchgod-0.7.tar.gz", hash = "sha256:48140d62b0ebe9dd9cf8381337f06351e1f2e70b2203fa9c6eff4e572ca84f29"},
