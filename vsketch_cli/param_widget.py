@@ -1,13 +1,15 @@
+import math
 from typing import Any, Dict, Mapping
 
 from PySide2.QtCore import Signal
 from PySide2.QtWidgets import (
+    QAbstractSpinBox,
     QComboBox,
     QDoubleSpinBox,
     QFormLayout,
+    QGroupBox,
     QSpinBox,
     QTextEdit,
-    QWidget,
 )
 
 import vsketch
@@ -63,10 +65,16 @@ class FloatParamWidget(QDoubleSpinBox):
     def __init__(self, param: vsketch.Param, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._param = param
-        self.setValue(float(param.value))
+        val = float(param.value)
+        self.setDecimals(max(1, 1 - math.floor(math.log10(val))))
+        self.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.setSingleStep(val / 10)
         if param.bounds:
             self.setRange(float(param.bounds[0]), float(param.bounds[1]))
+        else:
+            self.setRange(-1e100, 1e100)
 
+        self.setValue(val)
         self.valueChanged.connect(self.update_param)
 
     def update_param(self):
@@ -104,11 +112,11 @@ def _beautify(name: str) -> str:
     return name.replace("_", " ").title()
 
 
-class ParamsWidget(QWidget):
+class ParamsWidget(QGroupBox):
     paramUpdated = Signal()
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__("Parameters", *args, **kwargs)
 
         self._widgets: Dict[str, Any] = {}
 
@@ -138,7 +146,7 @@ class ParamsWidget(QWidget):
 
             # update the widget
             self._widgets[name] = widget
-            self._layout.addRow(_beautify(name), widget)
+            self._layout.addRow(_beautify(name) + ":", widget)
 
     def set_param_set(self, param_set: Mapping[str, Any]) -> None:
         for name, value in param_set.items():
