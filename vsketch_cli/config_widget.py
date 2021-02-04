@@ -3,15 +3,23 @@ import pathlib
 import typer
 from PySide2.QtCore import Signal
 from PySide2.QtWidgets import (
-    QComboBox,
-    QFormLayout,
     QGroupBox,
     QHBoxLayout,
     QInputDialog,
     QLineEdit,
+    QListWidget,
     QPushButton,
+    QSizePolicy,
     QVBoxLayout,
 )
+
+from .utils import find_unique_path
+
+
+class DeselectListWidget(QListWidget):
+    def mousePressEvent(self, event):
+        self.clearSelection()
+        super().mousePressEvent(event)
 
 
 class ConfigWidget(QGroupBox):
@@ -23,32 +31,42 @@ class ConfigWidget(QGroupBox):
 
         self._config_path = config_path
 
-        self._configs_combo = QComboBox()
-        load_btn = QPushButton("Load")
-        load_btn.clicked.connect(self.on_load_btn)
+        self._config_list = DeselectListWidget()
+        size_policy = self._config_list.sizePolicy()
+        size_policy.setHorizontalPolicy(QSizePolicy.Minimum)
+        self._config_list.setSizePolicy(size_policy)
+        self._config_list.itemSelectionChanged.connect(self.on_selection_changed)
+        self.update_config_list()
+
+        self._load_btn = QPushButton("Load")
+        self._load_btn.setEnabled(False)
+        self._load_btn.clicked.connect(self.on_load_btn)
         save_btn = QPushButton("Save")
         save_btn.clicked.connect(self.on_save_btn)
 
-        config_layout = QFormLayout()
-        config_layout.addRow("Configs:", self._configs_combo)
-
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(save_btn)
-        btn_layout.addWidget(load_btn)
+        btn_layout.addWidget(self._load_btn)
 
         layout = QVBoxLayout()
-        layout.addLayout(config_layout)
+        layout.addWidget(self._config_list)
         layout.addLayout(btn_layout)
         self.setLayout(layout)
 
     def update_config_list(self) -> None:
-        self._configs_combo.clear()
-        self._configs_combo.addItems(
+        self._config_list.clear()
+        self._config_list.addItems(
             [file.stem for file in sorted(self._config_path.glob("*.json"))]
         )
 
+    def on_selection_changed(self) -> None:
+        self._load_btn.setEnabled(len(self._config_list.selectedItems()) == 1)
+
     def on_load_btn(self) -> None:
-        path = self._config_path / (self._configs_combo.currentText() + ".json")
+        if len(self._config_list.selectedItems()) != 1:
+            return
+
+        path = self._config_path / (self._config_list.selectedItems()[0].text() + ".json")
         if path.exists():
             # noinspection PyUnresolvedReferences
             self.loadConfig.emit(str(path))  # type: ignore
@@ -63,15 +81,7 @@ class ConfigWidget(QGroupBox):
         if not ok:
             return
 
-        # find unique name
-        name = base_name
-        index = 2
-        while True:
-            path = self._config_path / (name + ".json")
-            if not path.exists():
-                break
-            name = base_name + "_" + str(index)
-            index += 1
+        path = find_unique_path(base_name + ".json", self._config_path)
 
         # noinspection PyUnresolvedReferences
         self.saveConfig.emit(str(path))  # type: ignore

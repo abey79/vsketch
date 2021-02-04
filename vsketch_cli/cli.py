@@ -9,7 +9,7 @@ from cookiecutter.main import cookiecutter
 from multiprocess.pool import Pool
 
 from .gui import show
-from .utils import execute_sketch, load_sketch_class
+from .utils import execute_sketch, load_sketch_class, canonical_name
 
 cli = typer.Typer()
 
@@ -24,14 +24,6 @@ def _print_info(title_str: str, detail_str: str = "") -> None:
     typer.echo(
         typer.style(title_str, fg=typer.colors.GREEN, bold=True) + str(detail_str), err=True
     )
-
-
-def _remove_prefix(s: str, prefix: str) -> str:
-    return s[len(prefix) :] if s.startswith(prefix) else s
-
-
-def _remove_postfix(s: str, postfix: str) -> str:
-    return s[: -len(postfix)] if s.endswith(postfix) else s
 
 
 def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
@@ -247,7 +239,7 @@ def save(
         return
 
     if name is None:
-        name = _remove_postfix(_remove_prefix(path.name, "sketch_"), ".py")
+        name = canonical_name(path)
 
     seed_in_name = seed is not None
 

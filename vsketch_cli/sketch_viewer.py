@@ -1,19 +1,20 @@
 import asyncio
 import json
 import pathlib
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Optional, Type
 
+import vpype as vp
 import vpype_viewer
 import watchgod
 from PySide2.QtCore import Signal
-from PySide2.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 import vsketch
 
 from .config_widget import ConfigWidget
 from .param_widget import ParamsWidget
 from .seed_widget import SeedWidget
-from .utils import execute_sketch, load_sketch_class
+from .utils import canonical_name, execute_sketch, find_unique_path, load_sketch_class
 
 
 class SideBarWidget(QWidget):
@@ -23,6 +24,8 @@ class SideBarWidget(QWidget):
         self.seed_widget = SeedWidget()
         self.params_widget = ParamsWidget()
         self.config_widget = ConfigWidget(config_path)
+        self.like_btn = QPushButton("LIKE!")
+        self.like_btn.setStyleSheet("padding: 15px; font-weight: bold;")
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -31,6 +34,7 @@ class SideBarWidget(QWidget):
         layout.addWidget(self.params_widget)
         layout.addWidget(self.config_widget)
         layout.addWidget(spacer)
+        layout.addWidget(self.like_btn)
         self.setLayout(layout)
 
 
@@ -41,7 +45,7 @@ class SketchViewer(vpype_viewer.QtViewer):
         super().__init__(*args, **kwargs)
 
         self._sketch_class: Optional[Type[vsketch.Vsketch]] = None
-        self._path = str(path)
+        self._path = path
         self._vsk: Optional[vsketch.Vsketch] = None
         self._vsk_master: Optional[vsketch.Vsketch] = None
         self._param_set: Dict[str, Any] = {}
@@ -59,8 +63,10 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._sidebar = SideBarWidget(config_path)
         self._sidebar.params_widget.paramUpdated.connect(self.redraw_sketch)  # type: ignore
         self._sidebar.seed_widget.seed_spin.valueChanged.connect(self.set_seed)
+        self._seed = self._sidebar.seed_widget.seed_spin.value()
         self._sidebar.config_widget.saveConfig.connect(self.save_config)  # type: ignore
         self._sidebar.config_widget.loadConfig.connect(self.load_config)  # type: ignore
+        self._sidebar.like_btn.clicked.connect(self.on_like)
         self.add_side_widget(self._sidebar)
 
         self.reload_sketch_class()
@@ -90,6 +96,19 @@ class SketchViewer(vpype_viewer.QtViewer):
         if self._sketch_class is not None:
             self._sketch_class.set_param_set(param_set)
             self.redraw_sketch()
+
+    def on_like(self) -> None:
+        vsk = execute_sketch(self._sketch_class, finalize=True, seed=self._seed)
+        if vsk is None:
+            return
+
+        base_name = canonical_name(self._path)
+        path = find_unique_path(
+            base_name + "_liked.svg", self._path.parent / "output", always_number=True
+        )
+
+        with open(path, "w") as fp:
+            vp.write_svg(fp, vsk.document)
 
     def reload_sketch_class(self) -> None:
         # extract sketch class from script file
