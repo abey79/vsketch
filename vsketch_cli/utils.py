@@ -2,6 +2,7 @@ import inspect
 import os
 import pathlib
 import traceback
+from contextlib import contextmanager
 from runpy import run_path
 from typing import Optional, Type, Union
 
@@ -57,10 +58,25 @@ def find_unique_path(
     return path
 
 
-def load_sketch_class(path: Union[str, pathlib.Path]) -> Optional[Type[vsketch.Vsketch]]:
+@contextmanager
+def working_directory(path: pathlib.Path):
+    prev_cwd = os.getcwd()
+    os.chdir(str(path))
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
+
+
+def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.Vsketch]]:
+    cwd_path = path
+    if not cwd_path.is_dir():
+        cwd_path = cwd_path.parent
+
     # noinspection PyBroadException
     try:
-        sketch_scripts = run_path(str(path))  # type: ignore
+        with working_directory(cwd_path):
+            sketch_scripts = run_path(str(path))
     except Exception:
         traceback.print_exc()
         print_error("Could not load script due to previous error.")
@@ -68,6 +84,7 @@ def load_sketch_class(path: Union[str, pathlib.Path]) -> Optional[Type[vsketch.V
 
     for cls in sketch_scripts.values():
         if inspect.isclass(cls) and issubclass(cls, vsketch.Vsketch):
+            cls.__vsketch_cwd__ = cwd_path
             return cls
     return None
 
@@ -80,16 +97,18 @@ def execute_sketch(
     if sketch_class is None:
         return None
 
-    vsk = sketch_class()
-    if vsk is None:
-        return None
+    cwd = getattr(sketch_class, "__vsketch_cwd__", pathlib.Path(os.getcwd()))
+    with working_directory(cwd):
+        vsk = sketch_class()
+        if vsk is None:
+            return None
 
-    if seed is not None:
-        vsk.randomSeed(seed)
-        vsk.noiseSeed(seed)
-    vsk.draw()
-    if finalize:
-        vsk.finalize()
+        if seed is not None:
+            vsk.randomSeed(seed)
+            vsk.noiseSeed(seed)
+        vsk.draw()
+        if finalize:
+            vsk.finalize()
 
     # vsk is not reused, so we can just hack into it's document instead of using a deep copy
     # like vsk.display() and vsk.save()
