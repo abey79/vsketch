@@ -4,6 +4,7 @@ from typing import Any, Dict, Mapping
 from PySide2.QtCore import Signal
 from PySide2.QtWidgets import (
     QAbstractSpinBox,
+    QCheckBox,
     QComboBox,
     QDoubleSpinBox,
     QFormLayout,
@@ -45,10 +46,13 @@ class IntParamWidget(QSpinBox):
     def __init__(self, param: vsketch.Param, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._param = param
-        if param.bounds:
-            self.setRange(int(param.bounds[0]), int(param.bounds[1]))
-        else:
-            self.setRange(-_MAX_INT, _MAX_INT)
+
+        if param.step is not None:
+            self.setSingleStep(int(param.step))
+        self.setRange(
+            param.min if param.min is not None else -_MAX_INT,
+            param.max if param.max is not None else _MAX_INT,
+        )
 
         self.setValue(int(param.value))
         self.valueChanged.connect(self.update_param)
@@ -70,13 +74,22 @@ class FloatParamWidget(QDoubleSpinBox):
         super().__init__(*args, **kwargs)
         self._param = param
         val = float(param.value)
-        self.setDecimals(max(1, 1 - math.floor(math.log10(val))))
-        self.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
-        self.setSingleStep(val / 10)
-        if param.bounds:
-            self.setRange(float(param.bounds[0]), float(param.bounds[1]))
+        if param.decimals is not None:
+            decimals = param.decimals
+        elif val == 0.0:
+            decimals = 1
         else:
-            self.setRange(-1e100, 1e100)
+            decimals = max(1, 1 - math.floor(math.log10(val)))
+        self.setDecimals(decimals)
+        if param.step is not None:
+            self.setSingleStep(param.step)
+        else:
+            self.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+            self.setSingleStep(val / 10)
+        self.setRange(
+            param.min if param.min is not None else -1e100,
+            param.max if param.max is not None else 1e100,
+        )
 
         self.setValue(val)
         self.valueChanged.connect(self.update_param)
@@ -109,6 +122,26 @@ class TextParamWidget(QTextEdit):
     def set_value(self, value: Any) -> None:
         self._param.set_value_with_validation(value)
         self.setText(str(self._param.value))
+
+
+class BoolParamWidget(QCheckBox):
+    value_changed = Signal()
+
+    def __init__(self, param: vsketch.Param, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._param = param
+
+        self.setChecked(param.value)
+        self.stateChanged.connect(self.update_param)
+
+    def update_param(self):
+        self._param.set_value_with_validation(self.isChecked())
+        # noinspection PyUnresolvedReferences
+        self.value_changed.emit()
+
+    def set_value(self, value: Any) -> None:
+        self._param.set_value_with_validation(value)
+        self.setChecked(bool(self._param.value))
 
 
 def _beautify(name: str) -> str:
@@ -145,6 +178,8 @@ class ParamsWidget(QGroupBox):
                 widget = IntParamWidget(param)
             elif param.type is float:
                 widget = FloatParamWidget(param)
+            elif param.type is bool:
+                widget = BoolParamWidget(param)
             else:
                 widget = TextParamWidget(param)
 

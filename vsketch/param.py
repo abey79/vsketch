@@ -1,25 +1,29 @@
 from typing import Any, Optional, Sequence, Tuple, TypeVar, Union
 
-ParamType = Union[int, float, str]
+ParamType = Union[int, float, bool, str]
 
 
 class Param:
     def __init__(
         self,
         value: ParamType,
+        min_value: Optional[ParamType] = None,
+        max_value: Optional[ParamType] = None,
+        *,
         choices: Optional[Sequence[ParamType]] = None,
-        bounds: Optional[Tuple[ParamType, ParamType]] = None,
+        step: Union[None, float, int] = None,
+        decimals: Optional[int] = None,
     ):
         self.value: ParamType = value
         self.type = type(value)
+        self.min = self.type(min_value) if min_value is not None else None  # type: ignore
+        self.max = self.type(max_value) if max_value is not None else None  # type: ignore
+        self.step = step
+        self.decimals = decimals
 
         self.choices: Optional[Tuple[ParamType, ...]] = None
         if choices is not None:
             self.choices = tuple(self.type(choice) for choice in choices)  # type: ignore
-
-        self.bounds: Optional[Tuple[ParamType, ParamType]] = None
-        if bounds is not None:
-            self.bounds = self.type(bounds[0]), self.type(bounds[1])  # type: ignore
 
     def set_value(self, value: ParamType) -> None:
         """Assign a value without validation."""
@@ -39,8 +43,11 @@ class Param:
         if self.choices and value not in self.choices:
             return
 
-        if self.bounds:
-            value = min(self.bounds[1], max(self.bounds[0], value))  # type: ignore
+        if self.min:
+            value = max(self.min, value)
+
+        if self.max:
+            value = min(self.max, value)
 
         self.value = value
 
