@@ -1,10 +1,25 @@
 import inspect
 import os
 import pathlib
+import traceback
 from runpy import run_path
 from typing import Optional, Type, Union
 
+import typer
+
 import vsketch
+
+
+def print_error(title_str: str, detail_str: str = "") -> None:
+    typer.echo(
+        typer.style(title_str, fg=typer.colors.RED, bold=True) + str(detail_str), err=True
+    )
+
+
+def print_info(title_str: str, detail_str: str = "") -> None:
+    typer.echo(
+        typer.style(title_str, fg=typer.colors.GREEN, bold=True) + str(detail_str), err=True
+    )
 
 
 def remove_prefix(s: str, prefix: str) -> str:
@@ -43,7 +58,14 @@ def find_unique_path(
 
 
 def load_sketch_class(path: Union[str, pathlib.Path]) -> Optional[Type[vsketch.Vsketch]]:
-    sketch_scripts = run_path(str(path))  # type: ignore
+    # noinspection PyBroadException
+    try:
+        sketch_scripts = run_path(str(path))  # type: ignore
+    except Exception:
+        traceback.print_exc()
+        print_error("Could not load script due to previous error.")
+        return None
+
     for cls in sketch_scripts.values():
         if inspect.isclass(cls) and issubclass(cls, vsketch.Vsketch):
             return cls

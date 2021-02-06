@@ -14,6 +14,8 @@ from PySide2.QtWidgets import (
 
 import vsketch
 
+_MAX_INT = (2 ** 31) - 1
+
 
 class ChoiceParamWidget(QComboBox):
     value_changed = Signal()
@@ -43,10 +45,12 @@ class IntParamWidget(QSpinBox):
     def __init__(self, param: vsketch.Param, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._param = param
-        self.setValue(int(param.value))
         if param.bounds:
             self.setRange(int(param.bounds[0]), int(param.bounds[1]))
+        else:
+            self.setRange(-_MAX_INT, _MAX_INT)
 
+        self.setValue(int(param.value))
         self.valueChanged.connect(self.update_param)
 
     def update_param(self) -> None:
@@ -129,6 +133,9 @@ class ParamsWidget(QGroupBox):
         while self._layout.rowCount() > 0:
             self._layout.removeRow(0)
         self._widgets.clear()
+
+        # hide if empty
+        self.setVisible(len(params) > 0)
 
         # create new widgets
         for name, param in params.items():

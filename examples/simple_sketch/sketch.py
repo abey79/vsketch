@@ -1,10 +1,10 @@
 import vsketch
 
+# asdfasdfasdf  sdafsss
+
 
 class SimpleSketch(vsketch.Vsketch):
     draw_type = vsketch.Param("circle", choices=["circle", "square"])
-    x = vsketch.Param(5.0, bounds=(5, 10))
-    y = vsketch.Param(5.0, bounds=(0, 15))
     radius = vsketch.Param(2.0, bounds=(2, 7))
     n = vsketch.Param(100)
     drift = vsketch.Param(0.05, bounds=(1e-10, 0.1))
@@ -18,9 +18,9 @@ class SimpleSketch(vsketch.Vsketch):
             t = self.k() * i
 
             if self.draw_type() == "circle":
-                self.circle(self.x(), self.y(), self.radius(), mode="radius")
+                self.circle(0, 0, self.radius(), mode="radius")
             else:
-                self.square(self.x(), self.y(), self.radius(), mode="radius")
+                self.square(0, 0, self.radius(), mode="radius")
 
             self.translate(
                 (self.noise(t, 0) - 0.3) * self.drift(),

@@ -27,6 +27,7 @@ vsk = "vsketch_cli.cli:cli"
 [tool.poetry.dependencies]
 python = ">=3.6.2, <3.9"
 bezier = "^2020.5.19"
+colorama = "^0.4.4"
 cookiecutter = "^1.7.2"
 matplotlib = "^3.3.3"
 multiprocess = "^0.70.11"

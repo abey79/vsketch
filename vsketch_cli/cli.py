@@ -9,21 +9,9 @@ from cookiecutter.main import cookiecutter
 from multiprocess.pool import Pool
 
 from .gui import show
-from .utils import execute_sketch, load_sketch_class, canonical_name
+from .utils import canonical_name, execute_sketch, load_sketch_class, print_error, print_info
 
 cli = typer.Typer()
-
-
-def _print_error(title_str: str, detail_str: str = "") -> None:
-    typer.echo(
-        typer.style(title_str, fg=typer.colors.RED, bold=True) + str(detail_str), err=True
-    )
-
-
-def _print_info(title_str: str, detail_str: str = "") -> None:
-    typer.echo(
-        typer.style(title_str, fg=typer.colors.GREEN, bold=True) + str(detail_str), err=True
-    )
 
 
 def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
@@ -194,10 +182,10 @@ def run(
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
-        _print_error("Sketch could not be found: ", str(err))
+        print_error("Sketch could not be found: ", str(err))
         return
 
-    _print_info("Running sketch: ", str(path))
+    print_info("Running sketch: ", str(path))
 
     if editor is not None:
         os.system(f"{editor} {path}")
@@ -221,7 +209,7 @@ def save(
     By default, the output is named after the sketch. An alternative name my be provided with
     the --name option.
 
-    By default, a random seed is used for Vsketch's random number generator. A seed may be
+    By default, a random seed is used for vsketch's random number generator. A seed may be
     provided with the --seed option.
 
     The --seed option also accepts seed range in the form of FIRST..LAST, e.g. 0..100. In this
@@ -235,7 +223,7 @@ def save(
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
-        _print_error("Sketch could not be found: ", str(err))
+        print_error("Sketch could not be found: ", str(err))
         return
 
     if name is None:
@@ -249,7 +237,7 @@ def save(
         try:
             seed_start, seed_end = _parse_seed(seed)
         except ValueError as err:
-            _print_error(f"Could not parse seed {seed}: ", str(err))
+            print_error(f"Could not parse seed {seed}: ", str(err))
             return
 
     # prepare output path
@@ -257,7 +245,7 @@ def save(
     if not output_path.exists():
         output_path.mkdir()
     elif not output_path.is_dir():
-        _print_error("Could not create output directory: ", str(output_path))
+        print_error("Could not create output directory: ", str(output_path))
         return
 
     # noinspection PyShadowingNames
@@ -265,7 +253,7 @@ def save(
         # this needs to be there because the sketch class cannot be pickled apparently
         sketch_class = load_sketch_class(path)
         if sketch_class is None:
-            _print_error("Could not load script: ", str(path))
+            print_error("Could not load script: ", str(path))
             return
 
         output_name = name
@@ -278,12 +266,12 @@ def save(
         vsk = execute_sketch(sketch_class, finalize=True, seed=seed)
 
         if vsk is None:
-            _print_error("Could not execute script: ", str(path))
+            print_error("Could not execute script: ", str(path))
             return
 
         doc = vsk.document
         with open(output_file, "w") as fp:
-            _print_info("Exporting SVG: ", str(output_file))
+            print_info("Exporting SVG: ", str(output_file))
             vp.write_svg(fp, doc, source_string=f"vsketch save -s {seed} {path}")
 
     seed_range = range(seed_start, seed_end + 1)
