@@ -109,9 +109,10 @@ class SketchViewer(vpype_viewer.QtViewer):
         seed = param_set.pop("__seed__", None)
         if seed is not None:
             self._seed = seed
-        if self._sketch_class is not None:
-            self._sketch_class.set_param_set(param_set)
-            self.redraw_sketch()
+
+        # set sketch_class params via params widgets
+        self._sidebar.params_widget.set_param_set(param_set)
+        self.redraw_sketch()
 
     def on_like(self) -> None:
         if self._vsk is None:
@@ -126,7 +127,7 @@ class SketchViewer(vpype_viewer.QtViewer):
         thread = DocumentSaverThread(path, self._vsk.document, self)
         self._sidebar.setEnabled(False)
         self._sidebar.like_btn.setText("saving...")
-        thread.completed.connect(self.on_like_completed)
+        thread.completed.connect(self.on_like_completed)  # type: ignore
         thread.start()
 
     def on_like_completed(self) -> None:
@@ -161,7 +162,7 @@ class SketchViewer(vpype_viewer.QtViewer):
             self._thread.quit()
         self._thread = SketchRunnerThread(self._sketch_class, self._seed, parent=self)
         # noinspection PyUnresolvedReferences
-        self._thread.completed.connect(self.redraw_sketch_completed)
+        self._thread.completed.connect(self.redraw_sketch_completed)  # type: ignore
         self._sidebar.status_label.loading()
         self._thread.start()
 

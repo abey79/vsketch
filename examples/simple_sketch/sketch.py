@@ -5,10 +5,10 @@ import vsketch
 
 class SimpleSketch(vsketch.Vsketch):
     draw_type = vsketch.Param("circle", choices=["circle", "square"])
-    radius = vsketch.Param(2.0, bounds=(2, 7))
+    radius = vsketch.Param(2.0, 2.0, 7.0)
     n = vsketch.Param(100)
-    drift = vsketch.Param(0.05, bounds=(1e-10, 0.1))
-    k = vsketch.Param(0.02, bounds=(0.001, 0.1))
+    drift = vsketch.Param(0.05, 1e-10, 0.1)
+    k = vsketch.Param(0.02, 0.001, 0.1)
 
     def draw(self) -> None:
         self.size("a5")

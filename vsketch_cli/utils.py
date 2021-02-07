@@ -4,7 +4,7 @@ import pathlib
 import traceback
 from contextlib import contextmanager
 from runpy import run_path
-from typing import Optional, Type, Union
+from typing import Iterator, Optional, Type
 
 import typer
 
@@ -59,7 +59,7 @@ def find_unique_path(
 
 
 @contextmanager
-def working_directory(path: pathlib.Path):
+def working_directory(path: pathlib.Path) -> Iterator:
     prev_cwd = os.getcwd()
     os.chdir(str(path))
     try:
@@ -76,7 +76,7 @@ def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.Vsketch]]:
     # noinspection PyBroadException
     try:
         with working_directory(cwd_path):
-            sketch_scripts = run_path(str(path))
+            sketch_scripts = run_path(str(path))  # type: ignore
     except Exception:
         traceback.print_exc()
         print_error("Could not load script due to previous error.")

@@ -26,7 +26,7 @@ class SketchRunnerThread(QThread):
     def run(self) -> None:
         vsk = execute_sketch(self._sketch_class, seed=self._seed, finalize=False)
         # noinspection PyUnresolvedReferences
-        self.completed.emit(vsk)
+        self.completed.emit(vsk)  # type: ignore
 
 
 class DocumentSaverThread(QThread):
@@ -47,5 +47,5 @@ class DocumentSaverThread(QThread):
         with open(self._path, "w") as fp:
             vp.write_svg(fp, self._document)
         # noinspection PyUnresolvedReferences
-        self.completed.emit()
+        self.completed.emit()  # type: ignore
         self.deleteLater()

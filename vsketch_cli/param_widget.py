@@ -50,8 +50,8 @@ class IntParamWidget(QSpinBox):
         if param.step is not None:
             self.setSingleStep(int(param.step))
         self.setRange(
-            param.min if param.min is not None else -_MAX_INT,
-            param.max if param.max is not None else _MAX_INT,
+            int(param.min) if param.min is not None else -_MAX_INT,
+            int(param.max) if param.max is not None else _MAX_INT,
         )
 
         self.setValue(int(param.value))
@@ -87,8 +87,8 @@ class FloatParamWidget(QDoubleSpinBox):
             self.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
             self.setSingleStep(val / 10)
         self.setRange(
-            param.min if param.min is not None else -1e100,
-            param.max if param.max is not None else 1e100,
+            float(param.min) if param.min is not None else -1e100,
+            float(param.max) if param.max is not None else 1e100,
         )
 
         self.setValue(val)
@@ -131,7 +131,7 @@ class BoolParamWidget(QCheckBox):
         super().__init__(*args, **kwargs)
         self._param = param
 
-        self.setChecked(param.value)
+        self.setChecked(bool(param.value))
         self.stateChanged.connect(self.update_param)
 
     def update_param(self):
@@ -192,8 +192,8 @@ class ParamsWidget(QGroupBox):
 
     def set_param_set(self, param_set: Mapping[str, Any]) -> None:
         for name, value in param_set.items():
-            if name in self._widget and hasattr(self._widget[name], "set_value"):
-                self._widget.set_value(value)
+            if name in self._widgets and hasattr(self._widgets[name], "set_value"):
+                self._widgets[name].set_value(value)
 
     def emitParamUpdated(self) -> None:
         # noinspection PyUnresolvedReferences
