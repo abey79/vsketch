@@ -35,8 +35,7 @@ class ChoiceParamWidget(QComboBox):
         # noinspection PyUnresolvedReferences
         self.value_changed.emit()  # type: ignore
 
-    def set_value(self, value: Any) -> None:
-        self._param.set_value_with_validation(value)
+    def update_from_param(self) -> None:
         self.setCurrentText(str(self._param.value))
 
 
@@ -62,8 +61,7 @@ class IntParamWidget(QSpinBox):
         # noinspection PyUnresolvedReferences
         self.value_changed.emit()  # type: ignore
 
-    def set_value(self, value: Any) -> None:
-        self._param.set_value_with_validation(value)
+    def update_from_param(self) -> None:
         self.setValue(int(self._param.value))
 
 
@@ -99,8 +97,7 @@ class FloatParamWidget(QDoubleSpinBox):
         # noinspection PyUnresolvedReferences
         self.value_changed.emit()
 
-    def set_value(self, value: Any) -> None:
-        self._param.set_value_with_validation(value)
+    def update_from_param(self) -> None:
         self.setValue(float(self._param.value))
 
 
@@ -119,8 +116,7 @@ class TextParamWidget(QTextEdit):
         # noinspection PyUnresolvedReferences
         self.value_changed.emit()
 
-    def set_value(self, value: Any) -> None:
-        self._param.set_value_with_validation(value)
+    def update_from_param(self) -> None:
         self.setText(str(self._param.value))
 
 
@@ -139,8 +135,7 @@ class BoolParamWidget(QCheckBox):
         # noinspection PyUnresolvedReferences
         self.value_changed.emit()
 
-    def set_value(self, value: Any) -> None:
-        self._param.set_value_with_validation(value)
+    def update_from_param(self) -> None:
         self.setChecked(bool(self._param.value))
 
 
@@ -190,10 +185,16 @@ class ParamsWidget(QGroupBox):
             self._widgets[name] = widget
             self._layout.addRow(_beautify(name) + ":", widget)
 
-    def set_param_set(self, param_set: Mapping[str, Any]) -> None:
-        for name, value in param_set.items():
-            if name in self._widgets and hasattr(self._widgets[name], "set_value"):
-                self._widgets[name].set_value(value)
+    def update_from_param(self):
+        for widget in self._widgets.values():
+            widget.blockSignals(True)
+            widget.update_from_param()
+            widget.blockSignals(False)
+
+    # def set_param_set(self, param_set: Mapping[str, Any]) -> None:
+    #     for name, value in param_set.items():
+    #         if name in self._widgets and hasattr(self._widgets[name], "set_value"):
+    #             self._widgets[name].set_value(value)
 
     def emitParamUpdated(self) -> None:
         # noinspection PyUnresolvedReferences

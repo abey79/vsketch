@@ -272,7 +272,9 @@ def save(
         doc = vsk.document
         with open(output_file, "w") as fp:
             print_info("Exporting SVG: ", str(output_file))
-            vp.write_svg(fp, doc, source_string=f"vsketch save -s {seed} {path}")
+            vp.write_svg(
+                fp, doc, source_string=f"vsketch save -s {seed} {path}", color_mode="layer"
+            )
 
     seed_range = range(seed_start, seed_end + 1)
 

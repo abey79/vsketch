@@ -125,7 +125,9 @@ class SketchViewer(vpype_viewer.QtViewer):
             self._seed = seed
 
         # set sketch_class params via params widgets
-        self._sidebar.params_widget.set_param_set(param_set)
+        if self._sketch_class is not None:
+            self._sketch_class.set_param_set(param_set)
+            self._sidebar.params_widget.update_from_param()
         self.redraw_sketch()
 
     def on_like(self) -> None:
@@ -136,6 +138,9 @@ class SketchViewer(vpype_viewer.QtViewer):
         path = find_unique_path(
             base_name + "_liked.svg", self._path.parent / "output", always_number=True
         )
+
+        # TODO: this is a bit hacky
+        self._vsk.finalize()
 
         # launch saving process in a thread
         thread = DocumentSaverThread(path, self._vsk.document, self)
