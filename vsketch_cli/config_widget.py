@@ -43,8 +43,12 @@ class ConfigWidget(QGroupBox):
         self._load_btn.clicked.connect(self.on_load_btn)
         save_btn = QPushButton("Save")
         save_btn.clicked.connect(self.on_save_btn)
+        self._delete_btn = QPushButton("Delete")
+        self._delete_btn.setEnabled(False)
+        self._delete_btn.clicked.connect(self.on_delete_btn)
 
         btn_layout = QHBoxLayout()
+        btn_layout.addWidget(self._delete_btn)
         btn_layout.addWidget(save_btn)
         btn_layout.addWidget(self._load_btn)
 
@@ -60,7 +64,9 @@ class ConfigWidget(QGroupBox):
         )
 
     def on_selection_changed(self) -> None:
-        self._load_btn.setEnabled(len(self._config_list.selectedItems()) == 1)
+        enabled = len(self._config_list.selectedItems()) == 1
+        self._load_btn.setEnabled(enabled)
+        self._delete_btn.setEnabled(enabled)
 
     def on_load_btn(self) -> None:
         if len(self._config_list.selectedItems()) != 1:
@@ -85,4 +91,11 @@ class ConfigWidget(QGroupBox):
 
         # noinspection PyUnresolvedReferences
         self.saveConfig.emit(str(path))  # type: ignore
+        self.update_config_list()
+
+    def on_delete_btn(self) -> None:
+        for item in self._config_list.selectedItems():
+            path = self._config_path / (item.text() + ".json")
+            if path.exists():
+                path.unlink()
         self.update_config_list()
