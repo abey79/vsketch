@@ -1,11 +1,13 @@
 import inspect
 import os
 import pathlib
+import random
 import traceback
 from contextlib import contextmanager
 from runpy import run_path
 from typing import Iterator, Optional, Type
 
+import numpy as np
 import typer
 
 import vsketch
@@ -106,6 +108,8 @@ def execute_sketch(
         if seed is not None:
             vsk.randomSeed(seed)
             vsk.noiseSeed(seed)
+            random.seed(seed)
+            np.random.seed(seed)
         vsk.draw()
         if finalize:
             vsk.finalize()

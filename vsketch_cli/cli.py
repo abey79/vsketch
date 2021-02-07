@@ -187,7 +187,7 @@ def run(
 
     print_info("Running sketch: ", str(path))
 
-    if editor is not None:
+    if editor is not None and editor != "":
         os.system(f"{editor} {path}")
 
     show(str(path), second_screen=fullscreen)

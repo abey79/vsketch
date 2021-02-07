@@ -6,7 +6,14 @@ from typing import Any, Dict, Optional, Type
 import vpype_viewer
 import watchgod
 from PySide2.QtCore import QThread, Signal
-from PySide2.QtWidgets import QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+from PySide2.QtWidgets import (
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 import vsketch
 
@@ -40,7 +47,7 @@ class SideBarWidget(QWidget):
         self.like_btn.setStyleSheet("padding: 15px; font-weight: bold;")
         self.like_btn.setEnabled(False)
         spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        spacer.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
 
         layout = QVBoxLayout()
         layout.addWidget(self.seed_widget)
@@ -82,7 +89,14 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._sidebar.config_widget.saveConfig.connect(self.save_config)  # type: ignore
         self._sidebar.config_widget.loadConfig.connect(self.load_config)  # type: ignore
         self._sidebar.like_btn.clicked.connect(self.on_like)
-        self.add_side_widget(self._sidebar)
+
+        scroller = QScrollArea()
+        scroller.setWidget(self._sidebar)
+        scroller.setWidgetResizable(True)
+        sp = scroller.sizePolicy()
+        sp.setHorizontalPolicy(QSizePolicy.Minimum)
+        scroller.setSizePolicy(sp)
+        self.add_side_widget(scroller)
 
         self._trigger_fit_to_viewport = True
         self.reload_sketch_class()
