@@ -5,7 +5,7 @@ import nbformat
 import pytest
 from nbconvert.preprocessors import ExecutePreprocessor
 
-EXAMPLES = str(pathlib.Path(__file__).parent.parent.absolute()) + "/examples/"
+EXAMPLES = str(pathlib.Path(__file__).parent.parent.absolute()) + "/examples/_notebooks/"
 
 
 @pytest.mark.slow

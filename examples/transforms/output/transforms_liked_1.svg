@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="21.0cm" version="1.2" viewBox="0 0 1122.5196850393702 793.7007874015749" width="29.7cm">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:source/>
+        <dc:date>2021-02-08T22:37:00.180746</dc:date>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs/>
+  <g fill="none" id="layer1" inkscape:groupmode="layer" inkscape:label="1" stroke="#00f" style="display:inline">
+    <polygon points="301.5018,309.1027 257.0708,172.3581 212.6398,309.1027 328.9617,224.5899 185.1799,224.5899"/>
+    <polygon points="350.7392,229.2616 443.7967,296.8719 408.2519,187.4762 372.7071,296.8719 465.7646,229.2616"/>
+    <polygon points="605.4432,232.999 513.4229,232.999 587.8689,287.0872 559.433,199.5707 530.9972,287.0872"/>
+    <polygon points="710.6141,209.2463 687.8655,279.2595 747.4223,235.9889 673.806,235.9889 733.3628,279.2595"/>
+    <polygon points="861.7952,216.9867 843.5963,272.9973 891.2417,238.3809 832.3487,238.3809 879.9942,272.9973"/>
+    <polygon points="802.2291,596.849 937.3397,547.6728 799.1278,508.0411 887.6487,621.3427 882.6308,477.6485"/>
+    <polygon points="654.4394,600.8908 785.7906,542.4095 645.1508,512.5156 741.3596,619.3662 726.3303,476.3721"/>
+    <polygon points="491.4927,517.1741 594.9206,617.0533 569.9532,475.4559 506.9234,604.6861 633.8752,537.1847"/>
+    <polygon points="359.6633,608.2166 481.5971,532.0238 338.1656,521.9941 448.3088,614.4153 413.5249,474.9044"/>
+    <polygon points="328.9617,526.9521 185.1799,526.9521 301.5018,611.4649 257.0708,474.7203 212.6398,611.4649"/>
+  </g>
+</svg>
