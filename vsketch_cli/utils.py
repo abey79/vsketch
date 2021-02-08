@@ -1,11 +1,12 @@
 import inspect
+import json
 import os
 import pathlib
 import random
 import traceback
 from contextlib import contextmanager
 from runpy import run_path
-from typing import Iterator, Optional, Type
+from typing import Dict, Iterator, Optional, Type
 
 import numpy as np
 import typer
@@ -126,3 +127,17 @@ def execute_sketch(
             )
 
     return vsk
+
+
+def get_config_path(path: pathlib.Path) -> pathlib.Path:
+    """returns the config directory path from a sketch path"""
+    config_path = path.parent / "config"
+    if not config_path.exists():
+        config_path.mkdir()
+    return config_path
+
+
+def load_config(path: pathlib.Path) -> Dict[str, vsketch.ParamType]:
+    with open(path, "r") as fp:
+        param_set = json.load(fp)
+    return param_set

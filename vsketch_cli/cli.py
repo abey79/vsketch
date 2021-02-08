@@ -1,15 +1,25 @@
 import os
 import pathlib
 import random
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import typer
 import vpype as vp
 from cookiecutter.main import cookiecutter
 from multiprocess.pool import Pool
 
+import vsketch
+
 from .gui import show
-from .utils import canonical_name, execute_sketch, load_sketch_class, print_error, print_info
+from .utils import (
+    canonical_name,
+    execute_sketch,
+    get_config_path,
+    load_config,
+    load_sketch_class,
+    print_error,
+    print_info,
+)
 
 cli = typer.Typer()
 
@@ -199,6 +209,15 @@ def save(
     name: Optional[str] = typer.Option(
         None, "-n", "--name", help="output name (without extension)"
     ),
+    config: Optional[str] = typer.Option(
+        None,
+        "-c",
+        "--config",
+        help=(
+            "path to the config file to use (may be a path to JSON file or the name of the "
+            "configuration)"
+        ),
+    ),
     seed: Optional[str] = typer.Option(None, "-s", "--seed", help="seed or seed range to use"),
     multiprocessing: bool = typer.Option(
         True, envvar="VSK_MULTIPROCESSING", help="enable multiprocessing"
@@ -206,11 +225,15 @@ def save(
 ) -> None:
     """Save the sketch to a SVG file.
 
-    By default, the output is named after the sketch. An alternative name my be provided with
-    the --name option.
+    By default, the output is named after the sketch and the provided options. An alternative
+    name my be provided with the --name option.
 
-    By default, a random seed is used for vsketch's random number generator. A seed may be
-    provided with the --seed option.
+    If the sketch as parameters, their default values are used. Alternatively, a pre-existing
+    configuration can be used instead with the --config option.
+
+    By default, a random seed is used for vsketch's random number generator. If --config is
+    used, the seed saved in the configuration is used instead. A seed may also be provided with
+    the --seed option, in which case it will override the configuration's seed.
 
     The --seed option also accepts seed range in the form of FIRST..LAST, e.g. 0..100. In this
     case, one output file per seed is generated.
@@ -226,13 +249,30 @@ def save(
         print_error("Sketch could not be found: ", str(err))
         return
 
-    if name is None:
-        name = canonical_name(path)
+    # load configuration
+    param_set: Dict[str, vsketch.ParamType] = {}
+    config_postfix = ""
+    if config is not None:
+        config_path = pathlib.Path(config)
+        if not config_path.exists():
+            config_path = get_config_path(path) / (config + ".json")
 
+        if config_path.exists():
+            param_set = load_config(config_path)
+            config_postfix = "_" + config_path.stem
+        else:
+            print_error("Config file not found: ", str(config_path))
+
+    # compute name
+    if name is None:
+        name = canonical_name(path) + config_postfix
     seed_in_name = seed is not None
 
     if seed is None:
-        seed_start = seed_end = random.randint(0, 2 ** 31 - 1)
+        if param_set is not None and "__seed__" in param_set:
+            seed_start = seed_end = int(param_set["__seed__"])
+        else:
+            seed_start = seed_end = random.randint(0, 2 ** 31 - 1)
     else:
         try:
             seed_start, seed_end = _parse_seed(seed)
@@ -255,6 +295,8 @@ def save(
         if sketch_class is None:
             print_error("Could not load script: ", str(path))
             return
+
+        sketch_class.set_param_set(param_set)
 
         output_name = name
         if seed_in_name:

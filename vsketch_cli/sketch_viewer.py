@@ -21,7 +21,7 @@ from .config_widget import ConfigWidget
 from .param_widget import ParamsWidget
 from .seed_widget import SeedWidget
 from .threads import DocumentSaverThread, SketchRunnerThread
-from .utils import canonical_name, find_unique_path, load_sketch_class
+from .utils import canonical_name, find_unique_path, get_config_path, load_sketch_class
 
 
 class StatusLabel(QLabel):
@@ -78,11 +78,7 @@ class SketchViewer(vpype_viewer.QtViewer):
         # noinspection PyUnresolvedReferences
         self.sketchFileChanged.connect(self.reload_sketch_class)  # type: ignore
 
-        config_path = path.parent / "config"
-        if not config_path.exists():
-            config_path.mkdir()
-
-        self._sidebar = SideBarWidget(config_path)
+        self._sidebar = SideBarWidget(get_config_path(self._path))
         self._sidebar.params_widget.paramUpdated.connect(self.redraw_sketch)  # type: ignore
         self._sidebar.seed_widget.seed_spin.valueChanged.connect(self.set_seed)
         self._seed = self._sidebar.seed_widget.seed_spin.value()
@@ -124,7 +120,6 @@ class SketchViewer(vpype_viewer.QtViewer):
         if seed is not None:
             self._seed = seed
 
-        # set sketch_class params via params widgets
         if self._sketch_class is not None:
             self._sketch_class.set_param_set(param_set)
             self._sidebar.params_widget.update_from_param()
