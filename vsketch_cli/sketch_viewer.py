@@ -173,7 +173,7 @@ class SketchViewer(vpype_viewer.QtViewer):
             return
 
         if self._thread is not None:
-            self._thread.quit()
+            self._thread.requestInterruption()
         self._thread = SketchRunnerThread(self._sketch_class, self._seed, parent=self)
         # noinspection PyUnresolvedReferences
         self._thread.completed.connect(self.redraw_sketch_completed)  # type: ignore

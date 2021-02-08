@@ -25,8 +25,9 @@ class SketchRunnerThread(QThread):
 
     def run(self) -> None:
         vsk = execute_sketch(self._sketch_class, seed=self._seed, finalize=False)
-        # noinspection PyUnresolvedReferences
-        self.completed.emit(vsk)  # type: ignore
+        if not self.isInterruptionRequested():
+            # noinspection PyUnresolvedReferences
+            self.completed.emit(vsk)  # type: ignore
 
 
 class DocumentSaverThread(QThread):
