@@ -19,6 +19,7 @@ from .utils import (
     load_sketch_class,
     print_error,
     print_info,
+    working_directory,
 )
 
 cli = typer.Typer()
@@ -67,11 +68,11 @@ def _find_sketch_script(path: Optional[str]) -> pathlib.Path:
 
 INIT_HELP = f"""Create a new sketch project.
 
-This command creates a new directory named NAME and containing the structure for a new
-sketch project. If not provided, the page size and orientation is requested with an
-interactive prompt.
+This command creates a new directory named TARGET and containing the structure for a new
+sketch project. TARGET may also be a path to the directory to be created.
 
-The page size may be one of:
+If not provided, the page size and orientation is requested with an
+interactive prompt. The page size may be one of:
 
     {', '.join(vp.PAGE_SIZES.keys())}
 
@@ -102,7 +103,7 @@ VSK_PAGE_SIZE variable.
 
 @cli.command(help=INIT_HELP)
 def init(
-    name: str = typer.Argument(..., help="project name"),
+    target: str = typer.Argument(..., help="project name or path"),
     page_size: str = typer.Option(
         "a4",
         "--page-size",
@@ -130,18 +131,18 @@ def init(
 ) -> None:
     """Init command."""
 
-    slug = name.replace(" ", "_")
+    dir_path = pathlib.Path(target)
 
-    cookiecutter(
-        template,
-        no_input=True,
-        extra_context={
-            "sketch_name": name,
-            "sketch_slug": slug,
-            "page_size": page_size,
-            "landscape": str(landscape),
-        },
-    )
+    with working_directory(dir_path.parent):
+        cookiecutter(
+            template,
+            no_input=True,
+            extra_context={
+                "sketch_name": dir_path.name,
+                "page_size": page_size,
+                "landscape": str(landscape),
+            },
+        )
 
 
 def _parse_seed(seed: str) -> Tuple[int, int]:
