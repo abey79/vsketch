@@ -14,6 +14,39 @@ class Param:
         step: Union[None, float, int] = None,
         decimals: Optional[int] = None,
     ):
+        """Create a sketch parameter.
+
+        This class implements a sketch parameter. Ts automatically recognized by ``vsk`` which
+        generates the corresponding UI in the sketch interactive viewer. :class:`Param`
+        instances must be declared as class member in the :class:`Vsketch` subclass and can
+        then be used using the calling convention::
+
+            import vsketch
+            class MySketch(vsketch.Vsketch):
+                page_size = vsketch.Param("a4", choices=["a3", "a4", "a5"])
+
+                def draw(self):
+                    self.size(self.page_size())
+                    # ...
+
+        :class:`Param` can encapsulate the following types: :class:`int`, :class:`float`,
+        :class:`str`, and :class:`bool`.
+
+        For numeral types, a minimum and maximum value may be specified, as well as the step
+        size to use in the UI::
+
+            low_bound_param = vsketch.Param(10, 0, step=5)  # may not be lower than 0
+            bounded_param = vsketch.Param(0.5, 0., 1.)  # must be within 0.0 and 1.0
+
+        :class:`float` parameters may further define the number of decimals to display in the
+        UI::
+
+            precise_param = vsketch.Param(0.01, decimals=5)
+
+        Numeral types and string parameters may have a set of possibly choices::
+
+            mode = vsketch.Param("simple", choices=["simple", "complex", "versatile"])
+        """
         self.value: ParamType = value
         self.type = type(value)
         self.min = self.type(min_value) if min_value is not None else None  # type: ignore

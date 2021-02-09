@@ -456,3 +456,10 @@ class QuickDrawSketch(vsketch.Vsketch):
 
     def finalize(self) -> None:
         self.vpype("linemerge linesort")
+
+
+if __name__ == "__main__":
+    vsk = QuickDrawSketch()
+    vsk.draw()
+    vsk.finalize()
+    vsk.display()

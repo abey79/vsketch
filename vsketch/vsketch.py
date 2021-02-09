@@ -67,6 +67,7 @@ class Vsketch:
 
     @property
     def document(self):
+        """Return the :class:`vpype.Document` instance containing the sketch's geometries."""
         return self._document
 
     @property
@@ -89,6 +90,7 @@ class Vsketch:
 
     @property
     def centered(self) -> bool:
+        """Controls whether the sketch should be centered on page."""
         return self._center_on_page
 
     @centered.setter
@@ -1578,9 +1580,17 @@ class Vsketch:
     # Pure virtual functions
 
     def draw(self) -> None:
+        """Draws the sketch.
+
+        This function must be implemented by subclasses.
+        """
         raise NotImplementedError()
 
     def finalize(self) -> None:
+        """Finalize the sketch before export.
+
+        This function must be implemented by subclasses.
+        """
         raise NotImplementedError()
 
     # Param

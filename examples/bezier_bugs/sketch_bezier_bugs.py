@@ -50,3 +50,10 @@ class BezierBugSketch(vsketch.Vsketch):
 
     def finalize(self) -> None:
         self.vpype("linesimplify linesort")
+
+
+if __name__ == "__main__":
+    vsk = BezierBugSketch()
+    vsk.draw()
+    vsk.finalize()
+    vsk.display()

@@ -15,7 +15,6 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
-import sphinx
 
 project = "vsketch"
 copyright = "2020, Antoine Beyeler"
@@ -29,6 +28,7 @@ author = "Antoine Beyeler"
 extensions = [
     "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
@@ -42,11 +42,9 @@ extensions = [
 
 autodoc_default_flags = ["members"]
 autosummary_generate = True
+add_module_names = False
+autosummary_imported_members = True
 
-# -- Autoapi configuration ------------------------------------------------
-# autoapi_dirs = ["../vsketch"]
-# autoapi_options = ["members", "undoc-members", "show-inheritance"]
-# autoapi_generate_api_docs = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -67,8 +65,14 @@ smartquotes_action = "qe"
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
-# html_theme = "alabaster"
-# html_theme_path = [alabaster.get_path()]
+
+html_theme_options = {
+    # Toc options
+    # "collapse_navigation": False,
+    # "sticky_navigation": True,
+    "navigation_depth": 4,
+    # "titles_only": False,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -79,6 +83,7 @@ html_static_path = ["_static"]
 intersphinx_mapping = {
     "shapely": ("https://shapely.readthedocs.io/en/latest/", None),
     "vpype": ("https://vpype.readthedocs.io/en/latest/", None),
+    "python": ("https://docs.python.org/3/", None),
 }
 
 
@@ -86,10 +91,21 @@ intersphinx_mapping = {
 
 napoleon_include_init_with_doc = True
 
-# def setup(cli):
-#     cli.add_config_value('recommonmark_config', {
-#             'auto_toc_tree_section': 'Contents',
-#             'enable_auto_doc_ref': True,
-#             'enable_eval_rst': True,
-#             }, True)
-#     cli.add_transform(AutoStructify)
+
+# noinspection PyUnusedLocal
+def autodoc_skip_member(app, what, name, obj, skip, options):
+
+    exclusions = (
+        # vsketch/vsketch.py
+        "get_params",
+        "set_param_set",
+        "params",
+        "param_set",
+    )
+    is_private = name.startswith("_") and name != "__init__"
+    exclude = name in exclusions or is_private
+    return skip or exclude
+
+
+def setup(app):
+    app.connect("autodoc-skip-member", autodoc_skip_member)

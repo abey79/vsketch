@@ -33,3 +33,10 @@ class TransformsSketch(vsketch.Vsketch):
 
     def finalize(self) -> None:
         self.vpype("linemerge linesimplify reloop linesort")
+
+
+if __name__ == "__main__":
+    vsk = TransformsSketch()
+    vsk.draw()
+    vsk.finalize()
+    vsk.display()
