@@ -9,6 +9,7 @@ import struct
 import urllib.request
 from itertools import islice
 
+import vpype as vp
 from shapely.geometry import MultiLineString
 
 import vsketch
@@ -407,10 +408,16 @@ def quickdraw_to_linestring(qd_image):
 
 class QuickDrawSketch(vsketch.Vsketch):
     category = vsketch.Param("crab", choices=quick_draw_categories)
-    grid_size = vsketch.Param(5, 1)
+    page_size = vsketch.Param("a4", choices=vp.PAGE_SIZES.keys())
+    landscape = vsketch.Param(False)
+    margins_mm = vsketch.Param(10, 0)
+    layer_count = vsketch.Param(2, 1)
+    columns = vsketch.Param(9, 1)
+    rows = vsketch.Param(13, 1)
+    scale_factor = vsketch.Param(3.0)
 
     def draw(self) -> None:
-        self.size("125x125mm", landscape=False)
+        self.size(self.page_size(), landscape=self.landscape())
         self.penWidth("0.5mm")
 
         # obtain the datafile
@@ -426,14 +433,26 @@ class QuickDrawSketch(vsketch.Vsketch):
         drawing_subset = list(islice(drawing_set, 10000))
 
         # draw stuff
-        self.scale(1 / self.grid_size())
-        samples = random.sample(drawing_subset, self.grid_size() ** 2)
-        for i in range(self.grid_size() ** 2):
-            drawing = quickdraw_to_linestring(samples[i])
-            self.geometry(drawing)
-            self.translate(self.width, 0)
-            if (i + 1) % self.grid_size() == 0:
-                self.translate(-self.grid_size() * self.width, self.height)
+
+        width = self.width - 2 * vp.convert_length(f"{self.margins_mm()}mm")
+        height = self.height - 2 * vp.convert_length(f"{self.margins_mm()}mm")
+
+        n = self.columns() * self.rows()
+        samples = random.sample(drawing_subset, n)
+        for j in range(self.rows()):
+            with self.pushMatrix():
+                for i in range(self.columns()):
+                    idx = j * self.columns() + i
+                    with self.pushMatrix():
+                        self.scale(
+                            self.scale_factor() * min(1 / self.columns(), 1 / self.rows())
+                        )
+                        drawing = quickdraw_to_linestring(samples[idx])
+                        self.stroke((idx % self.layer_count()) + 1)
+                        self.geometry(drawing)
+                    self.translate(width / self.columns(), 0)
+
+            self.translate(0, height / self.rows())
 
     def finalize(self) -> None:
-        self.vpype("linemerge linesimplify reloop linesort")
+        self.vpype("linemerge linesort")
