@@ -100,4 +100,4 @@ class Param:
         if self.factor is None:
             return self.value
         else:
-            return self.type(self.factor * self.value)
+            return self.type(self.factor * self.value)  # type: ignore
