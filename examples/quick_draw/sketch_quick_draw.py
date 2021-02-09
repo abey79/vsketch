@@ -410,7 +410,7 @@ class QuickDrawSketch(vsketch.Vsketch):
     category = vsketch.Param("crab", choices=quick_draw_categories)
     page_size = vsketch.Param("a4", choices=vp.PAGE_SIZES.keys())
     landscape = vsketch.Param(False)
-    margins_mm = vsketch.Param(10, 0)
+    margins = vsketch.Param(10, 0, unit="mm")
     layer_count = vsketch.Param(2, 1)
     columns = vsketch.Param(9, 1)
     rows = vsketch.Param(13, 1)
@@ -434,8 +434,8 @@ class QuickDrawSketch(vsketch.Vsketch):
 
         # draw stuff
 
-        width = self.width - 2 * vp.convert_length(f"{self.margins_mm()}mm")
-        height = self.height - 2 * vp.convert_length(f"{self.margins_mm()}mm")
+        width = self.width - 2 * self.margins()
+        height = self.height - 2 * self.margins()
 
         n = self.columns() * self.rows()
         samples = random.sample(drawing_subset, n)

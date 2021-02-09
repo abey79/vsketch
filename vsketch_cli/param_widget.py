@@ -183,7 +183,11 @@ class ParamsWidget(QGroupBox):
 
             # update the widget
             self._widgets[name] = widget
-            self._layout.addRow(_beautify(name) + ":", widget)
+            label = _beautify(name)
+            if param.unit != "":
+                label += f" ({param.unit})"
+            label += ":"
+            self._layout.addRow(label, widget)
 
     def update_from_param(self):
         for widget in self._widgets.values():

@@ -1,4 +1,6 @@
-from typing import Any, Optional, Sequence, Tuple, TypeVar, Union
+from typing import Any, Optional, Sequence, Tuple, Union
+
+import vpype as vp
 
 ParamType = Union[int, float, bool, str]
 
@@ -12,6 +14,7 @@ class Param:
         *,
         choices: Optional[Sequence[ParamType]] = None,
         step: Union[None, float, int] = None,
+        unit: str = "",
         decimals: Optional[int] = None,
     ):
         """Create a sketch parameter.
@@ -38,6 +41,13 @@ class Param:
             low_bound_param = vsketch.Param(10, 0, step=5)  # may not be lower than 0
             bounded_param = vsketch.Param(0.5, 0., 1.)  # must be within 0.0 and 1.0
 
+        For these types, a unit may also be specified::
+
+            margin = vsketch.Param(10., unit="mm")
+
+        In this case, the unit will be displayed in the UI and the value converted to pixel
+        when accessed by the sketch.
+
         :class:`float` parameters may further define the number of decimals to display in the
         UI::
 
@@ -53,6 +63,8 @@ class Param:
         self.max = self.type(max_value) if max_value is not None else None  # type: ignore
         self.step = step
         self.decimals = decimals
+        self.unit = unit
+        self.factor: Optional[float] = None if unit == "" else vp.convert_length(unit)
 
         self.choices: Optional[Tuple[ParamType, ...]] = None
         if choices is not None:
@@ -85,4 +97,7 @@ class Param:
         self.value = value
 
     def __call__(self) -> ParamType:
-        return self.value
+        if self.factor is None:
+            return self.value
+        else:
+            return self.type(self.factor * self.value)
