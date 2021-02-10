@@ -1,3 +1,5 @@
+"""This module implements the vsketch API."""
+
 from .param import Param, ParamType
 from .vsketch import Vsketch
 

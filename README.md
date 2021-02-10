@@ -30,19 +30,38 @@ _vsketch_ is the sum of two things:
 You can help by providing feedback and improving the documentation.*
 
 
-## Installation
+## Installing and Running the examples
 
-Vsketch is a regular Python package, install it with `pip` and use from your favorite development
-environment:
+The easiest way to get started is to obtain a local copy of *vsketch*'s repository and run the examples:
 
+```bash
+$ git clone https://github.com/abey79/vsketch
+$ cd vsketch
 ```
-pip install git+https://github.com/abey79/vsketch#egg=vsketch
+
+Create a virtual environment and activate it:
+
+```bash
+$ python3 -m venv venv
+$ source venv/bin/activate
 ```
 
-See the [Installation instructions](https://vsketch.readthedocs.io/en/latest/instal.html) for more details.
+Install *vsketch*:
+
+```bash
+$ pip install .
+```
+
+You are read to run the examples:
+
+```bash
+$ vsk run examples/quick_draw
+```
+
+Additional examples may be found in the author's [personal collection of sketches](https://github.com/abey79/sketches).
 
 
-## Quick start
+## Getting started
 
 This section is meant as a quick introduction of the workflow supported by _vsketch_. Check the
 [documentation](https://vsketch.readthedocs.io/en/latest/) for a more complete overview.

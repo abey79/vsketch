@@ -37,11 +37,13 @@ with the following command::
 
     poetry shell
 
-
-
-Running the tests
-=================
-
 You can run tests with the following command::
 
   $ poetry run pytest
+
+
+Donations
+=========
+
+You can help the project making `Ko-Fi donation <https://ko-fi.com/abey79>`_ or
+`sponsoring me <https://github.com/sponsors/abey79>`_ on GitHub. The funds will be used to cover my development costs.

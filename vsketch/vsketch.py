@@ -25,6 +25,12 @@ T = TypeVar("T")
 
 # noinspection PyPep8Naming
 class Vsketch:
+    """This class represent a sketch.
+
+    Sketches should be implemented as :class:`Vsketch` subclasses and override the
+    :meth:`draw` and :meth:`finalize` methods.
+    """
+
     def __init__(self):
         self._document = vp.Document(page_size=vp.convert_page_size("a3"))
         self._cur_stroke: Optional[int] = 1

@@ -6,6 +6,11 @@ ParamType = Union[int, float, bool, str]
 
 
 class Param:
+    """This class encapsulate a sketch parameter.
+
+    A sketch parameter can be interacted with in the ``vsk`` viewer.
+    """
+
     def __init__(
         self,
         value: ParamType,

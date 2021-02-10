@@ -29,11 +29,18 @@ What is *vsketch*?
 .. _vpype: https://github.com/abey79/vpype/
 .. _Processing: https://processing.org
 
-*This project is at an early the stage and needs contributions.*
+Call to action
+==============
+
+This project is at an early the stage and needs your :ref:`contribution <contributing>`. An area of particular
+relevance is the present documentation which would greatly benefit from expansion, in particular targeted to
+beginners. Please get in touch via `discussions on GitHub <https://github.com/abey79/vsketch/discussions>`_ or the
+`DrawingBots <https://drawingbots.net>`_'s `Discord server <https://discord.com/invite/XHP3dBg>`_ if you feel like
+helping!
 
 
 Contents
-________
+========
 
 .. toctree::
    :maxdepth: 3

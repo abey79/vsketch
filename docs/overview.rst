@@ -6,15 +6,12 @@ Overview
 .. highlight:: bash
 
 
-``vsk`` command-line tool
-=========================
+Simplify your workflow with ``vsk``
+===================================
 
-You can access ``vsk`` integrated help with the ``--help`` option, e.g.::
-
-    $ vsk --help
-    $ vsk run --help
-
-This section illustrate a few command use-cases and features of ``vsk```
+*vsketch* includes a CLI tool called ``vsk`` that aims to automate every part of your workflow, from initial creation to
+final export, with the overarching objective of minimising the friction in the creative process. The following
+paragraphs demonstrate how ``vsk`` is typically used for various phases in a sketch project life-cycle.
 
 
 Creating a sketch with ``vsk init``
@@ -88,11 +85,32 @@ If configurations have been saved using ``vsk run``, they can be used for export
     $ vsk save --config my_config my_project
 
 
-*vsketch* API
-=============
+Beyond the basics?
+------------------
+
+Every single feature of ``vsk`` is documented in the integrated help. You can access the global help as follows::
+
+    $ vsk --help
+
+This will list the available commands as well as the global options.
+
+Each command has its dedicated help section as well. For example, you can access the ``vsk run`` command as follows::
+
+    $ vsk run --help
+
+
+Write sketches with the *vsketch* API
+=====================================
 
 .. currentmodule:: vsketch
 .. highlight:: python
+
+Sketches are made of code and *vsketch* API makes this code familiar, concise and easy-to-learn. The following
+paragraphs provides an overview of how a sketch is made.
+
+
+Sketch structure
+----------------
 
 Sketch scripts always have the same structure::
 
@@ -112,14 +130,21 @@ Sketch scripts always have the same structure::
         self.finalize()
         self.display(mode="matplotlib")
 
+This structure is typically created using the ``vsk init`` command.
+
 Your sketch is encapsulated in a subclass of :class:`Vsketch` which must implement two functions:
 
     * :meth:`Vsketch.draw` implements the bulk of the sketch's content.
     * :meth:`Vsketch.finalize` implements the potentially CPU-heavy optimisations that are not required for
       display purposes.
 
-``vsk`` only calls :meth:`Vsketch.draw()` when displaying the sketch but will always call :meth:`Vsketch.finalize`
-before exporting a sketch to SVG.
+For display purposes, ``vsk`` only calls :meth:`Vsketch.draw()`. However, when it exports a sketch to a SVG file, it
+also calls :meth:`Vsketch.finalize`. This enables a fast refresh of the display when the sketch or its parameters change
+while ensuring that any SVG output is ready to plot.
+
+
+Primitives
+----------
 
 The usual primitives are available::
 
@@ -132,11 +157,19 @@ So are the less usual primitives::
 
     self.bezier(1, 1, 3, 1, 3, 3, 1, 3)
 
+
+Units
+-----
+
 By default, vsketch uses CSS pixels as unit, just like SVG. If you'd rather work in some other unit,
 just start your sketch with a scale factor::
 
     self.scale("1cm")
     self.line(0, 0, 21, 29.7)  # this line will span an entire A4 page
+
+
+Strokes, fills and layers
+-------------------------
 
 Colors do not really make sense when preparing files for plotters. *vsketch* instead uses layers which are
 intended to be plotted with different pens each::
@@ -158,12 +191,20 @@ No reason plotters should miss on the "fill" party! This works just as you didn'
     self.fill(2)
     self.circle(0, 0, 5)
 
+
+Using Shapely
+-------------
+
 `Shapely <https://shapely.readthedocs.io/en/latest/>`_ is a computational geometry library that is often
 very useful for generative plotter art. *vsketch* directly accepts Shapely objects::
 
     from shapely.geometry import Point
 
     self.geometry(Point(0, 0).buffer(2).union(Point(1.5, 0).buffer(1.5)))
+
+
+Transforms
+----------
 
 Transformation matrices are fully supported::
 
@@ -187,6 +228,9 @@ segment) can be adjusted. *vsketch* tries to be smart about this::
     # because it is bigger, this circle will be made of many more segments than the previous one
     self.circle(0, 0, radius=1)
 
+Using sub-sketches
+------------------
+
 Multiple sketches can be created and used as reusable sub-sketches::
 
     # create a sub-sketch
@@ -200,9 +244,15 @@ Multiple sketches can be created and used as reusable sub-sketches::
     self.rotate(45, degrees=True)
     self.sketch(sub_sketch)  # the transformation matrix is applied on the sub-sketch
 
+Using *vpype*
+-------------
+
 The power of `vpype`_ can be unleashed with a single call::
 
     self.vpype("linesimplify linemerge reloop linesort")
+
+Displaying and saving
+---------------------
 
 Usually, ``vsk`` takes care of running, displaying and exporting your sketch as SVG. This is also easy to do from a
 regular script. Displaying is done as follows::
@@ -223,6 +273,20 @@ As a matter of fact, examples always includes the following code::
 
 This way, the sketch can be executed by Python without having to use the ``vsk`` command.
 
-See also the many examples included in the repository.
+
+Beyond the basics?
+------------------
+
+.. highlight:: bash
+
+The entire API is documented :class:`here <Vsketch>`.
+
+Exploring the `examples <https://github.com/abey79/vsketch/tree/master/examples>`_ included with *vsketch* is a good
+way to learn about its API. If you have a local copy of *vsketch*'s repository, you can run any example with the
+following command::
+
+    $ vsk run examples/quick_draw
+
+You may also check the author's `personal collection of sketches <https://github.com/abey79/sketches>`_.
 
 .. _vpype: https://github.com/abey79/vpype/
