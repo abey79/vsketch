@@ -1,10 +1,13 @@
+.. _reference:
+
 =========
 Reference
 =========
 
-.. currentmodule:: vsketch
+.. rubric:: Modules
 
-.. automodule:: vsketch
+.. autosummary::
+   :toctree: reference
+   :template: module.rst
 
-   .. autoclass:: Vsketch
-      :members:
+   vsketch

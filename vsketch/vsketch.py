@@ -2,7 +2,7 @@ import math
 import os
 import random
 import shlex
-from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, Union, cast
+from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, TypeVar, Union, cast
 
 import noise
 import numpy as np
@@ -13,14 +13,24 @@ from shapely.geometry import Polygon
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
+from .param import Param
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
 
 __all__ = ["Vsketch"]
 
 
+T = TypeVar("T")
+
+
 # noinspection PyPep8Naming
 class Vsketch:
+    """This class represent a sketch.
+
+    Sketches should be implemented as :class:`Vsketch` subclasses and override the
+    :meth:`draw` and :meth:`finalize` methods.
+    """
+
     def __init__(self):
         self._document = vp.Document(page_size=vp.convert_page_size("a3"))
         self._cur_stroke: Optional[int] = 1
@@ -43,8 +53,27 @@ class Vsketch:
         self._random.seed(random.randint(0, 2 ** 31))
         self.resetMatrix()
 
+        # extract params
+        self._params = self.get_params()
+
+    @classmethod
+    def get_params(cls) -> Dict[str, Param]:
+        res = {}
+        for name in cls.__dict__:
+            param = getattr(cls, name)
+            if isinstance(param, Param):
+                res[name] = param
+        return res
+
+    @classmethod
+    def set_param_set(cls, param_set: Dict[str, Any]) -> None:
+        for name, value in param_set.items():
+            if name in cls.__dict__ and isinstance(cls.__dict__[name], Param):
+                cls.__dict__[name].set_value_with_validation(value)
+
     @property
     def document(self):
+        """Return the :class:`vpype.Document` instance containing the sketch's geometries."""
         return self._document
 
     @property
@@ -64,6 +93,15 @@ class Vsketch:
             page height
         """
         return cast(float, self.document.page_size[1])
+
+    @property
+    def centered(self) -> bool:
+        """Controls whether the sketch should be centered on page."""
+        return self._center_on_page
+
+    @centered.setter
+    def centered(self, centered: bool) -> None:
+        self._center_on_page = centered
 
     @property
     def transform(self) -> np.ndarray:
@@ -791,7 +829,7 @@ class Vsketch:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
             extent: width and height of the square
-            mode: "corner", "redius", or "center" (see :meth:`rectMode`) — note that the
+            mode: "corner", "radius", or "center" (see :meth:`rectMode`) — note that the
                 "corners" mode is meaningless for this function, and is interpreted as the
                 "corner" mode
         """
@@ -1086,11 +1124,6 @@ class Vsketch:
         """
         x, y = quadratic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
         return x
-
-    def bezierDetail(self, epsilon: float) -> None:
-        raise NotImplementedError(
-            "bezierDetail() is not implemented, see detail() for more information"
-        )
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
@@ -1545,6 +1578,36 @@ class Vsketch:
         rng = random.Random()
         rng.seed(seed)
         self._noise_seed = rng.uniform(0, 100000)
+
+    #####################
+    # SKETCH MANAGEMENT #
+    #####################
+
+    # Pure virtual functions
+
+    def draw(self) -> None:
+        """Draws the sketch.
+
+        This function must be implemented by subclasses.
+        """
+        raise NotImplementedError()
+
+    def finalize(self) -> None:
+        """Finalize the sketch before export.
+
+        This function must be implemented by subclasses.
+        """
+        raise NotImplementedError()
+
+    # Param
+
+    @property
+    def params(self) -> Iterable[Param]:
+        return self._params.values()
+
+    @property
+    def param_set(self) -> Dict[str, Any]:
+        return {name: param.value for name, param in self._params.items()}
 
     #######################
     # STATELESS UTILITIES #

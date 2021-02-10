@@ -37,7 +37,7 @@ jobs:
     - name: Python Code Quality and Lint
       uses: abey79/python-lint@master
       with:
-        python-root-list: "vsketch tests"
+        python-root-list: "vsketch vsketch_cli tests"
         use-pylint: false
         use-pycodestyle: false
         use-flake8: false
