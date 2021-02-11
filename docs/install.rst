@@ -28,7 +28,7 @@ notebooks such as Jupyter Lab or Google Colab.
 Google Colab
 ------------
 
-Vpype can be used in browser without any installation steps thanks to the
+Vsketch can be used in browser without any installation steps thanks to the
 `Google Colab <https://colab.research.google.com/notebooks/intro.ipynb>`_ free notebook environment. Add this content
 to the first cell to setup the environment::
 
