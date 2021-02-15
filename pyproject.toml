@@ -25,7 +25,7 @@ include = [
 vsk = "vsketch_cli.cli:cli"
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.9"
+python = ">=3.7, !=3.9.0, <3.10"
 bezier = ">=2021.2.12"
 colorama = "^0.4.4"
 cookiecutter = "^1.7.2"

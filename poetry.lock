@@ -1669,8 +1669,8 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.7, <3.9"
-content-hash = "d1d8a0526dc1ad3e9cd53fbb33c564a9ac77a0d068db5ac378059f46d7612f35"
+python-versions = ">=3.7, !=3.9.0, <3.10"
+content-hash = "29fdfba21488f02c7e58da412890300de0fbcefc01d9a529e7ae4b886e735a37"
 
 [metadata.files]
 alabaster = [
