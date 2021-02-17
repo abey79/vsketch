@@ -101,7 +101,10 @@ class Param:
 
         self.value = value
 
-    def __call__(self) -> ParamType:
+    def __get__(self, instance, owner=None) -> Any:
+        if instance is None:
+            return self
+
         if self.factor is None:
             return self.value
         else:

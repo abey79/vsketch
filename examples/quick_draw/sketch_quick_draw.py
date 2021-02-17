@@ -417,11 +417,11 @@ class QuickDrawSketch(vsketch.Vsketch):
     scale_factor = vsketch.Param(3.0)
 
     def draw(self) -> None:
-        self.size(self.page_size(), landscape=self.landscape())
+        self.size(self.page_size, landscape=self.landscape)
         self.penWidth("0.5mm")
 
         # obtain the datafile
-        file_name = self.category() + ".bin"
+        file_name = self.category + ".bin"
         file_path = pathlib.Path(file_name)
         url = "https://storage.googleapis.com/quickdraw_dataset/full/binary/"
         url += file_name.replace(" ", "%20")
@@ -434,25 +434,23 @@ class QuickDrawSketch(vsketch.Vsketch):
 
         # draw stuff
 
-        width = self.width - 2 * self.margins()
-        height = self.height - 2 * self.margins()
+        width = self.width - 2 * self.margins
+        height = self.height - 2 * self.margins
 
-        n = self.columns() * self.rows()
+        n = self.columns * self.rows
         samples = random.sample(drawing_subset, n)
-        for j in range(self.rows()):
+        for j in range(self.rows):
             with self.pushMatrix():
-                for i in range(self.columns()):
-                    idx = j * self.columns() + i
+                for i in range(self.columns):
+                    idx = j * self.columns + i
                     with self.pushMatrix():
-                        self.scale(
-                            self.scale_factor() * min(1 / self.columns(), 1 / self.rows())
-                        )
+                        self.scale(self.scale_factor * min(1 / self.columns, 1 / self.rows))
                         drawing = quickdraw_to_linestring(samples[idx])
-                        self.stroke((idx % self.layer_count()) + 1)
+                        self.stroke((idx % self.layer_count) + 1)
                         self.geometry(drawing)
-                    self.translate(width / self.columns(), 0)
+                    self.translate(width / self.columns, 0)
 
-            self.translate(0, height / self.rows())
+            self.translate(0, height / self.rows)
 
     def finalize(self) -> None:
         self.vpype("linemerge linesort")

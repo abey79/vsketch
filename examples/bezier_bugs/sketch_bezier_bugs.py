@@ -42,10 +42,10 @@ class BezierBugSketch(vsketch.Vsketch):
     def draw(self) -> None:
         self.size("10in", "10in")
 
-        for row in range(self.row_count()):
-            for col in range(self.column_count()):
-                x = col * self.column_offset()
-                y = row * self.row_offset()
+        for row in range(self.row_count):
+            for col in range(self.column_count):
+                x = col * self.column_offset
+                y = row * self.row_offset
                 bug(self, x, y)
 
     def finalize(self) -> None:

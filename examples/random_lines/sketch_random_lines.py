@@ -15,15 +15,15 @@ class RandomLinesSketch(vsketch.Vsketch):
 
         x_coords = np.linspace(0, 25, 1000)
 
-        for i in range(self.num_line()):
+        for i in range(self.num_line):
             y_coords = (
                 np.array(
                     [
-                        self.noise(x * self.x_freq(), i / self.num_line() * self.y_freq())
+                        self.noise(x * self.x_freq, i / self.num_line * self.y_freq)
                         for x in x_coords
                     ]
                 )
-                + self.y_offset() / self.num_line() * i
+                + self.y_offset / self.num_line * i
             )
             self.polygon(x_coords, y_coords)
 
