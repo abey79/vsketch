@@ -16,7 +16,7 @@ class Noise:
         self.octaves: int = 4
         self.amp_falloff: float = 0.5
 
-    def seed(self, seed: int):
+    def seed(self, seed: int) -> None:
         rng = np.random.default_rng(seed)
         self._perlin = rng.random(PERLIN_SIZE + 1)
 

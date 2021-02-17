@@ -877,14 +877,6 @@ fast = ["fastjsonschema"]
 test = ["check-manifest", "fastjsonschema", "testpath", "pytest", "pytest-cov"]
 
 [[package]]
-name = "noise"
-version = "1.2.2"
-description = "Perlin noise for Python"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "notebook"
 version = "6.2.0"
 description = "A web-based notebook environment for interactive computing"
@@ -1671,7 +1663,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, !=3.9.0, <3.10"
-content-hash = "29fdfba21488f02c7e58da412890300de0fbcefc01d9a529e7ae4b886e735a37"
+content-hash = "2d0ac3ba7eabffdb735fd95c17baeb362146d8e1c0df3cd12050e009fa47f493"
 
 [metadata.files]
 alabaster = [
@@ -2162,22 +2154,6 @@ nbconvert = [
 nbformat = [
     {file = "nbformat-5.1.2-py3-none-any.whl", hash = "sha256:3949fdc8f5fa0b1afca16fb307546e78494fa7a7bceff880df8168eafda0e7ac"},
     {file = "nbformat-5.1.2.tar.gz", hash = "sha256:1d223e64a18bfa7cdf2db2e9ba8a818312fc2a0701d2e910b58df66809385a56"},
-]
-noise = [
-    {file = "noise-1.2.2-cp27-none-win32.whl", hash = "sha256:f7ef26a4c334224e7763e740fc945c26c0abf9ba51a19d4f5befa1d20d7da0b7"},
-    {file = "noise-1.2.2-cp27-none-win_amd64.whl", hash = "sha256:15582a58c9ee79b07436a1220bd6c4145266865262d1e6478d37a08b7d910da8"},
-    {file = "noise-1.2.2-cp33-none-win32.whl", hash = "sha256:93ac2977cf0e8f5cb90a2e828a5dfefc438bfb1fb8d7fd1ee305f05eadc8578e"},
-    {file = "noise-1.2.2-cp33-none-win_amd64.whl", hash = "sha256:20d1c89a2b8c3714abe5a5fa653b3ab9ab01aee1475993b8bdb9d5e26bc081cc"},
-    {file = "noise-1.2.2-cp34-none-win32.whl", hash = "sha256:f82933563ef89651865cc7cbfab11721a2229f5c6c8c009a041be4fb887949f2"},
-    {file = "noise-1.2.2-cp34-none-win_amd64.whl", hash = "sha256:065be3531a6b7a7dfcb6840646400a75e081511c524caa04feaea11e16e7ab24"},
-    {file = "noise-1.2.2-py2.7-win-amd64.egg", hash = "sha256:fae41762d6b7a0a1e360ec4cb03260b6abcc302b2244a3feefdfbf52ffd612c9"},
-    {file = "noise-1.2.2-py2.7-win32.egg", hash = "sha256:0d3c51b538dfbbea85cbcf9fc4418ae5210136f5e39948968392a6d4f3cd39b0"},
-    {file = "noise-1.2.2-py3.3-win-amd64.egg", hash = "sha256:0191e19e77be1018f5548e75125de1c6aec11a75a8693bb5f8f8106b63561ed8"},
-    {file = "noise-1.2.2-py3.3-win32.egg", hash = "sha256:a15336cea59c74f1b3b2bf03b76600a3d59b0e557da1219176b9ca216dca8a91"},
-    {file = "noise-1.2.2-py3.4-win-amd64.egg", hash = "sha256:a476b2b62efa56b777c5a04566930aa47cfda43eda0e744a39b55056e763064f"},
-    {file = "noise-1.2.2-py3.4-win32.egg", hash = "sha256:001782e0b67c260e734e48a409641707f502ee4cd186a74e6bda881fb3c44427"},
-    {file = "noise-1.2.2.tar.gz", hash = "sha256:57a2797436574391ff63a111e852e53a4164ecd81ad23639641743cd1a209b65"},
-    {file = "noise-1.2.2.zip", hash = "sha256:36036cdaca131ddd2ab4397fba649af7f074ec08031e1e0a51031d0ae23b509a"},
 ]
 notebook = [
     {file = "notebook-6.2.0-py3-none-any.whl", hash = "sha256:25ad93c982b623441b491e693ef400598d1a46cdf11b8c9c0b3be6c61ebbb6cd"},

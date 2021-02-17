@@ -4,7 +4,19 @@ import os
 import random
 import shlex
 from numbers import Number
-from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Optional,
+    Sequence,
+    TextIO,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
 import numpy as np
 import vpype as vp
@@ -1505,12 +1517,22 @@ class Vsketch:
         """
         self._random.seed(seed)
 
+    @overload
+    def noise(
+        self, x: Number, y: Optional[Number] = None, z: Optional[Number] = None
+    ) -> float:
+        ...
+
+    @overload
     def noise(
         self,
-        x: Union[Number, Sequence[float]],
-        y: Union[None, Number, Sequence[float]] = None,
-        z: Union[None, Number, Sequence[float]] = None,
-    ) -> Union[float, np.ndarray]:
+        x: Union[Sequence[float], np.ndarray],
+        y: Union[None, Number, Sequence[float], np.ndarray] = None,
+        z: Union[None, Number, Sequence[float], np.ndarray] = None,
+    ) -> np.ndarray:
+        ...
+
+    def noise(self, x, y=None, z=None):
         """Returns the Perlin noise value at specified coordinates.
 
         This function can compute 1D, 2D or 3D noise, depending on the number of coordinates
