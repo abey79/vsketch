@@ -1,10 +1,11 @@
 import math
+import numbers
 import os
 import random
 import shlex
+from numbers import Number
 from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, TypeVar, Union, cast
 
-import noise
 import numpy as np
 import vpype as vp
 import vpype_cli
@@ -13,6 +14,7 @@ from shapely.geometry import Polygon
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
+from .noise import Noise
 from .param import Param
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
@@ -45,12 +47,9 @@ class Vsketch:
         self._default_pen_width = vp.convert_length("0.3mm")
         self._rect_mode = "corner"
         self._ellipse_mode = "center"
-        self._noise_lod = 4
         self._random = random.Random()
-        self._noise_falloff = 0.5
-        # we use the global rng to guarantee unique seeds for noise
-        self._noise_seed = random.uniform(0, 1)
         self._random.seed(random.randint(0, 2 ** 31))
+        self._noise = Noise()
         self.resetMatrix()
 
         # extract params
@@ -1506,7 +1505,12 @@ class Vsketch:
         """
         self._random.seed(seed)
 
-    def noise(self, x: float, y: float = 0, z: float = 0) -> float:
+    def noise(
+        self,
+        x: Union[Number, Sequence[float]],
+        y: Union[None, Number, Sequence[float]] = None,
+        z: Union[None, Number, Sequence[float]] = None,
+    ) -> Union[float, np.ndarray]:
         """Returns the Perlin noise value at specified coordinates.
 
         This function can compute 1D, 2D or 3D noise, depending on the number of coordinates
@@ -1530,19 +1534,12 @@ class Vsketch:
             noise value between 0.0 and 1.0
         """
 
-        # We use simplex noise instead of perlin noise because it can be computed for all
-        # inputs (as opposed to [0, 1]) so it behaves in a way that is closer to Processing
-        return (
-            noise.snoise4(
-                x,
-                y,
-                z,
-                self._noise_seed,
-                octaves=self._noise_lod,
-                persistence=self._noise_falloff,
-            )
-            + 0.5
-        )
+        res = self._noise.perlin(x, y if y is not None else 0.0, z if z is not None else 0)
+        return res[
+            0 if isinstance(x, numbers.Number) else slice(None),
+            0 if isinstance(y, numbers.Number) or y is None else slice(None),
+            0 if isinstance(z, numbers.Number) or z is None else slice(None),
+        ]
 
     def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
         """Adjusts parameters of the Perlin noise function.
@@ -1561,9 +1558,10 @@ class Vsketch:
             lod: number of octaves to use
             falloff: ratio of amplitude of one octave with respect to the previous one
         """
-        self._noise_lod = lod
-        if falloff is not None:
-            self._noise_falloff = falloff
+        if lod > 0:
+            self._noise.octaves = lod
+        if falloff is not None and falloff > 0.0:
+            self._noise.amp_falloff = falloff
 
     def noiseSeed(self, seed: int) -> None:
         """Set the random seed for :func:`noise`.
@@ -1575,9 +1573,7 @@ class Vsketch:
         Args:
             seed: the seed
         """
-        rng = random.Random()
-        rng.seed(seed)
-        self._noise_seed = rng.uniform(0, 100000)
+        self._noise.seed(seed)
 
     #####################
     # SKETCH MANAGEMENT #
