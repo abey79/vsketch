@@ -101,7 +101,7 @@ class Param:
 
         self.value = value
 
-    def __get__(self, instance, owner=None) -> Any:
+    def __get__(self, instance: Any, owner: Any = None) -> Any:
         if instance is None:
             return self
 

@@ -11,7 +11,7 @@ def bounds_equal(
     """Asserts that sketch bounds are approximately equal to those provided"""
 
     bounds = vsk.document.bounds()
-    return (
+    return bool(
         bounds is not None
         and np.isclose(bounds[0], xmin, rtol=1e-03)
         and np.isclose(bounds[1], ymin, rtol=1e-03)
