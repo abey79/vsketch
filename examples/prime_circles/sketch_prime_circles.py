@@ -23,10 +23,10 @@ class PrimeCirclesSketch(vsketch.Vsketch):
         self.size("10in", "10in")
         self.scale("3mm")
 
-        for i, prime in enumerate(get_primes(self.N())):
+        for i, prime in enumerate(get_primes(self.N)):
             self.circle(0, 0, 2 * (i + 1))
 
-            if self.random_phase():
+            if self.random_phase:
                 phase = np.random.random() * 2 * math.pi
             else:
                 phase = -math.pi / 2

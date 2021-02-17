@@ -10,9 +10,9 @@ class NoiseBezierSketch(vsketch.Vsketch):
         self.size("a4", landscape=False)
         self.scale("cm")
 
-        for i in range(self.N()):
-            t = i * self.freq()
-            v = i * self.drift()
+        for i in range(self.N):
+            t = i * self.freq
+            v = i * self.drift
             self.bezier(
                 self.noise(t, 0) * 10 + v,
                 self.noise(t, 1000) * 10 + v,

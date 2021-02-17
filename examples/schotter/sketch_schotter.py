@@ -10,14 +10,14 @@ class SchotterSketch(vsketch.Vsketch):
         self.size("a4", landscape=False)
         self.scale("cm")
 
-        for j in range(self.rows()):
+        for j in range(self.rows):
             with self.pushMatrix():
-                for i in range(self.columns()):
+                for i in range(self.columns):
                     with self.pushMatrix():
-                        self.rotate(self.fuzziness() * 0.03 * self.random(-j, j))
+                        self.rotate(self.fuzziness * 0.03 * self.random(-j, j))
                         self.translate(
-                            self.fuzziness() * 0.01 * self.randomGaussian() * j,
-                            self.fuzziness() * 0.01 * self.randomGaussian() * j,
+                            self.fuzziness * 0.01 * self.randomGaussian() * j,
+                            self.fuzziness * 0.01 * self.randomGaussian() * j,
                         )
                         self.rect(0, 0, 1, 1)
                     self.translate(1, 0)

@@ -194,7 +194,7 @@ def run(
         path = _find_sketch_script(target)
     except ValueError as err:
         print_error("Sketch could not be found: ", str(err))
-        return
+        raise typer.Exit(code=1)
 
     print_info("Running sketch: ", str(path))
 
@@ -220,6 +220,9 @@ def save(
         ),
     ),
     seed: Optional[str] = typer.Option(None, "-s", "--seed", help="seed or seed range to use"),
+    destination: Optional[str] = typer.Option(
+        None, "-d", "--destination", help="destination path"
+    ),
     multiprocessing: bool = typer.Option(
         True, envvar="VSK_MULTIPROCESSING", help="enable multiprocessing"
     ),
@@ -242,13 +245,16 @@ def save(
     If the number of files to generate is greater than 4, all available cores are used for the
     process. This behaviour can be disabled with --no-multiprocessing or the
     VSK_MULTIPROCESSING variable.
+
+    By default, all SVG are saved in the sketch's "output" sub-directory. This can be
+    overridden using the --destination option.
     """
 
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
         print_error("Sketch could not be found: ", str(err))
-        return
+        raise typer.Exit(code=1)
 
     # load configuration
     param_set: Dict[str, vsketch.ParamType] = {}
@@ -279,15 +285,26 @@ def save(
             seed_start, seed_end = _parse_seed(seed)
         except ValueError as err:
             print_error(f"Could not parse seed {seed}: ", str(err))
-            return
+            raise typer.Exit(code=1)
 
     # prepare output path
-    output_path = path.parent / "output"
-    if not output_path.exists():
-        output_path.mkdir()
-    elif not output_path.is_dir():
-        print_error("Could not create output directory: ", str(output_path))
-        return
+    if destination is not None:
+        output_path = pathlib.Path(destination)
+        if not output_path.exists():
+            print_error("Provided output path does not exist: ", str(output_path.absolute()))
+            raise typer.Exit(code=1)
+        if not output_path.is_dir():
+            print_error(
+                "Provided output path is not a directory: ", str(output_path.absolute())
+            )
+            raise typer.Exit(code=1)
+    else:
+        output_path = path.parent / "output"
+        if not output_path.exists():
+            output_path.mkdir()
+        elif not output_path.is_dir():
+            print_error("Could not create output directory: ", str(output_path))
+            raise typer.Exit(code=1)
 
     # noinspection PyShadowingNames
     def _write_output(seed: int) -> None:
@@ -295,7 +312,7 @@ def save(
         sketch_class = load_sketch_class(path)
         if sketch_class is None:
             print_error("Could not load script: ", str(path))
-            return
+            raise typer.Exit(code=1)
 
         sketch_class.set_param_set(param_set)
 
@@ -310,7 +327,7 @@ def save(
 
         if vsk is None:
             print_error("Could not execute script: ", str(path))
-            return
+            raise typer.Exit(code=1)
 
         doc = vsk.document
         with open(output_file, "w") as fp:

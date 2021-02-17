@@ -2,13 +2,13 @@ import vsketch
 
 
 class DetailSketch(vsketch.Vsketch):
-    detail_mm = vsketch.Param(1, 1, 50)
+    detail_value = vsketch.Param(1, 1, 50, unit="mm")
 
     def draw(self) -> None:
         self.size("a5", landscape=True)
         self.scale("1.5cm")
 
-        self.detail(f"{self.detail_mm()}mm")
+        self.detail(self.detail_value)
 
         self.circle(0, 0, 1)
         self.circle(0, 0, 2)
