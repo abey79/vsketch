@@ -706,7 +706,9 @@ class Vsketch:
         """
         if self._cur_stroke:
             center = self._transform_line(np.array([complex(x, y)]))
-            circle = vp.circle(center.real, center.imag, self.strokePenWidth / 2, self.epsilon)
+            circle = vp.circle(
+                center[0].real, center[0].imag, self.strokePenWidth / 2, self.epsilon
+            )
             lc = vp.LineCollection(
                 stylize_path(
                     circle,
@@ -1534,12 +1536,36 @@ class Vsketch:
     def noise(self, x, y=None, z=None):
         """Returns the Perlin noise value at specified coordinates.
 
-        This function can compute 1D, 2D or 3D noise, depending on the number of coordinates
-        given. See `Processing's description <https://processing.org/reference/noise_.html>`_
-        of Perlin noise for background information.
+        This function can sample 1D, 2D or 3D noise space, depending on the number of
+        coordinates provided.
+
+        ``x``, ``y``, and ``z`` may be scalar values. In this case, this function returns a
+        float value:
+
+            >>> vsk = Vsketch()
+            >>> vsk.noise(1.0, 1.0, 1.0)
+            0.5713948646260701
+
+        They can also be 1D vectors (any sequence type, including Numpy array).. In this case,
+        noise values are computed for every combination of the input parameter::
+
+            >>> vsk.noise([0, 0.1, 0.2, 0.3, 0.4])
+            array([0.73779253, 0.7397108 , 0.73590816, 0.72425246, 0.69773313])
+            >>> vsk.noise([0., 1.], np.linspace(0., 1., 5))
+            array([[0.73779253, 0.61588815, 0.52075717, 0.48219902, 0.50484146],
+                   [0.59085755, 0.67609827, 0.73308901, 0.74057962, 0.75528381]])
+            >>> vsk.noise(np.linspace(0., 1., 100), np.linspace(0., 1., 50), [0, 100]).shape
+            (100, 50, 2)
+
+        The vectorised version of :meth:`noise` is several orders of magnitude faster than the
+        corresponding scalar calls. This is thus the recommended way to use this function when
+        multiple noise values are needed.
 
         For a given :class:`Vsketch` instance, a coordinate tuple will always lead to the same
         pseudo-random value, unless another seed is set (:func:`noiseSeed`).
+
+        See `Processing's description <https://processing.org/reference/noise_.html>`_
+        of Perlin noise for background information.
 
         .. seealso::
 

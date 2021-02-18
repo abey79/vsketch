@@ -21,7 +21,7 @@ class Noise:
         rng = np.random.default_rng(seed)
         self._perlin = rng.random(PERLIN_SIZE + 1)
 
-    # @profile
+    # noinspection DuplicatedCode
     def perlin(
         self,
         x: Union[Number, Sequence[Number]],
@@ -85,77 +85,3 @@ class Noise:
             grid[idx] -= 1.0
 
         return r.reshape(1, 1, 1) if single else r
-
-
-def main():
-    import matplotlib.pyplot as plt
-
-    n = Noise()
-
-    xx = np.linspace(0, 10, 100)
-    yy = np.arange(30)
-    perl = n.perlin(xx, np.linspace(0, 3, 30), 0)
-    perl = perl[..., 0]
-
-    for j in yy:
-        plt.plot(np.arange(100) * 5.0, yy[j] * 10 + 100 * perl[:, j], "-b")
-
-    plt.axis("square")
-    plt.xlim(0, 640)
-    plt.ylim(0, 360)
-
-    plt.show()
-
-
-def main_old():
-    import matplotlib.pyplot as plt
-
-    n = Noise()
-
-    for j in range(30):
-        x = np.arange(100)
-        y = np.empty(100)
-
-        for i in range(100):
-            y[i] = n.perlin(i * 0.1, j * 0.1, 0)
-
-        plt.plot(x * 5, j * 10 + 100 * y, "-b")
-
-    plt.axis("square")
-    plt.xlim(0, 640)
-    plt.ylim(0, 360)
-
-    plt.show()
-
-
-if __name__ == "__main__":
-    main_old()
-
-    # print(Noise().noise_numpy(1, 0, 0))
-    # import matplotlib.pyplot as plt
-    #
-    # n = Noise()
-    #
-    # basic = False
-    # if not basic:
-    #     xx = np.linspace(0, 10, 100)
-    #     perl = n.noise_numpy(xx, np.linspace(0, 3, 30), 0)
-    #     perl = perl[..., 0]
-    #
-    #     for j in range(30):
-    #         plt.plot(xx, perl[:, j], "-b")
-    # else:
-    #     for j in range(30):
-    #         x = np.arange(100)
-    #         y = np.empty(100)
-    #
-    #         for i in range(100):
-    #             y[i] = n.noise(i * 0.1, j * 0.1, 0)
-    #
-    #         plt.plot(x * 5, j * 10 + 100 * y, "-b")
-    #
-    # plt.axis("square")
-    # plt.xlim(0, 640)
-    # plt.ylim(0, 360)
-    #
-    # plt.show()
