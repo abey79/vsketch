@@ -1,5 +1,4 @@
 import math
-import numbers
 import os
 import random
 import shlex
@@ -1558,9 +1557,9 @@ class Vsketch:
 
         res = self._noise.perlin(x, y if y is not None else 0.0, z if z is not None else 0)
         return res[
-            0 if isinstance(x, numbers.Number) else slice(None),
-            0 if isinstance(y, numbers.Number) or y is None else slice(None),
-            0 if isinstance(z, numbers.Number) or z is None else slice(None),
+            0 if isinstance(x, Number) else slice(None),
+            0 if isinstance(y, Number) or y is None else slice(None),
+            0 if isinstance(z, Number) or z is None else slice(None),
         ]
 
     def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
