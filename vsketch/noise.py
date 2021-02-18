@@ -37,7 +37,7 @@ class Noise:
         """
 
         if isinstance(x, Number) and isinstance(y, Number) and isinstance(z, Number):
-            grid = np.array([x, y, z])
+            grid = np.array([x, y, z], dtype=float)
             single = True
         else:
             grid = np.array(np.meshgrid(x, y, z, indexing="ij", copy=False), dtype=float)
