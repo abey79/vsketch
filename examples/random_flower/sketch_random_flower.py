@@ -17,24 +17,14 @@ class RandomFlowerSketch(vsketch.Vsketch):
         self.rotate(-90, degrees=True)
 
         noise_coord = np.linspace(0, 1, self.point_per_line)
-
         dirs = np.linspace(0, 2 * math.pi, self.num_line)
+        perlin = self.noise(noise_coord, dirs, [0, 100])
 
-        for direction in dirs:
+        for i, direction in enumerate(dirs):
             rdir = self.map(
-                np.array([self.noise(x, direction) for x in noise_coord]),
-                0,
-                1,
-                direction - self.rdir_range,
-                direction + self.rdir_range,
+                perlin[:, i, 0], 0, 1, direction - self.rdir_range, direction + self.rdir_range
             )
-            roffset = self.map(
-                np.array([self.noise(x, direction, 100) for x in noise_coord]),
-                0,
-                1,
-                0.05,
-                0.12,
-            )
+            roffset = self.map(perlin[:, i, 1], 0, 1, 0.05, 0.12)
 
             xoffset = roffset * np.cos(rdir)
             yoffset = roffset * np.sin(rdir)

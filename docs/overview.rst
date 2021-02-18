@@ -228,6 +228,20 @@ segment) can be adjusted. *vsketch* tries to be smart about this::
     # because it is bigger, this circle will be made of many more segments than the previous one
     self.circle(0, 0, radius=1)
 
+
+Perlin noise
+------------
+
+The :meth:`noise` is a vectorized implementation of Perlin noise that can sample a random space of up to 3 dimensions.
+This example illustrate the case of a vectorised sampling of a 2D noise space::
+
+    num_lines = 250
+    x_coords = np.linspace(0., 250., 1000)
+    perlin = self.noise(x_coords * 0.1, np.linspace(0, 5., num_lines))
+    for j in range(num_lines):
+        self.polygon(x_coords, j + perlin[:, j] * 6)
+
+
 Using sub-sketches
 ------------------
 

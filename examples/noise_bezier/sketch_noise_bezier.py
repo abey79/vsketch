@@ -1,3 +1,5 @@
+import numpy as np
+
 import vsketch
 
 
@@ -10,18 +12,20 @@ class NoiseBezierSketch(vsketch.Vsketch):
         self.size("a4", landscape=False)
         self.scale("cm")
 
+        t = np.arange(self.N) * self.freq
+        perlin = self.noise(t, np.arange(8) * 1000)
+
         for i in range(self.N):
-            t = i * self.freq
             v = i * self.drift
             self.bezier(
-                self.noise(t, 0) * 10 + v,
-                self.noise(t, 1000) * 10 + v,
-                self.noise(t, 2000) * 10 + v,
-                self.noise(t, 3000) * 10 + v,
-                self.noise(t, 4000) * 10 + v,
-                self.noise(t, 5000) * 10 + v,
-                self.noise(t, 6000) * 10 + v,
-                self.noise(t, 7000) * 10 + v,
+                perlin[i, 0] * 10 + v,
+                perlin[i, 1] * 10 + v,
+                perlin[i, 2] * 10 + v,
+                perlin[i, 3] * 10 + v,
+                perlin[i, 4] * 10 + v,
+                perlin[i, 5] * 10 + v,
+                perlin[i, 6] * 10 + v,
+                perlin[i, 7] * 10 + v,
             )
 
     def finalize(self) -> None:

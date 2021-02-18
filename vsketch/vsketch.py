@@ -2,9 +2,21 @@ import math
 import os
 import random
 import shlex
-from typing import Any, Dict, Iterable, Optional, Sequence, TextIO, Tuple, TypeVar, Union, cast
+from numbers import Number
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Optional,
+    Sequence,
+    TextIO,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
-import noise
 import numpy as np
 import vpype as vp
 import vpype_cli
@@ -13,6 +25,7 @@ from shapely.geometry import Polygon
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
+from .noise import Noise
 from .param import Param
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
@@ -45,12 +58,9 @@ class Vsketch:
         self._default_pen_width = vp.convert_length("0.3mm")
         self._rect_mode = "corner"
         self._ellipse_mode = "center"
-        self._noise_lod = 4
         self._random = random.Random()
-        self._noise_falloff = 0.5
-        # we use the global rng to guarantee unique seeds for noise
-        self._noise_seed = random.uniform(0, 1)
         self._random.seed(random.randint(0, 2 ** 31))
+        self._noise = Noise()
         self.resetMatrix()
 
         # extract params
@@ -696,7 +706,9 @@ class Vsketch:
         """
         if self._cur_stroke:
             center = self._transform_line(np.array([complex(x, y)]))
-            circle = vp.circle(center.real, center.imag, self.strokePenWidth / 2, self.epsilon)
+            circle = vp.circle(
+                center[0].real, center[0].imag, self.strokePenWidth / 2, self.epsilon
+            )
             lc = vp.LineCollection(
                 stylize_path(
                     circle,
@@ -1506,15 +1518,54 @@ class Vsketch:
         """
         self._random.seed(seed)
 
-    def noise(self, x: float, y: float = 0, z: float = 0) -> float:
+    @overload
+    def noise(
+        self, x: Number, y: Optional[Number] = None, z: Optional[Number] = None
+    ) -> float:
+        ...
+
+    @overload
+    def noise(
+        self,
+        x: Union[Sequence[float], np.ndarray],
+        y: Union[None, Number, Sequence[float], np.ndarray] = None,
+        z: Union[None, Number, Sequence[float], np.ndarray] = None,
+    ) -> np.ndarray:
+        ...
+
+    def noise(self, x, y=None, z=None):
         """Returns the Perlin noise value at specified coordinates.
 
-        This function can compute 1D, 2D or 3D noise, depending on the number of coordinates
-        given. See `Processing's description <https://processing.org/reference/noise_.html>`_
-        of Perlin noise for background information.
+        This function can sample 1D, 2D or 3D noise space, depending on the number of
+        coordinates provided.
+
+        ``x``, ``y``, and ``z`` may be scalar values. In this case, this function returns a
+        float value:
+
+            >>> vsk = Vsketch()
+            >>> vsk.noise(1.0, 1.0, 1.0)
+            0.5713948646260701
+
+        They can also be 1D vectors (any sequence type, including Numpy array).. In this case,
+        noise values are computed for every combination of the input parameter::
+
+            >>> vsk.noise([0, 0.1, 0.2, 0.3, 0.4])
+            array([0.73779253, 0.7397108 , 0.73590816, 0.72425246, 0.69773313])
+            >>> vsk.noise([0., 1.], np.linspace(0., 1., 5))
+            array([[0.73779253, 0.61588815, 0.52075717, 0.48219902, 0.50484146],
+                   [0.59085755, 0.67609827, 0.73308901, 0.74057962, 0.75528381]])
+            >>> vsk.noise(np.linspace(0., 1., 100), np.linspace(0., 1., 50), [0, 100]).shape
+            (100, 50, 2)
+
+        The vectorised version of :meth:`noise` is several orders of magnitude faster than the
+        corresponding scalar calls. This is thus the recommended way to use this function when
+        multiple noise values are needed.
 
         For a given :class:`Vsketch` instance, a coordinate tuple will always lead to the same
         pseudo-random value, unless another seed is set (:func:`noiseSeed`).
+
+        See `Processing's description <https://processing.org/reference/noise_.html>`_
+        of Perlin noise for background information.
 
         .. seealso::
 
@@ -1530,19 +1581,12 @@ class Vsketch:
             noise value between 0.0 and 1.0
         """
 
-        # We use simplex noise instead of perlin noise because it can be computed for all
-        # inputs (as opposed to [0, 1]) so it behaves in a way that is closer to Processing
-        return (
-            noise.snoise4(
-                x,
-                y,
-                z,
-                self._noise_seed,
-                octaves=self._noise_lod,
-                persistence=self._noise_falloff,
-            )
-            + 0.5
-        )
+        res = self._noise.perlin(x, y if y is not None else 0.0, z if z is not None else 0)
+        return res[
+            0 if isinstance(x, Number) else slice(None),
+            0 if isinstance(y, Number) or y is None else slice(None),
+            0 if isinstance(z, Number) or z is None else slice(None),
+        ]
 
     def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
         """Adjusts parameters of the Perlin noise function.
@@ -1561,9 +1605,10 @@ class Vsketch:
             lod: number of octaves to use
             falloff: ratio of amplitude of one octave with respect to the previous one
         """
-        self._noise_lod = lod
-        if falloff is not None:
-            self._noise_falloff = falloff
+        if lod > 0:
+            self._noise.octaves = lod
+        if falloff is not None and falloff > 0.0:
+            self._noise.amp_falloff = falloff
 
     def noiseSeed(self, seed: int) -> None:
         """Set the random seed for :func:`noise`.
@@ -1575,9 +1620,7 @@ class Vsketch:
         Args:
             seed: the seed
         """
-        rng = random.Random()
-        rng.seed(seed)
-        self._noise_seed = rng.uniform(0, 100000)
+        self._noise.seed(seed)
 
     #####################
     # SKETCH MANAGEMENT #
