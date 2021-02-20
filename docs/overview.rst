@@ -126,9 +126,9 @@ Sketch scripts always have the same structure::
 
     if __name__ == "__main__":
         vsk = MySketch()
-        self.draw()
-        self.finalize()
-        self.display(mode="matplotlib")
+        vsk.draw()
+        vsk.finalize()
+        vsk.display(mode="matplotlib")
 
 This structure is typically created using the ``vsk init`` command.
 
