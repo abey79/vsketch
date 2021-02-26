@@ -1,9 +1,4 @@
-import numbers
-
-import numpy as np
-
 import vsketch
-from vsketch.noise import Noise
 
 
 def test_random(vsk):
@@ -68,35 +63,3 @@ def test_noise_seed(vsk):
     assert n1 != n4
     assert n2 != n4
     assert n1 == n3
-
-
-def test_noise_dimensions(vsk):
-    assert isinstance(vsk.noise(1.5), numbers.Number)
-
-    assert vsk.noise([0, 1]).shape == (2,)
-    assert vsk.noise([0, 1], 3).shape == (2,)
-    assert vsk.noise([0, 1], [2, 3, 4]).shape == (2, 3)
-    assert vsk.noise([0, 1], [2, 3, 4], 4).shape == (2, 3)
-    assert vsk.noise([0, 1], [2, 3, 4], [5, 6, 7, 8]).shape == (2, 3, 4)
-    assert vsk.noise([0, 1], 4, [5, 6, 7, 8]).shape == (2, 4)
-    assert vsk.noise(4, 4, [5, 6, 7, 8]).shape == (4,)
-    assert vsk.noise(4, [0, 1], [5, 6, 7, 8]).shape == (2, 4)
-
-
-def test_noise_benchmark_single(benchmark):
-    noise = Noise()
-    benchmark(noise.perlin, 1.0, 2.0, 3.0)
-
-
-def test_noise_benchmark_small_array(benchmark):
-    noise = Noise()
-    benchmark(
-        noise.perlin, np.linspace(0, 1, 10), np.linspace(0, 1, 10), np.linspace(0, 1, 10)
-    )
-
-
-def test_noise_benchmark_big_array(benchmark):
-    noise = Noise()
-    benchmark(
-        noise.perlin, np.linspace(0, 1, 100), np.linspace(0, 1, 100), np.linspace(0, 1, 100)
-    )

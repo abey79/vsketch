@@ -20,12 +20,12 @@ from typing import (
 import numpy as np
 import vpype as vp
 import vpype_cli
+from pnoise import Noise
 from shapely.geometry import Polygon
 
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
-from .noise import Noise
 from .param import Param
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
@@ -1581,12 +1581,7 @@ class Vsketch:
             noise value between 0.0 and 1.0
         """
 
-        res = self._noise.perlin(x, y if y is not None else 0.0, z if z is not None else 0)
-        return res[
-            0 if isinstance(x, Number) else slice(None),
-            0 if isinstance(y, Number) or y is None else slice(None),
-            0 if isinstance(z, Number) or z is None else slice(None),
-        ]
+        return self._noise.perlin(x, y if y is not None else 0.0, z if z is not None else 0)
 
     def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
         """Adjusts parameters of the Perlin noise function.
