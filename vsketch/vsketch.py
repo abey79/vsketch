@@ -1652,6 +1652,36 @@ class Vsketch:
     #######################
 
     @staticmethod
+    def lerp(
+        start: Union[float, complex, np.ndarray],
+        stop: Union[float, complex, np.ndarray],
+        amt: float,
+    ) -> Union[float, complex, np.ndarray]:
+        """Interpolate between two numbers or arrays.
+
+        The ``amt`` parameter is the amount to interpolate between the two values where 0.0
+        equal to the first point, 0.1 is very near the first point, 0.5 is half-way in between,
+        etc.
+
+        Examples::
+
+            >>> vsk = Vsketch()
+            >>> vsk.lerp(0., 10, 0.3)
+            3.
+            >>> vsk.lerp(np.array([0, 1, 2]), np.array(10, 11, 12), 0.5)
+            array([5., 6., 7.])
+
+        Args:
+            start: start value or array
+            stop: end value or array
+            amt: value between 0. and 1.
+
+        Return:
+            interpolated value or array
+        """
+        return (1.0 - amt) * start + amt * stop
+
+    @staticmethod
     def map(
         value: Union[float, np.ndarray],
         start1: float,
