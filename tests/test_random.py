@@ -1,3 +1,6 @@
+import numpy as np
+import pytest
+
 import vsketch
 
 
@@ -63,3 +66,32 @@ def test_noise_seed(vsk):
     assert n1 != n4
     assert n2 != n4
     assert n1 == n3
+
+
+def test_noise_dimensions(vsk):
+    assert isinstance(vsk.noise(0.1), float)
+    assert isinstance(vsk.noise(0.1, 0.2), float)
+    assert isinstance(vsk.noise(0.1, 0.2, 0.3), float)
+    assert isinstance(vsk.noise(0.1, grid_mode=False), float)
+    assert isinstance(vsk.noise(0.1, 0.2, grid_mode=False), float)
+    assert isinstance(vsk.noise(0.1, 0.2, 0.3, grid_mode=False), float)
+
+    assert vsk.noise([0, 1]).shape == (2,)
+    assert vsk.noise([0, 1], 0.1).shape == (2,)
+    assert vsk.noise([0, 1], 0.1, 0.2).shape == (2,)
+    assert vsk.noise([0, 1], range(10, 13)).shape == (2, 3)
+    assert vsk.noise([0, 1], range(10, 13), 0.5).shape == (2, 3)
+    assert vsk.noise([0, 1], range(10, 13), np.linspace(0, 1, 100)).shape == (2, 3, 100)
+
+    assert vsk.noise(np.linspace(0, 1, 100), grid_mode=False).shape == (100,)
+    assert vsk.noise(
+        np.linspace(0, 1, 100), np.linspace(10, 20, 100), grid_mode=False
+    ).shape == (100,)
+    assert vsk.noise(
+        np.linspace(0, 1, 100), np.linspace(10, 20, 100), range(100), grid_mode=False
+    ).shape == (100,)
+
+    with pytest.raises(ValueError):
+        vsk.noise(range(10), range(11), grid_mode=False)
+    with pytest.raises(ValueError):
+        vsk.noise(range(10), range(10), range(11), grid_mode=False)

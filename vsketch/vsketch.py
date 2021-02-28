@@ -1520,7 +1520,11 @@ class Vsketch:
 
     @overload
     def noise(
-        self, x: Number, y: Optional[Number] = None, z: Optional[Number] = None
+        self,
+        x: Number,
+        y: Optional[Number] = None,
+        z: Optional[Number] = None,
+        grid_mode: bool = True,
     ) -> float:
         ...
 
@@ -1530,24 +1534,26 @@ class Vsketch:
         x: Union[Sequence[float], np.ndarray],
         y: Union[None, Number, Sequence[float], np.ndarray] = None,
         z: Union[None, Number, Sequence[float], np.ndarray] = None,
+        grid_mode: bool = True,
     ) -> np.ndarray:
         ...
 
-    def noise(self, x, y=None, z=None):
+    def noise(self, x, y=None, z=None, grid_mode=True):
         """Returns the Perlin noise value at specified coordinates.
 
-        This function can sample 1D, 2D or 3D noise space, depending on the number of
-        coordinates provided.
+        This function sample 1D, 2D or 3D noise space, depending on the number of
+        coordinates provided. The coordinates may be either scalar values or vectors. In the
+        later case, :meth:`noise` can operate in grid mode (default) or not.
 
-        ``x``, ``y``, and ``z`` may be scalar values. In this case, this function returns a
-        float value:
+        When ``x``, ``y``, and ``z`` are scalar values, this function returns a float value::
 
             >>> vsk = Vsketch()
             >>> vsk.noise(1.0, 1.0, 1.0)
             0.5713948646260701
 
-        They can also be 1D vectors (any sequence type, including Numpy array).. In this case,
-        noise values are computed for every combination of the input parameter::
+        With grid mode enabled, either or all of ``x``, ``y``, and ``z`` can also be 1D vectors
+        (any sequence type, such as Numpy array), each with possibly different length.
+        :meth:`noise` computes values for *every combination* of the input parameters::
 
             >>> vsk.noise([0, 0.1, 0.2, 0.3, 0.4])
             array([0.73779253, 0.7397108 , 0.73590816, 0.72425246, 0.69773313])
@@ -1557,11 +1563,19 @@ class Vsketch:
             >>> vsk.noise(np.linspace(0., 1., 100), np.linspace(0., 1., 50), [0, 100]).shape
             (100, 50, 2)
 
-        The vectorised version of :meth:`noise` is several orders of magnitude faster than the
-        corresponding scalar calls. This is thus the recommended way to use this function when
-        multiple noise values are needed.
+        With grid mode disabled, the provided input coordinates must all have the same shape
+        and the returned array will also have this shape. In this example, the Perlin 2D noise
+        field is sample along the diagonal::
 
-        For a given :class:`Vsketch` instance, a coordinate tuple will always lead to the same
+            >>> vsk.noise(np.linspace(0, 1, 10), np.linspace(0, 1, 10), grid_mode=False)
+            array([0.57731468, 0.58830833, 0.61182686, 0.59998289, 0.64938922,
+            0.68599367, 0.62879284, 0.6615939 , 0.73334911, 0.76806402])
+
+        The vectorised version of :meth:`noise` is several orders of magnitude faster than the
+        corresponding scalar calls. It is thus strongly recommended to use few, out-of-loop,
+        vectorized calls instead of many in-loop scalar calls.
+
+        For a given :class:`Vsketch` instance, a given coordinate will always yield the same
         pseudo-random value, unless another seed is set (:func:`noiseSeed`).
 
         See `Processing's description <https://processing.org/reference/noise_.html>`_
@@ -1576,12 +1590,27 @@ class Vsketch:
             x: X coordinate in the noise space
             y: Y coordinate in the noise space (if provided)
             z: Z coordinate in the noise space (if provided)
+            grid_mode: enable grid mode (default: True)
 
         Returns:
             noise value between 0.0 and 1.0
         """
 
-        return self._noise.perlin(x, y if y is not None else 0.0, z if z is not None else 0)
+        # force grid mode to True in scalar mode
+        if (
+            isinstance(x, Number)
+            and (isinstance(y, Number) or y is None)
+            and (isinstance(z, Number) or z is None)
+        ):
+            grid_mode = True
+
+        zeros = np.zeros_like(x) if not grid_mode else 0
+        return self._noise.perlin(
+            x,
+            y if y is not None else zeros,
+            z if z is not None else zeros,
+            grid_mode=grid_mode,
+        )
 
     def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
         """Adjusts parameters of the Perlin noise function.
