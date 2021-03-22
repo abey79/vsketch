@@ -4,11 +4,11 @@ from shapely.geometry import Polygon
 import vsketch
 
 
-class StrokeFillSketch(vsketch.Vsketch):
-    def draw(self) -> None:
-        self.size("a4", landscape=True)
-        self.scale("1cm")
-        self.penWidth("0.5mm")
+class StrokeFillSketch(vsketch.SketchClass):
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size("a4", landscape=True)
+        vsk.scale("1cm")
+        vsk.penWidth("0.5mm")
 
         p = translate(
             Polygon(
@@ -20,45 +20,42 @@ class StrokeFillSketch(vsketch.Vsketch):
         )
 
         # the default is no fill and stroke to layer 1
-        self.square(0, 0, 4)
-        self.circle(2, 8, 4)
-        self.geometry(p)
+        vsk.square(0, 0, 4)
+        vsk.circle(2, 8, 4)
+        vsk.geometry(p)
 
-        self.translate(7, 0)
+        vsk.translate(7, 0)
 
         # add some fill to layer 2
-        self.fill(2)
-        self.penWidth("1mm", 2)
-        self.square(0, 0, 4)
-        self.circle(2, 8, 4)
-        self.geometry(p)
+        vsk.fill(2)
+        vsk.penWidth("1mm", 2)
+        vsk.square(0, 0, 4)
+        vsk.circle(2, 8, 4)
+        vsk.geometry(p)
 
-        self.translate(7, 0)
+        vsk.translate(7, 0)
 
         # with thick stroke
-        self.fill(2)
-        self.penWidth("1mm", 2)
-        self.strokeWeight(4)
-        self.square(0, 0, 4)
-        self.circle(2, 8, 4)
-        self.geometry(p)
+        vsk.fill(2)
+        vsk.penWidth("1mm", 2)
+        vsk.strokeWeight(4)
+        vsk.square(0, 0, 4)
+        vsk.circle(2, 8, 4)
+        vsk.geometry(p)
 
-        self.translate(7, 0)
+        vsk.translate(7, 0)
 
         # remove stroke and set fill to layer 3 with a thicker pen
-        self.fill(3)
-        self.penWidth("2mm", 3)
-        self.noStroke()
-        self.square(0, 0, 4)
-        self.circle(2, 8, 4)
-        self.geometry(p)
+        vsk.fill(3)
+        vsk.penWidth("2mm", 3)
+        vsk.noStroke()
+        vsk.square(0, 0, 4)
+        vsk.circle(2, 8, 4)
+        vsk.geometry(p)
 
-    def finalize(self) -> None:
-        self.vpype("linemerge linesimplify reloop linesort")
+    def finalize(self, vsk: vsketch.Vsketch) -> None:
+        vsk.vpype("linemerge linesimplify reloop linesort")
 
 
 if __name__ == "__main__":
-    vsk = StrokeFillSketch()
-    vsk.draw()
-    vsk.finalize()
-    vsk.display()
+    StrokeFillSketch.display()

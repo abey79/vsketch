@@ -3,10 +3,10 @@ import numpy as np
 import vsketch
 
 
-class TransformsSketch(vsketch.Vsketch):
-    def draw(self) -> None:
-        self.size("a4", landscape=True)
-        self.scale("2cm")
+class TransformsSketch(vsketch.SketchClass):
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size("a4", landscape=True)
+        vsk.scale("2cm")
 
         # build a star
         angles = np.linspace(0, 2 * np.pi, 5, endpoint=False)
@@ -14,29 +14,26 @@ class TransformsSketch(vsketch.Vsketch):
         x = np.cos(angles[idx] - np.pi / 2)
         y = np.sin(angles[idx] - np.pi / 2)
 
-        with self.pushMatrix():
+        with vsk.pushMatrix():
             for i in range(5):
-                with self.pushMatrix():
-                    self.scale(0.8 ** i)
-                    self.polygon(x, y)
+                with vsk.pushMatrix():
+                    vsk.scale(0.8 ** i)
+                    vsk.polygon(x, y)
 
-                self.translate(2, 0)
+                vsk.translate(2, 0)
 
-        self.translate(0, 4)
+        vsk.translate(0, 4)
 
         for i in range(5):
-            with self.pushMatrix():
-                self.rotate(i * 4, degrees=True)
-                self.polygon(x, y)
+            with vsk.pushMatrix():
+                vsk.rotate(i * 4, degrees=True)
+                vsk.polygon(x, y)
 
-            self.translate(2, 0)
+            vsk.translate(2, 0)
 
-    def finalize(self) -> None:
-        self.vpype("linemerge linesimplify reloop linesort")
+    def finalize(self, vsk: vsketch.Vsketch) -> None:
+        vsk.vpype("linemerge linesimplify reloop linesort")
 
 
 if __name__ == "__main__":
-    vsk = TransformsSketch()
-    vsk.draw()
-    vsk.finalize()
-    vsk.display()
+    TransformsSketch.display()

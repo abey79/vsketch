@@ -406,7 +406,7 @@ def quickdraw_to_linestring(qd_image):
     return MultiLineString(linestrings)
 
 
-class QuickDrawSketch(vsketch.Vsketch):
+class QuickDrawSketch(vsketch.SketchClass):
     category = vsketch.Param("crab", choices=quick_draw_categories)
     page_size = vsketch.Param("a4", choices=vp.PAGE_SIZES.keys())
     landscape = vsketch.Param(False)
@@ -416,9 +416,9 @@ class QuickDrawSketch(vsketch.Vsketch):
     rows = vsketch.Param(13, 1)
     scale_factor = vsketch.Param(3.0)
 
-    def draw(self) -> None:
-        self.size(self.page_size, landscape=self.landscape)
-        self.penWidth("0.5mm")
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size(self.page_size, landscape=self.landscape)
+        vsk.penWidth("0.5mm")
 
         # obtain the datafile
         file_name = self.category + ".bin"
@@ -434,30 +434,27 @@ class QuickDrawSketch(vsketch.Vsketch):
 
         # draw stuff
 
-        width = self.width - 2 * self.margins
-        height = self.height - 2 * self.margins
+        width = vsk.width - 2 * self.margins
+        height = vsk.height - 2 * self.margins
 
         n = self.columns * self.rows
         samples = random.sample(drawing_subset, n)
         for j in range(self.rows):
-            with self.pushMatrix():
+            with vsk.pushMatrix():
                 for i in range(self.columns):
                     idx = j * self.columns + i
-                    with self.pushMatrix():
-                        self.scale(self.scale_factor * min(1 / self.columns, 1 / self.rows))
+                    with vsk.pushMatrix():
+                        vsk.scale(self.scale_factor * min(1 / self.columns, 1 / self.rows))
                         drawing = quickdraw_to_linestring(samples[idx])
-                        self.stroke((idx % self.layer_count) + 1)
-                        self.geometry(drawing)
-                    self.translate(width / self.columns, 0)
+                        vsk.stroke((idx % self.layer_count) + 1)
+                        vsk.geometry(drawing)
+                    vsk.translate(width / self.columns, 0)
 
-            self.translate(0, height / self.rows)
+            vsk.translate(0, height / self.rows)
 
-    def finalize(self) -> None:
-        self.vpype("linemerge linesort")
+    def finalize(self, vsk: vsketch.Vsketch) -> None:
+        vsk.vpype("linemerge linesort")
 
 
 if __name__ == "__main__":
-    vsk = QuickDrawSketch()
-    vsk.draw()
-    vsk.finalize()
-    vsk.display()
+    QuickDrawSketch.display()

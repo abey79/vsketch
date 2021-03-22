@@ -26,7 +26,6 @@ from shapely.geometry import Polygon
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
 from .fill import generate_fill
-from .param import Param
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
 
@@ -62,24 +61,6 @@ class Vsketch:
         self._random.seed(random.randint(0, 2 ** 31))
         self._noise = Noise()
         self.resetMatrix()
-
-        # extract params
-        self._params = self.get_params()
-
-    @classmethod
-    def get_params(cls) -> Dict[str, Param]:
-        res = {}
-        for name in cls.__dict__:
-            param = getattr(cls, name)
-            if isinstance(param, Param):
-                res[name] = param
-        return res
-
-    @classmethod
-    def set_param_set(cls, param_set: Dict[str, Any]) -> None:
-        for name, value in param_set.items():
-            if name in cls.__dict__ and isinstance(cls.__dict__[name], Param):
-                cls.__dict__[name].set_value_with_validation(value)
 
     @property
     def document(self):
@@ -1645,36 +1626,6 @@ class Vsketch:
             seed: the seed
         """
         self._noise.seed(seed)
-
-    #####################
-    # SKETCH MANAGEMENT #
-    #####################
-
-    # Pure virtual functions
-
-    def draw(self) -> None:
-        """Draws the sketch.
-
-        This function must be implemented by subclasses.
-        """
-        raise NotImplementedError()
-
-    def finalize(self) -> None:
-        """Finalize the sketch before export.
-
-        This function must be implemented by subclasses.
-        """
-        raise NotImplementedError()
-
-    # Param
-
-    @property
-    def params(self) -> Iterable[Param]:
-        return self._params.values()
-
-    @property
-    def param_set(self) -> Dict[str, Any]:
-        return {name: param.value for name, param in self._params.items()}
 
     #######################
     # STATELESS UTILITIES #

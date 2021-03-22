@@ -1,8 +1,126 @@
-from typing import Any, Optional, Sequence, Tuple, Union
+import os
+import pathlib
+import random
+from typing import Any, Dict, Iterable, Optional, Sequence, Tuple, Union
 
+import numpy as np
 import vpype as vp
 
+from .utils import working_directory
+from .vsketch import Vsketch
+
 ParamType = Union[int, float, bool, str]
+
+
+class SketchClass:
+    def __init__(self):
+        self._vsk = Vsketch()
+        self._finalized = False
+        self._params = self.get_params()
+
+    @property
+    def vsk(self) -> Vsketch:
+        return self._vsk
+
+    def execute_draw(self) -> None:
+        self.draw(self._vsk)
+
+    def ensure_finalized(self) -> None:
+        if self._finalized:
+            return
+
+        self.finalize(self._vsk)
+
+        # vsk is not reused, so we can just hack into it's document instead of using a deep
+        # copy like vsk.display() and vsk.save()
+        if self.vsk.centered and self.vsk.document.page_size is not None:
+            bounds = self.vsk.document.bounds()
+            if bounds is not None:
+                width, height = self.vsk.document.page_size
+                self.vsk.document.translate(
+                    (width - (bounds[2] - bounds[0])) / 2.0 - bounds[0],
+                    (height - (bounds[3] - bounds[1])) / 2.0 - bounds[1],
+                )
+
+        self._finalized = True
+
+    @classmethod
+    def execute(
+        cls,
+        seed: Optional[int] = None,
+        finalize: bool = False,
+    ) -> Optional["SketchClass"]:
+        cwd = getattr(cls, "__vsketch_cwd__", pathlib.Path(os.getcwd()))
+        with working_directory(cwd):
+            sketch = cls()
+            if sketch is None:
+                return None
+
+            if seed is not None:
+                sketch.vsk.randomSeed(seed)
+                sketch.vsk.noiseSeed(seed)
+                random.seed(seed)
+                np.random.seed(seed)
+            sketch.execute_draw()
+            if finalize:
+                sketch.ensure_finalized()
+
+        # vsk is not reused, so we can just hack into it's document instead of using a deep
+        # copy like vsk.display() and vsk.save()
+        vsk = sketch.vsk
+        if vsk.centered and vsk.document.page_size is not None:
+            bounds = vsk.document.bounds()
+            if bounds is not None:
+                width, height = vsk.document.page_size
+                vsk.document.translate(
+                    (width - (bounds[2] - bounds[0])) / 2.0 - bounds[0],
+                    (height - (bounds[3] - bounds[1])) / 2.0 - bounds[1],
+                )
+
+        return sketch
+
+    @classmethod
+    def display(cls):
+        sketch = cls.execute()
+        if sketch is not None:
+            sketch.vsk.display()
+
+    def draw(self, vsk: Vsketch) -> None:
+        """Draws the sketch.
+
+        This function must be implemented by subclasses.
+        """
+        raise NotImplementedError()
+
+    def finalize(self, vsk: Vsketch) -> None:
+        """Finalize the sketch before export.
+
+        This function must be implemented by subclasses.
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def get_params(cls) -> Dict[str, "Param"]:
+        res = {}
+        for name in cls.__dict__:
+            param = getattr(cls, name)
+            if isinstance(param, Param):
+                res[name] = param
+        return res
+
+    @classmethod
+    def set_param_set(cls, param_set: Dict[str, Any]) -> None:
+        for name, value in param_set.items():
+            if name in cls.__dict__ and isinstance(cls.__dict__[name], Param):
+                cls.__dict__[name].set_value_with_validation(value)
+
+    @property
+    def params(self) -> Iterable["Param"]:
+        return self._params.values()
+
+    @property
+    def param_set(self) -> Dict[str, Any]:
+        return {name: param.value for name, param in self._params.items()}
 
 
 class Param:
