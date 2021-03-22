@@ -112,35 +112,47 @@ paragraphs provides an overview of how a sketch is made.
 Sketch structure
 ----------------
 
-Sketch scripts always have the same structure::
+Sketch scripts are used by the ``vsk`` CLI tool. They always have the same structure::
 
     import vsketch
 
-    class MySketch(vsketch.Vsketch):
-        def draw(self) -> None:
-            self.size("a4", landscape=False)
+    class MySketch(vsketch.SketchClass):
+        def draw(self, vsk: vsketch.Vsketch) -> None:
+            vsk.size("a4", landscape=False)
 
-        def finalize(self) -> None:
-            self.vpype("linemerge linesimplify reloop linesort")
+        def finalize(self, vsk: vsketch.Vsketch) -> None:
+            vsk.vpype("linemerge linesimplify reloop linesort")
 
 
     if __name__ == "__main__":
-        vsk = MySketch()
-        vsk.draw()
-        vsk.finalize()
-        vsk.display(mode="matplotlib")
+        MySketch().display()
 
-This structure is typically created using the ``vsk init`` command.
+This skeleton is generally created using the ``vsk init`` command.
 
-Your sketch is encapsulated in a subclass of :class:`Vsketch` which must implement two functions:
+Your sketch is encapsulated in a subclass of :class:`SketchClass` which must implement two functions:
 
-    * :meth:`Vsketch.draw` implements the bulk of the sketch's content.
-    * :meth:`Vsketch.finalize` implements the potentially CPU-heavy optimisations that are not required for
+    * :meth:`SketchClass.draw` implements the bulk of the sketch's content.
+    * :meth:`SketchClass.finalize` implements the potentially CPU-heavy optimisations that are not required for
       display purposes.
 
-For display purposes, ``vsk`` only calls :meth:`Vsketch.draw()`. However, when it exports a sketch to a SVG file, it
-also calls :meth:`Vsketch.finalize`. This enables a fast refresh of the display when the sketch or its parameters change
-while ensuring that any SVG output is ready to plot.
+For display purposes, ``vsk`` only calls :meth:`SketchClass.draw`. However, when it exports a sketch to a SVG file, it
+also calls :meth:`SketchClass.finalize`. This enables a fast refresh of the display when the sketch or its parameters
+change while ensuring that any SVG output is ready to plot.
+
+
+Using *vsketch* as a regular package
+------------------------------------
+
+*vsketch* can also be used as a regular Python package, without relying on the ``vsk`` CLI tool. This is useful to
+work, for example, in Jupyter or Colab notebooks.
+
+This is done by simply creating an instance of :class:`vsketch.Vsketch`::
+
+    import vsketch
+
+    vsk = vsketch.Vsketch()
+    vsk.size("a4", landscape=True)
+    # ...
 
 
 Primitives
@@ -148,14 +160,14 @@ Primitives
 
 The usual primitives are available::
 
-    self.line(0, 0, 10, 20)
-    self.rect(10, 10, 5, 8)
-    self.circle(2, 2, radius=3)
-    self.triangle(0, 0, 1, 1, 0, 1)
+    vsk.line(0, 0, 10, 20)
+    vsk.rect(10, 10, 5, 8)
+    vsk.circle(2, 2, radius=3)
+    vsk.triangle(0, 0, 1, 1, 0, 1)
 
 So are the less usual primitives::
 
-    self.bezier(1, 1, 3, 1, 3, 3, 1, 3)
+    vsk.bezier(1, 1, 3, 1, 3, 3, 1, 3)
 
 
 Units
@@ -164,8 +176,8 @@ Units
 By default, vsketch uses CSS pixels as unit, just like SVG. If you'd rather work in some other unit,
 just start your sketch with a scale factor::
 
-    self.scale("1cm")
-    self.line(0, 0, 21, 29.7)  # this line will span an entire A4 page
+    vsk.scale("1cm")
+    vsk.line(0, 0, 21, 29.7)  # this line will span an entire A4 page
 
 
 Strokes, fills and layers
@@ -175,21 +187,21 @@ Colors do not really make sense when preparing files for plotters. *vsketch* ins
 intended to be plotted with different pens each::
 
     # by default, layer 1 is current
-    self.line(0, 0, 5, 5)
+    vsk.line(0, 0, 5, 5)
 
     # the current layer can be changed
-    self.stroke(2)
-    self.circle(14, 8, 3)
+    vsk.stroke(2)
+    vsk.circle(14, 8, 3)
 
 No reason plotters should miss on the "fill" party! This works just as you didn't dare to expect::
 
     # let's use a pen width of 0.5mm for layer 2
-    self.penWidth("0.5mm", 2)
+    vsk.penWidth("0.5mm", 2)
 
     # this circle will be stroked in layer 1 and and filled in layer 2
-    self.stroke(1)
-    self.fill(2)
-    self.circle(0, 0, 5)
+    vsk.stroke(1)
+    vsk.fill(2)
+    vsk.circle(0, 0, 5)
 
 
 Using Shapely
@@ -200,7 +212,7 @@ very useful for generative plotter art. *vsketch* directly accepts Shapely objec
 
     from shapely.geometry import Point
 
-    self.geometry(Point(0, 0).buffer(2).union(Point(1.5, 0).buffer(1.5)))
+    vsk.geometry(Point(0, 0).buffer(2).union(Point(1.5, 0).buffer(1.5)))
 
 
 Transforms
@@ -210,23 +222,23 @@ Transformation matrices are fully supported::
 
     for i in range(5):
         with pushMatrix():
-            self.rotate(i * 5, degrees=True)
-            self.rect(-2, -2, 2, 2)
+            vsk.rotate(i * 5, degrees=True)
+            vsk.rect(-2, -2, 2, 2)
 
-        self.translate(5, 0)
+        vsk.translate(5, 0)
 
 Internally, vsketch approximates all curves with segments. The level of detail (i.e. the maximum length of individual
 segment) can be adjusted. *vsketch* tries to be smart about this::
 
-    self.detail("0.1mm")
+    vsk.detail("0.1mm")
 
     # this circle is made of segment 0.1mm-long or less
-    self.circle(0, 0, radius=1)
+    vsk.circle(0, 0, radius=1)
 
-    self.scale(100)
+    vsk.scale(100)
 
     # because it is bigger, this circle will be made of many more segments than the previous one
-    self.circle(0, 0, radius=1)
+    vsk.circle(0, 0, radius=1)
 
 
 Perlin noise
@@ -237,9 +249,9 @@ This example illustrate the case of a vectorised sampling of a 2D noise space::
 
     num_lines = 250
     x_coords = np.linspace(0., 250., 1000)
-    perlin = self.noise(x_coords * 0.1, np.linspace(0, 5., num_lines))
+    perlin = vsk.noise(x_coords * 0.1, np.linspace(0, 5., num_lines))
     for j in range(num_lines):
-        self.polygon(x_coords, j + perlin[:, j] * 6)
+        vsk.polygon(x_coords, j + perlin[:, j] * 6)
 
 
 Using sub-sketches
@@ -253,39 +265,31 @@ Multiple sketches can be created and used as reusable sub-sketches::
     sub_sketch.square(0.5, 0.5, 1)
 
     # add the sub-sketch
-    self.sketch(sub_sketch)
-    self.translate(10, 10)
-    self.rotate(45, degrees=True)
-    self.sketch(sub_sketch)  # the transformation matrix is applied on the sub-sketch
+    vsk.sketch(sub_sketch)
+    vsk.translate(10, 10)
+    vsk.rotate(45, degrees=True)
+    vsk.sketch(sub_sketch)  # the transformation matrix is applied on the sub-sketch
 
 Using *vpype*
 -------------
 
 The power of `vpype`_ can be unleashed with a single call::
 
-    self.vpype("linesimplify linemerge reloop linesort")
+    vsk.vpype("linesimplify linemerge reloop linesort")
 
 Displaying and saving
 ---------------------
 
-Usually, ``vsk`` takes care of running, displaying and exporting your sketch as SVG. This is also easy to do from a
-regular script. Displaying is done as follows::
+``vsk`` generally takes care of running, displaying and exporting your sketch as SVG. When using *vsketch* as a
+standalone package, this must be done manually.
 
-    self.display()
+Displaying is done as follows::
 
-Finally, you can save a ready-to-plot SVG::
+    vsk.display()
 
-    self.save("my_file.svg")
+And saving a ready-to-plot SVG as follows::
 
-As a matter of fact, examples always includes the following code::
-
-    if __name__ == "__main__":
-        vsk = MySketch()
-        vsk.draw()
-        vsk.finalize()
-        vsk.display()
-
-This way, the sketch can be executed by Python without having to use the ``vsk`` command.
+    vsk.save("my_file.svg")
 
 
 Beyond the basics?

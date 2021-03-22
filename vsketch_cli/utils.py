@@ -2,13 +2,10 @@ import inspect
 import json
 import os
 import pathlib
-import random
 import traceback
-from contextlib import contextmanager
 from runpy import run_path
-from typing import Dict, Iterator, Optional, Type
+from typing import Dict, Optional, Type
 
-import numpy as np
 import typer
 
 import vsketch
@@ -61,24 +58,14 @@ def find_unique_path(
     return path
 
 
-@contextmanager
-def working_directory(path: pathlib.Path) -> Iterator:
-    prev_cwd = os.getcwd()
-    os.chdir(str(path))
-    try:
-        yield
-    finally:
-        os.chdir(prev_cwd)
-
-
-def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.Vsketch]]:
+def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.SketchClass]]:
     cwd_path = path
     if not cwd_path.is_dir():
         cwd_path = cwd_path.parent
 
     # noinspection PyBroadException
     try:
-        with working_directory(cwd_path):
+        with vsketch.working_directory(cwd_path):
             sketch_scripts = run_path(str(path))  # type: ignore
     except Exception:
         traceback.print_exc()
@@ -86,47 +73,10 @@ def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.Vsketch]]:
         return None
 
     for cls in sketch_scripts.values():
-        if inspect.isclass(cls) and issubclass(cls, vsketch.Vsketch):
+        if inspect.isclass(cls) and issubclass(cls, vsketch.SketchClass):
             cls.__vsketch_cwd__ = cwd_path
             return cls
     return None
-
-
-def execute_sketch(
-    sketch_class: Optional[Type[vsketch.Vsketch]] = None,
-    seed: Optional[int] = None,
-    finalize: bool = False,
-) -> Optional[vsketch.Vsketch]:
-    if sketch_class is None:
-        return None
-
-    cwd = getattr(sketch_class, "__vsketch_cwd__", pathlib.Path(os.getcwd()))
-    with working_directory(cwd):
-        vsk = sketch_class()
-        if vsk is None:
-            return None
-
-        if seed is not None:
-            vsk.randomSeed(seed)
-            vsk.noiseSeed(seed)
-            random.seed(seed)
-            np.random.seed(seed)
-        vsk.draw()
-        if finalize:
-            vsk.finalize()
-
-    # vsk is not reused, so we can just hack into it's document instead of using a deep copy
-    # like vsk.display() and vsk.save()
-    if vsk.centered and vsk.document.page_size is not None:
-        bounds = vsk.document.bounds()
-        if bounds is not None:
-            width, height = vsk.document.page_size
-            vsk.document.translate(
-                (width - (bounds[2] - bounds[0])) / 2.0 - bounds[0],
-                (height - (bounds[3] - bounds[1])) / 2.0 - bounds[1],
-            )
-
-    return vsk
 
 
 def get_config_path(path: pathlib.Path) -> pathlib.Path:

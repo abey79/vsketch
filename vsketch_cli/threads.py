@@ -6,15 +6,13 @@ from PySide2.QtCore import QThread, Signal
 
 import vsketch
 
-from .utils import execute_sketch
-
 
 class SketchRunnerThread(QThread):
-    completed = Signal(vsketch.Vsketch)
+    completed = Signal(vsketch.SketchClass)
 
     def __init__(
         self,
-        sketch_class: Type[vsketch.Vsketch],
+        sketch_class: Type[vsketch.SketchClass],
         seed: Optional[int],
         *args: Any,
         **kwargs: Any,
@@ -24,10 +22,10 @@ class SketchRunnerThread(QThread):
         self._seed = seed
 
     def run(self) -> None:
-        vsk = execute_sketch(self._sketch_class, seed=self._seed, finalize=False)
+        sketch = self._sketch_class.execute(seed=self._seed, finalize=False)
         if not self.isInterruptionRequested():
             # noinspection PyUnresolvedReferences
-            self.completed.emit(vsk)  # type: ignore
+            self.completed.emit(sketch)  # type: ignore
 
 
 class DocumentSaverThread(QThread):

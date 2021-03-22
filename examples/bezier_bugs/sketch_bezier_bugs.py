@@ -33,27 +33,24 @@ def bug(vsk, x, y):
             vsk.bezier(x1, y1, x2, y2, x3, y3, x4, y4)
 
 
-class BezierBugSketch(vsketch.Vsketch):
+class BezierBugSketch(vsketch.SketchClass):
     row_count = vsketch.Param(7, 1)
     column_count = vsketch.Param(7, 1)
     row_offset = vsketch.Param(100.0)
     column_offset = vsketch.Param(100.0)
 
-    def draw(self) -> None:
-        self.size("10in", "10in")
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size("10in", "10in")
 
         for row in range(self.row_count):
             for col in range(self.column_count):
                 x = col * self.column_offset
                 y = row * self.row_offset
-                bug(self, x, y)
+                bug(vsk, x, y)
 
-    def finalize(self) -> None:
-        self.vpype("linesimplify linesort")
+    def finalize(self, vsk: vsketch.Vsketch) -> None:
+        vsk.vpype("linesimplify linesort")
 
 
 if __name__ == "__main__":
-    vsk = BezierBugSketch()
-    vsk.draw()
-    vsk.finalize()
-    vsk.display()
+    BezierBugSketch.display()

@@ -6,10 +6,10 @@ from shapely.ops import unary_union
 import vsketch
 
 
-class ShapelySketch(vsketch.Vsketch):
-    def draw(self) -> None:
-        self.size("a4", landscape=False)
-        self.scale("4mm")
+class ShapelySketch(vsketch.SketchClass):
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size("a4", landscape=False)
+        vsk.scale("4mm")
 
         for i in range(5):
             for j in range(7):
@@ -19,14 +19,11 @@ class ShapelySketch(vsketch.Vsketch):
                         for _ in range(15)
                     ]
                 )
-                self.geometry(translate(shape, i * 8, j * 8))
+                vsk.geometry(translate(shape, i * 8, j * 8))
 
-    def finalize(self) -> None:
-        self.vpype("linemerge linesimplify reloop linesort")
+    def finalize(self, vsk: vsketch.Vsketch) -> None:
+        vsk.vpype("linemerge linesimplify reloop linesort")
 
 
 if __name__ == "__main__":
-    vsk = ShapelySketch()
-    vsk.draw()
-    vsk.finalize()
-    vsk.display()
+    ShapelySketch.display()

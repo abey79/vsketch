@@ -13,13 +13,11 @@ import vsketch
 from .gui import show
 from .utils import (
     canonical_name,
-    execute_sketch,
     get_config_path,
     load_config,
     load_sketch_class,
     print_error,
     print_info,
-    working_directory,
 )
 
 cli = typer.Typer()
@@ -133,7 +131,7 @@ def init(
 
     dir_path = pathlib.Path(target)
 
-    with working_directory(dir_path.parent):
+    with vsketch.working_directory(dir_path.parent):
         cookiecutter(
             template,
             no_input=True,
@@ -323,13 +321,13 @@ def save(
 
         output_file = output_path / output_name
 
-        vsk = execute_sketch(sketch_class, finalize=True, seed=seed)
+        sketch = sketch_class.execute(finalize=True, seed=seed)
 
-        if vsk is None:
+        if sketch is None:
             print_error("Could not execute script: ", str(path))
             raise typer.Exit(code=1)
 
-        doc = vsk.document
+        doc = sketch.vsk.document
         with open(output_file, "w") as fp:
             print_info("Exporting SVG: ", str(output_file))
             vp.write_svg(

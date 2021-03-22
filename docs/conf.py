@@ -96,11 +96,16 @@ napoleon_include_init_with_doc = True
 def autodoc_skip_member(app, what, name, obj, skip, options):
 
     exclusions = (
-        # vsketch/vsketch.py
+        # vsketch/param.py
         "get_params",
         "set_param_set",
         "params",
         "param_set",
+        # misc from vsk
+        "working_directory",
+        "execute",
+        "execute_draw",
+        "ensure_finalized",
     )
     is_private = name.startswith("_") and name != "__init__"
     exclude = name in exclusions or is_private

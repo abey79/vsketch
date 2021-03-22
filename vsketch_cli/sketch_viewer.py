@@ -65,10 +65,9 @@ class SketchViewer(vpype_viewer.QtViewer):
     def __init__(self, path: pathlib.Path, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
-        self._sketch_class: Optional[Type[vsketch.Vsketch]] = None
+        self._sketch_class: Optional[Type[vsketch.SketchClass]] = None
+        self._sketch: Optional[vsketch.SketchClass] = None
         self._path = path
-        self._vsk: Optional[vsketch.Vsketch] = None
-        self._vsk_master: Optional[vsketch.Vsketch] = None
         self._param_set: Dict[str, Any] = {}
         self._seed: Optional[int] = None
         self._thread: Optional[QThread] = None
@@ -105,10 +104,10 @@ class SketchViewer(vpype_viewer.QtViewer):
         self.redraw_sketch()
 
     def save_config(self, path: str) -> None:
-        if self._vsk is None:
+        if self._sketch is None:
             return
 
-        param_set = self._vsk.param_set
+        param_set = self._sketch.param_set
         param_set["__seed__"] = self._seed
         with open(path, "w") as fp:
             json.dump(param_set, fp)
@@ -120,13 +119,13 @@ class SketchViewer(vpype_viewer.QtViewer):
         if seed is not None:
             self._seed = seed
 
-        if self._sketch_class is not None:
-            self._sketch_class.set_param_set(param_set)
+        if self._sketch is not None:
+            self._sketch.set_param_set(param_set)
             self._sidebar.params_widget.update_from_param()
         self.redraw_sketch()
 
     def on_like(self) -> None:
-        if self._vsk is None:
+        if self._sketch is None:
             return
 
         base_name = canonical_name(self._path)
@@ -134,11 +133,10 @@ class SketchViewer(vpype_viewer.QtViewer):
             base_name + "_liked.svg", self._path.parent / "output", always_number=True
         )
 
-        # TODO: this is a bit hacky
-        self._vsk.finalize()
+        self._sketch.ensure_finalized()
 
         # launch saving process in a thread
-        thread = DocumentSaverThread(path, self._vsk.document, self)
+        thread = DocumentSaverThread(path, self._sketch.vsk.document, self)
         self._sidebar.setEnabled(False)
         self._sidebar.like_btn.setText("saving...")
         thread.completed.connect(self.on_like_completed)  # type: ignore
@@ -156,8 +154,8 @@ class SketchViewer(vpype_viewer.QtViewer):
         # values
         if self._sketch_class is not None:
             # attempt to restore previous set of parameters
-            if self._vsk is not None:
-                self._sketch_class.set_param_set(self._vsk.param_set)
+            if self._sketch is not None:
+                self._sketch_class.set_param_set(self._sketch.param_set)
 
             self._sidebar.params_widget.set_params(self._sketch_class.get_params())
         else:
@@ -180,14 +178,14 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._sidebar.status_label.loading()
         self._thread.start()
 
-    def redraw_sketch_completed(self, vsk: vsketch.Vsketch) -> None:
-        self._vsk = vsk
+    def redraw_sketch_completed(self, sketch: vsketch.SketchClass) -> None:
+        self._sketch = sketch
         self._thread = None
 
-        if self._vsk is not None:
+        if self._sketch is not None:
             self._sidebar.status_label.succeeded()
             self._sidebar.like_btn.setEnabled(True)
-            self.set_document(self._vsk.document)
+            self.set_document(self._sketch.vsk.document)
 
             if self._trigger_fit_to_viewport:
                 self._viewer_widget.engine.fit_to_viewport()

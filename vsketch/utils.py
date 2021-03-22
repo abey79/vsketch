@@ -1,4 +1,7 @@
-from typing import TYPE_CHECKING, Tuple
+import os
+import pathlib
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Iterator, Tuple
 
 import numpy as np
 
@@ -73,3 +76,13 @@ def compute_ellipse_mode(
         return c_x, c_y, width / 2, height / 2
     else:
         raise ValueError("mode must be one of 'corner', 'corners', 'center', 'radius'")
+
+
+@contextmanager
+def working_directory(path: pathlib.Path) -> Iterator:
+    prev_cwd = os.getcwd()
+    os.chdir(str(path))
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
