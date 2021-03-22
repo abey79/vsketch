@@ -1,7 +1,7 @@
 import os
 import pathlib
 import random
-from typing import Any, Dict, Iterable, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import vpype as vp
@@ -13,6 +13,11 @@ ParamType = Union[int, float, bool, str]
 
 
 class SketchClass:
+    """Base class for sketch managed with the ``vsk`` CLI tool.
+
+    Subclass must override :meth:`draw` and :meth:`finalize`.
+    """
+
     def __init__(self):
         self._vsk = Vsketch()
         self._finalized = False
@@ -20,6 +25,7 @@ class SketchClass:
 
     @property
     def vsk(self) -> Vsketch:
+        """:class:`Vsketch` instance"""
         return self._vsk
 
     def execute_draw(self) -> None:
@@ -80,10 +86,14 @@ class SketchClass:
         return sketch
 
     @classmethod
-    def display(cls):
+    def display(cls, *args: Any, **kwargs: Any) -> None:
+        """Execute the sketch class and display the results using :meth:`Vsketch.display`.
+
+        All parameters are forwarded to :meth:`Vsketch.display`.
+        """
         sketch = cls.execute()
         if sketch is not None:
-            sketch.vsk.display()
+            sketch.vsk.display(*args, **kwargs)
 
     def draw(self, vsk: Vsketch) -> None:
         """Draws the sketch.
@@ -115,16 +125,12 @@ class SketchClass:
                 cls.__dict__[name].set_value_with_validation(value)
 
     @property
-    def params(self) -> Iterable["Param"]:
-        return self._params.values()
-
-    @property
     def param_set(self) -> Dict[str, Any]:
         return {name: param.value for name, param in self._params.items()}
 
 
 class Param:
-    """This class encapsulate a sketch parameter.
+    """This class encapsulate a :class:`SketchClass` parameter.
 
     A sketch parameter can be interacted with in the ``vsk`` viewer.
     """

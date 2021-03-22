@@ -37,10 +37,9 @@ T = TypeVar("T")
 
 # noinspection PyPep8Naming
 class Vsketch:
-    """This class represent a sketch.
+    """This class implement the core *vsketch* API.
 
-    Sketches should be implemented as :class:`Vsketch` subclasses and override the
-    :meth:`draw` and :meth:`finalize` methods.
+    All drawing are created through an instance of :class:`Vsketch`.
     """
 
     def __init__(self):
