@@ -90,25 +90,25 @@ Open `sketch_my_project.py` in your favourite editor and modify it as follows:
 import vsketch
 
 class SchotterSketch(vsketch.Vsketch):
-    def draw(self) -> None:
-        self.size("a4", landscape=False)
-        self.scale("cm")
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size("a4", landscape=False)
+        vsk.scale("cm")
 
         for j in range(22):
-            with self.pushMatrix():
+            with vsk.pushMatrix():
                 for i in range(12):
-                    with self.pushMatrix():
-                        self.rotate(0.03 * self.random(-j, j))
-                        self.translate(
-                            0.01 * self.randomGaussian() * j,
-                            0.01 * self.randomGaussian() * j,
+                    with vsk.pushMatrix():
+                        vsk.rotate(0.03 * vsk.random(-j, j))
+                        vsk.translate(
+                            0.01 * vsk.randomGaussian() * j,
+                            0.01 * vsk.randomGaussian() * j,
                         )
-                        self.rect(0, 0, 1, 1)
-                    self.translate(1, 0)
-            self.translate(0, 1)
+                        vsk.rect(0, 0, 1, 1)
+                    vsk.translate(1, 0)
+            vsk.translate(0, 1)
 
-    def finalize(self) -> None:
-        self.vpype("linemerge linesimplify reloop linesort")
+    def finalize(self, vsk: vsketch.Vsketch) -> None:
+        vsk.vpype("linemerge linesimplify reloop linesort")
 
 ```
 
@@ -140,22 +140,22 @@ class SchotterSketch(vsketch.Vsketch):
 Change the `draw()` method as follows:
 
 ```python
-    def draw(self) -> None:
-        self.size("a4", landscape=False)
-        self.scale("cm")
+    def draw(self, vsk: vsketch.Vsketch) -> None:
+        vsk.size("a4", landscape=False)
+        vsk.scale("cm")
 
-        for j in range(self.rows()):
-            with self.pushMatrix():
-                for i in range(self.columns()):
-                    with self.pushMatrix():
-                        self.rotate(self.fuzziness() * 0.03 * self.random(-j, j))
-                        self.translate(
-                            self.fuzziness() * 0.01 * self.randomGaussian() * j,
-                            self.fuzziness() * 0.01 * self.randomGaussian() * j,
+        for j in range(self.rows):
+            with vsk.pushMatrix():
+                for i in range(self.columns):
+                    with vsk.pushMatrix():
+                        vsk.rotate(self.fuzziness * 0.03 * vsk.random(-j, j))
+                        vsk.translate(
+                            self.fuzziness * 0.01 * vsk.randomGaussian() * j,
+                            self.fuzziness * 0.01 * vsk.randomGaussian() * j,
                         )
-                        self.rect(0, 0, 1, 1)
-                    self.translate(1, 0)
-            self.translate(0, 1)
+                        vsk.rect(0, 0, 1, 1)
+                    vsk.translate(1, 0)
+            vsk.translate(0, 1)
 ```
 
 Hit `ctrl-S`/`cmd-S` to save and, lo and behold, corresponding buttons just appeared in the viewer without even needing to restart it! Here is how it looks with some more fuzziness:
