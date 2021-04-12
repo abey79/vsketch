@@ -89,8 +89,8 @@ Open `sketch_my_project.py` in your favourite editor and modify it as follows:
 ```python
 import vsketch
 
-class SchotterSketch(vsketch.Vsketch):
-    def draw(self, vsk: vsketch.Vsketch) -> None:
+class SchotterSketch(vsketch.SketchClass):
+    def draw(self, vsk: vsketch.SketchClass) -> None:
         vsk.size("a4", landscape=False)
         vsk.scale("cm")
 
@@ -109,6 +109,9 @@ class SchotterSketch(vsketch.Vsketch):
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
         vsk.vpype("linemerge linesimplify reloop linesort")
+
+if __name__ == "__main__":
+    SchotterSketch.display()
 
 ```
 
@@ -129,11 +132,11 @@ Wouldn't be nice if you could interactively interact with the script's parameter
 Add the following declaration at the top of the class:
 
 ```python
-class SchotterSketch(vsketch.Vsketch):
+class SchotterSketch(vsketch.SketchClass):
     columns = vsketch.Param(12)
     rows = vsketch.Param(22)
     fuzziness = vsketch.Param(1.0)
-
+    
     # ...
 ```
 
