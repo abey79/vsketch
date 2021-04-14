@@ -89,7 +89,8 @@ jobs:
     - name: Pytest
       run: |
         poetry run pytest --runslow
-      if: matrix.python-version != '3.8' || matrix.os != 'ubuntu-latest'
+      ## FIXME codecov
+      if: true || matrix.python-version != '3.8' || matrix.os != 'ubuntu-latest'
     ## CODECOV SUPPORT ##
     ## TODO: need to be activated
     - name: Pytest with coverage
@@ -101,6 +102,7 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
+      ## FIXME codecov
       if: false && matrix.python-version == '3.8' && matrix.os == 'ubuntu-latest'
 
   #################
