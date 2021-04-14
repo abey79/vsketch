@@ -34,7 +34,7 @@ multiprocess = "^0.70.11"
 numpy = "^1.20.1"
 pnoise = "^0.1.0"
 PySide2 = "^5.15.2"
-qasync = "^0.13.0"
+qasync = "^0.15.0"
 Shapely = {extras = ["vectorized"], version = "^1.7.1"}
 typer = "^0.3.2"
 vpype = { git = "https://github.com/abey79/vpype" }
