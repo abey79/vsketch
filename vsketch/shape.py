@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 import vpype as vp
-from shapely.geometry import LineString, MultiLineString, Polygon
+from shapely.geometry import LineString, MultiLineString, Point, Polygon
 
 from .curves import quadratic_bezier_path
 from .utils import compute_ellipse_mode
@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 # TODO
 # - clean up code duplicates
+# - add points
+# - examples
 
 
 class Shape:
@@ -19,6 +21,7 @@ class Shape:
         self._vsk = vsk
         self._polygon = Polygon()
         self._lines: List[LineString] = []
+        self._points: List[Point] = []
 
     def _add_polygon(
         self, exterior: np.ndarray, holes: Sequence[np.ndarray] = (), op: str = "union"
@@ -44,7 +47,7 @@ class Shape:
             else:
                 raise ValueError(f"operation {op} invalid")
 
-    def compile(self) -> Tuple[Polygon, MultiLineString]:
+    def _compile(self) -> Tuple[Polygon, MultiLineString]:
         lines = []
         for line in self._lines:
             new_line = line.difference(self._polygon)
@@ -106,6 +109,7 @@ class Shape:
             radius = cast(float, diameter) / 2
 
         if mode is None:
+            # noinspection PyProtectedMember
             mode = self._vsk._ellipse_mode
 
         if mode == "corners":
@@ -160,6 +164,7 @@ class Shape:
             mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
         """
         if mode is None:
+            # noinspection PyProtectedMember
             mode = self._vsk._ellipse_mode
         line = vp.ellipse(*compute_ellipse_mode(mode, x, y, w, h), self._vsk.epsilon)
         self._add_polygon(line, op=op)
@@ -213,6 +218,7 @@ class Shape:
             stop = stop * (180 / np.pi)
 
         if mode is None:
+            # noinspection PyProtectedMember
             mode = self._vsk._ellipse_mode
 
         cx, cy, rw, rh = compute_ellipse_mode(mode, x, y, w, h)
@@ -312,6 +318,7 @@ class Shape:
             bl = radii[3]
 
         if mode is None:
+            # noinspection PyProtectedMember
             mode = self._vsk._rect_mode
 
         if mode == "corner":
@@ -357,6 +364,7 @@ class Shape:
                 "corners" mode is meaningless for this function, and is interpreted as the
                 "corner" mode
         """
+        # noinspection PyProtectedMember
         if mode == "corners" or (mode is None and self._vsk._rect_mode == "corners"):
             mode = "corner"
         self.rect(x, y, extent, extent, mode=mode, op=op)
