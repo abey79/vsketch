@@ -6,21 +6,17 @@ import traceback
 from runpy import run_path
 from typing import Dict, Optional, Type
 
-import typer
+import click
 
 import vsketch
 
 
 def print_error(title_str: str, detail_str: str = "") -> None:
-    typer.echo(
-        typer.style(title_str, fg=typer.colors.RED, bold=True) + str(detail_str), err=True
-    )
+    click.echo(click.style(title_str, fg="red", bold=True) + str(detail_str), err=True)
 
 
 def print_info(title_str: str, detail_str: str = "") -> None:
-    typer.echo(
-        typer.style(title_str, fg=typer.colors.GREEN, bold=True) + str(detail_str), err=True
-    )
+    click.echo(click.style(title_str, fg="green", bold=True) + str(detail_str), err=True)
 
 
 def remove_prefix(s: str, prefix: str) -> str:
