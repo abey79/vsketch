@@ -1,6 +1,6 @@
 import pathlib
 
-import typer
+import click
 from PySide2.QtCore import Signal
 from PySide2.QtWidgets import (
     QGroupBox,
@@ -77,7 +77,7 @@ class ConfigWidget(QGroupBox):
             # noinspection PyUnresolvedReferences
             self.loadConfig.emit(str(path))  # type: ignore
         else:
-            typer.echo(f"Config file {path} not found.", err=True)
+            click.echo(f"Config file {path} not found.", err=True)
 
     def on_save_btn(self) -> None:
         base_name, ok = QInputDialog.getText(

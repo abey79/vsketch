@@ -3,7 +3,7 @@ import pathlib
 import random
 from typing import Dict, Optional, Tuple
 
-import typer
+import click
 import vpype as vp
 from cookiecutter.main import cookiecutter
 from multiprocess.pool import Pool
@@ -20,7 +20,10 @@ from .utils import (
     print_info,
 )
 
-cli = typer.Typer()
+
+@click.group()
+def cli():
+    pass
 
 
 def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
@@ -100,34 +103,36 @@ VSK_PAGE_SIZE variable.
 
 
 @cli.command(help=INIT_HELP)
-def init(
-    target: str = typer.Argument(..., help="project name or path"),
-    page_size: str = typer.Option(
-        "a4",
-        "--page-size",
-        "-p",
-        prompt=True,
-        metavar="PAGESIZE",
-        envvar="VSK_PAGE_SIZE",
-        help="page size",
-    ),
-    landscape: bool = typer.Option(
-        False,
-        "--landscape",
-        "-l",
-        prompt=True,
-        envvar="VSK_LANDSCAPE",
-        help="use landscape orientation",
-    ),
-    template: str = typer.Option(
-        "https://github.com/abey79/cookiecutter-vsketch-sketch.git",
-        envvar="VSK_TEMPLATE",
-        metavar="TEMPLATE",
-        show_default=False,
-        help="project template",
-    ),
-) -> None:
-    """Init command."""
+@click.argument("target")
+@click.option(
+    "--page-size",
+    "-p",
+    default="a4",
+    prompt=True,
+    metavar="PAGESIZE",
+    envvar="VSK_PAGE_SIZE",
+    show_default=True,
+    help="Page size.",
+)
+@click.option(
+    "--landscape",
+    "-l",
+    prompt=True,
+    is_flag=True,
+    envvar="VSK_LANDSCAPE",
+    help="Use landscape orientation.",
+)
+@click.option(
+    "--template",
+    default="https://github.com/abey79/cookiecutter-vsketch-sketch.git",
+    envvar="VSK_TEMPLATE",
+    metavar="TEMPLATE",
+    help="Project template.",
+)
+def init(target: str, page_size: str, landscape: bool, template: str) -> None:
+    """Initialize a new sketch.
+
+    TARGET is the name or path of the new sketch directory."""
 
     dir_path = pathlib.Path(target)
 
@@ -154,22 +159,21 @@ def _parse_seed(seed: str) -> Tuple[int, int]:
 
 
 @cli.command()
-def run(
-    target: Optional[str] = typer.Argument(default=None, help="sketch directory or file"),
-    editor: Optional[str] = typer.Option(
-        None,
-        "-e",
-        "--editor",
-        metavar="EDITOR",
-        envvar="VSK_EDITOR",
-        help="open the sketch file in EDITOR",
-    ),
-    fullscreen: bool = typer.Option(
-        False,
-        envvar="VSK_FULLSCREEN",
-        help="display the viewer fullscreen on the second screen if available",
-    ),
-) -> None:
+@click.argument("target", required=False)
+@click.option(
+    "--editor",
+    "-e",
+    metavar="EDITOR",
+    envvar="VSK_EDITOR",
+    help="Use EDITOR to open the sketch source.",
+)
+@click.option(
+    "--fullscreen",
+    is_flag=True,
+    envvar="VSK_FULLSCREEN",
+    help="Display the viewer fullscreen on the second screen if available.",
+)
+def run(target: Optional[str], editor: Optional[str], fullscreen: bool) -> None:
     """Execute, display and monitor changes on a sketch.
 
     This command loads a sketch and opens an interactive viewer display the result. The viewer
@@ -192,7 +196,7 @@ def run(
         path = _find_sketch_script(target)
     except ValueError as err:
         print_error("Sketch could not be found: ", str(err))
-        raise typer.Exit(code=1)
+        raise click.Abort()
 
     print_info("Running sketch: ", str(path))
 
@@ -203,29 +207,38 @@ def run(
 
 
 @cli.command()
+@click.argument("target", required=False)
+@click.option("--name", "-n", metavar="NAME", help="Output name (without extension).")
+@click.option(
+    "--config",
+    "-c",
+    metavar="CONFIG",
+    help=(
+        "Path to the config file to use (may be a path to JSON file or the name of the "
+        "configuration)."
+    ),
+)
+@click.option("--seed", "-s", metavar="[SEED|FIRST..LAST]", help="Seed or seed range to use.")
+@click.option("--destination", "-d", metavar="DEST", help="Destination path.")
+@click.option(
+    "--multiprocessing",
+    "-m",
+    is_flag=True,
+    envvar="VSK_MULTIPROCESSING",
+    help="Enable multiprocessing.",
+)
 def save(
-    target: Optional[str] = typer.Argument(default=None, help="sketch directory or file"),
-    name: Optional[str] = typer.Option(
-        None, "-n", "--name", help="output name (without extension)"
-    ),
-    config: Optional[str] = typer.Option(
-        None,
-        "-c",
-        "--config",
-        help=(
-            "path to the config file to use (may be a path to JSON file or the name of the "
-            "configuration)"
-        ),
-    ),
-    seed: Optional[str] = typer.Option(None, "-s", "--seed", help="seed or seed range to use"),
-    destination: Optional[str] = typer.Option(
-        None, "-d", "--destination", help="destination path"
-    ),
-    multiprocessing: bool = typer.Option(
-        True, envvar="VSK_MULTIPROCESSING", help="enable multiprocessing"
-    ),
+    target: Optional[str],
+    name: Optional[str],
+    config: Optional[str],
+    seed: Optional[str],
+    destination: Optional[str],
+    multiprocessing: bool,
 ) -> None:
     """Save the sketch to a SVG file.
+
+    TARGET may either point at a Python file or at a directory and is interpreted in the same
+    way as the `vsk run` command (see `vsk run --help`).
 
     By default, the output is named after the sketch and the provided options. An alternative
     name my be provided with the --name option.
@@ -252,7 +265,7 @@ def save(
         path = _find_sketch_script(target)
     except ValueError as err:
         print_error("Sketch could not be found: ", str(err))
-        raise typer.Exit(code=1)
+        raise click.Abort()
 
     # load configuration
     param_set: Dict[str, vsketch.ParamType] = {}
@@ -283,26 +296,26 @@ def save(
             seed_start, seed_end = _parse_seed(seed)
         except ValueError as err:
             print_error(f"Could not parse seed {seed}: ", str(err))
-            raise typer.Exit(code=1)
+            raise click.Abort()
 
     # prepare output path
     if destination is not None:
         output_path = pathlib.Path(destination)
         if not output_path.exists():
             print_error("Provided output path does not exist: ", str(output_path.absolute()))
-            raise typer.Exit(code=1)
+            raise click.Abort()
         if not output_path.is_dir():
             print_error(
                 "Provided output path is not a directory: ", str(output_path.absolute())
             )
-            raise typer.Exit(code=1)
+            raise click.Abort()
     else:
         output_path = path.parent / "output"
         if not output_path.exists():
             output_path.mkdir()
         elif not output_path.is_dir():
             print_error("Could not create output directory: ", str(output_path))
-            raise typer.Exit(code=1)
+            raise click.Abort()
 
     # noinspection PyShadowingNames
     def _write_output(seed: int) -> None:
@@ -310,7 +323,7 @@ def save(
         sketch_class = load_sketch_class(path)
         if sketch_class is None:
             print_error("Could not load script: ", str(path))
-            raise typer.Exit(code=1)
+            raise click.Abort()
 
         sketch_class.set_param_set(param_set)
 
@@ -325,7 +338,7 @@ def save(
 
         if sketch is None:
             print_error("Could not execute script: ", str(path))
-            raise typer.Exit(code=1)
+            raise click.Abort()
 
         doc = sketch.vsk.document
         with open(output_file, "w") as fp:
