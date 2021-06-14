@@ -53,8 +53,8 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
     - name: Lint and static analysis
       run: |
-        poetry run isort --check --diff vsketch vsketch_cli tests
-        poetry run black --check --diff vsketch vsketch_cli tests
+        poetry run isort --check --diff vsketch vsketch_cli examples tests
+        poetry run black --check --diff vsketch vsketch_cli examples tests
         poetry run mypy
     - name: Pytest
       run: |

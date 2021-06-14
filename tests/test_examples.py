@@ -4,6 +4,7 @@ import nbformat
 import pytest
 from click.testing import CliRunner
 from nbconvert.preprocessors import ExecutePreprocessor
+
 from vsketch_cli.cli import cli
 
 EXAMPLES = pathlib.Path(__file__).parent.parent.absolute() / "examples"
