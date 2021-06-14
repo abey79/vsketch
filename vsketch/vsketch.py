@@ -1162,7 +1162,7 @@ class Vsketch:
     def createShape(self) -> Shape:
         return Shape(self)
 
-    def shape(self, shp: Shape):
+    def shape(self, shp: Shape) -> None:
         # noinspection PyProtectedMember
         p, mls = shp._compile()
         self.geometry(p)

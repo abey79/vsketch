@@ -1,5 +1,6 @@
 """This module implements the vsketch API."""
 
+from .shape import Shape
 from .easing import EASING_FUNCTIONS
 from .sketch_class import Param, ParamType, SketchClass
 from .utils import working_directory
@@ -10,6 +11,7 @@ __all__ = [
     "Param",
     "ParamType",
     "SketchClass",
+    "Shape",
     "working_directory",
     "EASING_FUNCTIONS",
 ]

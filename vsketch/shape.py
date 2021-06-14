@@ -11,12 +11,67 @@ if TYPE_CHECKING:
     from .vsketch import Vsketch
 
 # TODO
-# - clean up code duplicates
-# - add points
-# - examples
+# [ ] clean up code duplicates
+# [ ] add points
+# [ ] Vsketch.shape() must control if points/lines are diffed with MultiPolygon
+# [ ] tests!
+# [~] clean docstring
+# [~] add documentation
+# [ ] examples
 
 
 class Shape:
+    """Shape class.
+
+    A shape is a reusable graphical element made of polygons, lines and points. Shapes are
+    built using primitives in a very similar way to how :class:`Vsketch` works with the added
+    capability of using boolean drawing operation (union, difference, intersection, or
+    exclusive union).
+
+    Shapes must be created using a :class:`Vsketch` instance::
+
+        shape = vsk.createShape()
+
+    The shape can then built with an API similar to that of :class:`Vsketch`::
+
+        shape.square(0, 0, 1, mode="radius")
+        shape.circle(0, 0, 0.5, mode="radius", op="difference")
+
+    Finally, a shape can be drawn to a sketch with the :meth:`Vsketch.shape` method::
+
+        vsk.stroke(1)
+        vsk.fill(2)
+        vsk.shape(shape)
+
+    Shapes are a combination of a one or more polygons with optional holes (created with a
+    combination of function such as, e.g., :meth:`circle`, :meth:`rect`, etc.), lines (created
+    with :meth:`line` or :meth:`bezier`), and points (created with :meth:`point`).
+
+    When shapes are drawn to a sketch with :meth:`Vsketch.shape`. This method can control
+    how lines and points which intersects with the shape's polygon are treated. In particular,
+    it may be preferable to mask them when the shape is to be hatched. See
+    :meth:`Vsketch.shape`'s documentation for details.
+
+    .. note::
+
+        It is helpful to understand the fundamental difference between a :class:`Vsketch` and
+        :class:`Shape` instance.
+
+        At any point in time, :class:`Vsketch` instances contains a set of paths which
+        correspond exactly to what the plotter will draw and is considered read-only (One of
+        the reason for that is that scaling existing geometries would invalidate any hatching).
+
+        On the other hand, a :class:`Shape` instance is an abstract geometrical representation
+        which can, at any point in time, be further modified, for example using the
+        ``difference`` mode (which subtracts a primitive from the existing shape). This
+        abstract representation is turned into actual plotter line work (including hatching if
+        enabled with :meth:`Vsketch.fill`) `only` when it is drawn in a sketch using
+        :meth:`Vsketch.shape`. At this point, the final scaling is applied (based on the
+        current transformation matrix), the hatching (if any) is computed, points are
+        transformed into small circles (see :meth:`Vsketch.point`), and the resulting,
+        ready-to-be-plotted paths are added to the sketch.
+    """
+
     def __init__(self, vsk: "Vsketch"):
         self._vsk = vsk
         self._polygon = Polygon()
@@ -76,14 +131,21 @@ class Shape:
         mode: Optional[str] = None,
         op: str = "union",
     ) -> None:
-        """Draw a circle.
+        """Add a circle to the shape.
 
         The level of detail used to approximate the circle is controlled by :func:`detail`.
         As for the :meth:`ellipse` function, the way arguments are interpreted is influenced by
-        the mode set with :meth:`ellipseMode` or the ``mode`` argument.
+        the mode set with :meth:`ellipseMode` or the ``mode`` argument of the :class:`Vsketch`
+        instance used to create the shape.
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the circle is added to the shape), ``difference`` (the circle is cut off the
+        shape), ``intersection`` (only the overlapping part of the circle is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and circle are kept).
 
         .. seealso::
 
+            * :meth:`Vsketch.circle`
             * :meth:`ellipse`
             * :meth:`ellipseMode`
 
@@ -100,6 +162,7 @@ class Shape:
             diameter: circle diameter (or None if using radius)
             radius: circle radius (or None if using diameter
             mode: one of 'center', 'radius', 'corner', 'corners'
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
 
         if (diameter is None) == (radius is None):
@@ -126,15 +189,25 @@ class Shape:
         mode: Optional[str] = None,
         op: str = "union",
     ) -> None:
-        """Draw an ellipse.
+        """Add an ellipse to the shape.
 
         The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
-        current ellipse mode.
+        current ellipse mode of the :class:`Vsketch` instance used to create the shape.
 
         By default, ``x`` and ``y`` set the location of the  ellipse center, ``w`` sets its
         width, and ``h`` sets its height. The way these parameters are interpreted can be
         changed with the :meth:`ellipseMode` function (which changes the default for subsequent
         calls to :func:`ellipse`) or the ``mode`` argument (which only affects this call).
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the ellipse is added to the shape), ``difference`` (the ellipse is cut off
+        the shape), ``intersection`` (only the overlapping part of the ellipse is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and ellipse are kept).
+
+        .. seealso::
+
+            * :meth:`Vsketch.ellipse`
+            * :meth:`ellipseMode`
 
         Examples:
 
@@ -162,6 +235,7 @@ class Shape:
             w: by default, the ellipse width
             h: by default, the ellipse height
             mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         if mode is None:
             # noinspection PyProtectedMember
@@ -182,7 +256,7 @@ class Shape:
         mode: Optional[str] = None,
         op: str = "union",
     ) -> None:
-        """Draw an arc.
+        """Add an arc to the shape.
 
         The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
         current ellipse mode (see :meth:`ellipse` for a detailed explanation) and refer to the
@@ -192,7 +266,13 @@ class Shape:
         ``chord`` closes it with a straight line, and ``pie`` connects the two endings with the
         arc center.
 
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the arc is added to the shape), ``difference`` (the arc is cut off the
+        shape), ``intersection`` (only the overlapping part of the arc is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and arc are kept).
+
         .. seealso::
+            * :meth:`Vsketch.arc`
             * :meth:`ellipseMode`
             * :meth:`ellipse`
 
@@ -212,6 +292,7 @@ class Shape:
             degrees: set to True to use degrees for start and stop angles (default: False)
             close: "no", "chord" or "pie" (default: "no")
             mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         if not degrees:
             start = start * (180 / np.pi)
@@ -246,10 +327,10 @@ class Shape:
         mode: Optional[str] = None,
         op: str = "union",
     ) -> None:
-        """Draw a rectangle.
+        """Add a rectangle to the shape.
 
         The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
-        current rect
+        current rect mode of the :class:`Vsketch` instance used to create the shape.
 
         By default, ``x`` and ``y`` set the location of the upper-left corner, ``w`` sets the
         width, and ``h`` sets the height. The way these parameters are interpreted can be
@@ -260,6 +341,16 @@ class Shape:
         each corner (default: 0). If some corner radius is not specified, it will be set equal
         to the previous corner radius. If the sum of two consecutive corner radii are greater
         than their associated edge lenght, their values will be rescaled to fit the rectangle.
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the rectangle is added to the shape), ``difference`` (the rectangle is cut
+        off the shape), ``intersection`` (only the overlapping part of the rectangle is kept in
+        the shape), or ``xor`` (only the none overlapping parts of the shape and rectangle
+        are kept).
+
+        .. seealso::
+
+            * :meth:`Vsketch.rect`
 
         Examples:
 
@@ -298,6 +389,7 @@ class Shape:
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
             mode: "corner", "corners", "redius", or "center" (see :meth:`rectMode`)
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         if len(radii) == 0:
             radii = (0, 0, 0, 0)
@@ -340,13 +432,20 @@ class Shape:
     def square(
         self, x: float, y: float, extent: float, mode: Optional[str] = None, op: str = "union"
     ) -> None:
-        """Draw a square.
+        """Add a square to the shape.
 
         As for the :meth:`rect` function, the way arguments are interpreted is influenced by
-        the mode set with :meth:`rectMode` or the ``mode`` argument.
+        the mode set with :meth:`rectMode` or the ``mode`` argument of the :class:`Vsketch`
+        instance used to create the shape.
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the square is added to the shape), ``difference`` (the square is cut off the
+        shape), ``intersection`` (only the overlapping part of the square is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and square are kept).
 
         .. seealso::
 
+            * :meth:`Vsketch.square`
             * :meth:`rect`
             * :meth:`rectMode`
 
@@ -363,6 +462,7 @@ class Shape:
             mode: "corner", "redius", or "center" (see :meth:`rectMode`) — note that the
                 "corners" mode is meaningless for this function, and is interpreted as the
                 "corner" mode
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         # noinspection PyProtectedMember
         if mode == "corners" or (mode is None and self._vsk._rect_mode == "corners"):
@@ -381,7 +481,16 @@ class Shape:
         y4: float,
         op: str = "union",
     ) -> None:
-        """Draw a quadrilateral.
+        """Add a quadrilateral to the shape.
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the quad is added to the shape), ``difference`` (the quad is cut off the
+        shape), ``intersection`` (only the overlapping part of the quad is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and quad are kept).
+
+        .. seealso::
+
+            * :meth:`Vsketch.quad`
 
         Example:
 
@@ -398,6 +507,7 @@ class Shape:
             y3: Y coordinate of the third vertex
             x4: X coordinate of the last vertex
             y4: Y coordinate of the last vertex
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         line = np.array(
             [x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j, x4 + y4 * 1j, x1 + y1 * 1j],
@@ -415,7 +525,17 @@ class Shape:
         y3: float,
         op: str = "union",
     ) -> None:
-        """Draw a triangle.
+        """Add a triangle to the shape.
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the triangle is added to the shape), ``difference`` (the triangle is cut off
+        the shape), ``intersection`` (only the overlapping part of the triangle is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and triangle are
+        kept).
+
+        .. seealso::
+
+            * :meth:`Vsketch.triangle`
 
         Example:
 
@@ -430,6 +550,7 @@ class Shape:
             y2: Y coordinate of the second corner
             x3: X coordinate of the third corner
             y3: Y coordinate of the third corner
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
 
         line = np.array(
@@ -445,7 +566,16 @@ class Shape:
         close: bool = False,
         op: str = "union",
     ) -> None:
-        """Draw a polygon.
+        """Add a polygon to the shape.
+
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the polygon is added to the shape), ``difference`` (the polygon is cut off
+        the shape), ``intersection`` (only the overlapping part of the polygon is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and polygon are kept).
+
+        .. seealso::
+
+            * :meth:`Vsketch.polygon`
 
         Examples:
 
@@ -477,6 +607,7 @@ class Shape:
             y: Y coordinates
             holes: list of holes inside the polygon
             close: the polygon is closed if True
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         if y is None:
             try:
@@ -518,13 +649,24 @@ class Shape:
         self._add_polygon(line, holes=hole_lines, op=op)
 
     def geometry(self, shape: Any, op: str = "union") -> None:
-        """Draw a Shapely geometry.
+        """Add a Shapely geometry to the shape.
 
         This function should accept any of LineString, LinearRing, MultiPolygon,
         MultiLineString, or Polygon.
 
+        This function support multiple boolean mode with the ``op`` argument: ``union``
+        (default, the geometry is added to the shape), ``difference`` (the geometry is cut off
+        the shape), ``intersection`` (only the overlapping part of the geometry is kept in the
+        shape), or ``xor`` (only the none overlapping parts of the shape and geometry are
+        kept).
+
+        .. seealso::
+
+            * :meth:`Vsketch.geometry`
+
         Args:
             shape (Shapely geometry): a supported shapely geometry object
+            op: one of 'union', 'difference', 'intersection', or 'xor'
         """
         if getattr(shape, "is_empty", False):
             return
@@ -558,18 +700,22 @@ class Shape:
         x4: float,
         y4: float,
     ) -> None:
-        """Draws a Bezier curve
+        """Add a Bezier curve to the shape.
 
         Bezier curves are defined by a series of anchor and control points. The first two
         arguments specify the first anchor point and the last two arguments specify the other
         anchor point. The middle arguments specify the control points which define the shape
         of the curve.
 
+        The level of detail of the bezier curve is controlled using the :meth:`Vsketch.detail`
+        method on the :class:`Vsketch` instance used to create the shape.
+
         .. seealso::
 
             * :func:`bezierPoint`
             * :func:`bezierTangent`
             * :func:`detail`
+            * :func:`Vsketch.bezier`
 
         Args:
             x1: X coordinate of the first anchor point
