@@ -1162,11 +1162,40 @@ class Vsketch:
     def createShape(self) -> Shape:
         return Shape(self)
 
-    def shape(self, shp: Shape) -> None:
+    def shape(
+        self, shp: Shape, mask_lines: Optional[bool] = None, mask_points: Optional[bool] = None
+    ) -> None:
+        """Draw a shape.
+
+        Draw a shape, including its area, lines, and points. If a :meth:`fill` layer is active,
+        it is used for the area. Likewise, the current :meth:`penWidth` is used for points
+        (see :meth:`points`).
+
+        By default, the shape's lines and points are masked by the its area if a fill layer is
+        active (such as to avoid unwanted interaction with the hatch fill), and left unmasked
+        if not. This behaviour can be overridden using the ``mask_lines`` and ``mask_points``
+        parameters.
+
+        Args:
+            shp: the shape to draw
+            mask_lines: controls whether the shape's line are masked by its area (default:
+                True if fill active, otherwise False)
+            mask_points: controls whether the shape's points are masked by its area (default:
+                True if fill active, otherwise False)
+        """
+
+        if mask_lines is None:
+            mask_lines = self._cur_fill is not None
+        if mask_points is None:
+            mask_points = self._cur_fill is not None
+
         # noinspection PyProtectedMember
-        p, mls = shp._compile()
-        self.geometry(p)
-        self.geometry(mls)
+        area, lines, points = shp._compile(mask_lines, mask_points)
+
+        self.geometry(area)
+        self.geometry(lines)
+        for point in points:
+            self.point(point.x, point.y)
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
@@ -1227,7 +1256,7 @@ class Vsketch:
                 )
             self._document.add(lc, self._cur_stroke)
 
-        if self._cur_fill:
+        if self._cur_fill and len(transformed_exterior) > 2:
             p = Polygon(
                 complex_to_2d(transformed_exterior),
                 holes=[complex_to_2d(hole) for hole in transformed_holes],

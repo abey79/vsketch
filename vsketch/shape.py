@@ -2,7 +2,16 @@ from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 import vpype as vp
-from shapely.geometry import LineString, MultiLineString, Point, Polygon
+from shapely.geometry import (
+    LinearRing,
+    LineString,
+    MultiLineString,
+    MultiPoint,
+    MultiPolygon,
+    Point,
+    Polygon,
+)
+from shapely.ops import unary_union
 
 from .curves import quadratic_bezier_path
 from .utils import compute_ellipse_mode
@@ -12,12 +21,13 @@ if TYPE_CHECKING:
 
 # TODO
 # [ ] clean up code duplicates
-# [ ] add points
-# [ ] Vsketch.shape() must control if points/lines are diffed with MultiPolygon
-# [ ] tests!
-# [~] clean docstring
-# [~] add documentation
-# [ ] examples
+# [x] add points
+# [ ] add Shape.shape() to merge shape into shape
+# [x] Vsketch.shape() must control if points/lines are diffed with MultiPolygon
+# [ ] tests! (degenerate cases)
+# [x] clean docstring
+# [ ] update readme/doc
+# [x] examples
 
 
 class Shape:
@@ -32,9 +42,18 @@ class Shape:
 
         shape = vsk.createShape()
 
-    The shape can then built with an API similar to that of :class:`Vsketch`::
+    Shapes consist of an area (which may be disjoint and have holes), a set of lines, and a set
+    of points (both of which may be empty). Lines and points are added to the shape using the
+    :meth:`line`, :meth:`bezier`, and :meth:`point` methods.
+
+    The shape's area can be built with primitives similar to that of :class:`Vsketch`::
 
         shape.square(0, 0, 1, mode="radius")
+        shape.square(0.5, 0.5, 1, mode="radius")
+
+    By default, an union operation applied when new primitives are added. Other boolean
+    operations are available. For example, a hole can be punched in the shape as follows::
+
         shape.circle(0, 0, 0.5, mode="radius", op="difference")
 
     Finally, a shape can be drawn to a sketch with the :meth:`Vsketch.shape` method::
@@ -43,14 +62,9 @@ class Shape:
         vsk.fill(2)
         vsk.shape(shape)
 
-    Shapes are a combination of a one or more polygons with optional holes (created with a
-    combination of function such as, e.g., :meth:`circle`, :meth:`rect`, etc.), lines (created
-    with :meth:`line` or :meth:`bezier`), and points (created with :meth:`point`).
-
-    When shapes are drawn to a sketch with :meth:`Vsketch.shape`. This method can control
-    how lines and points which intersects with the shape's polygon are treated. In particular,
-    it may be preferable to mask them when the shape is to be hatched. See
-    :meth:`Vsketch.shape`'s documentation for details.
+    :meth:`Vsketch.shape` can control whether the lines and points which intersects with the
+    shape's area are masked. For example, it's best to enable masking when the shape's area is
+    to be hatched. See :meth:`Vsketch.shape`'s documentation for details.
 
     .. note::
 
@@ -102,13 +116,66 @@ class Shape:
             else:
                 raise ValueError(f"operation {op} invalid")
 
-    def _compile(self) -> Tuple[Polygon, MultiLineString]:
-        lines = []
-        for line in self._lines:
-            new_line = line.difference(self._polygon)
-            if not new_line.is_empty:
-                lines.append(new_line)
-        return self._polygon, MultiLineString(lines)
+    def _compile(
+        self, mask_lines: bool, mask_points: bool
+    ) -> Tuple[MultiPolygon, MultiLineString, MultiPoint]:
+        """Returns the shape's content.
+
+        This function returns three Shapely geometries:
+
+        * a :class:`Polygon` or :class:`MultiPolygon` for the area
+        * a :class:`MultiLineString` for the individual lines
+        * a : class:`MultiPoint` for the individual points
+
+        Args:
+            mask_lines: controls if points are masked by the shape's area or not
+            mask_points: controls if lines are masked by the shape's area or not
+
+        Returns:
+            tuple of MultiPolygon, MultiLineString, and MultiPoint, each of which may have a 0
+            length
+        """
+
+        # normalize area
+        if self._polygon.is_empty:
+            area = MultiPolygon()
+        elif isinstance(self._polygon, Polygon):
+            area = MultiPolygon([self._polygon])
+        elif isinstance(self._polygon, MultiPolygon):
+            area = self._polygon
+        else:
+            raise RuntimeError(f"incorrect type for Shape._polygon: {type(self._polygon)}")
+
+        # normalize/mask lines
+        if mask_lines:
+            lines = unary_union(
+                [line.difference(area) for line in self._lines if not line.is_empty]
+            )
+
+            if lines.is_empty:
+                lines = MultiLineString()
+            elif isinstance(lines, (LineString, LinearRing)):
+                lines = MultiLineString([lines])
+            elif not isinstance(lines, MultiLineString):
+                raise RuntimeError(f"incorrect type for masked lines: {type(lines)}")
+        else:
+            lines = MultiLineString(self._lines)
+
+        # normalize/mask points
+        points = MultiPoint(
+            [point for point in self._points if not mask_points or not point.intersects(area)]
+        )
+
+        return area, lines, points
+
+    def point(self, x: float, y: float) -> None:
+        """Add a point to the shape.
+        Args:
+            x: X coordinate of the point
+            y: Y coordinate of the point
+        """
+
+        self._points.append(Point(x, y))
 
     def line(self, x1: float, y1: float, x2: float, y2: float) -> None:
         """Add a line to the shape.
