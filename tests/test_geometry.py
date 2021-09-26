@@ -10,7 +10,7 @@ from shapely.geometry import (
     Polygon,
 )
 
-from tests.utils import line_count_equal, line_exists
+from tests.utils import bounds_equal, line_count_equal, line_exists
 
 
 @pytest.mark.parametrize(
@@ -52,21 +52,27 @@ from tests.utils import line_count_equal, line_exists
             ],
         ],
         [Point(0, 0).buffer(1).intersection(Point(10, 10).buffer(1)), []],
+        [Point(2, 3.5), 1],
+        [MultiPoint([(3, 2), (3, 4)]), 2],
     ],
 )
 def test_geometry_single_path(vsk, data, expected):
-    vsk.geometry(data)
-    assert line_count_equal(vsk, len(expected))
-    for line in expected:
-        assert line_exists(vsk, np.array(line, dtype=complex))
+    if data.geom_type in ["Point", "MultiPoint"]:
+        vsk.detail(0.001)
+        vsk.geometry(data)
+        offset = vsk.strokePenWidth / 2
+        assert line_count_equal(vsk, expected)
+        bounds = data.bounds
+        assert bounds_equal(
+            vsk, bounds[0] - offset, bounds[1] - offset, bounds[2] + offset, bounds[3] + offset
+        )
+    else:
+        vsk.geometry(data)
+        assert line_count_equal(vsk, len(expected))
+        for line in expected:
+            assert line_exists(vsk, np.array(line, dtype=complex))
 
 
 def test_geometry_wrong_arg(vsk):
     with pytest.raises(ValueError):
         vsk.geometry(np.arange(10))
-
-    with pytest.raises(ValueError):
-        vsk.geometry(Point([10, 12]))
-
-    with pytest.raises(ValueError):
-        vsk.geometry(MultiPoint([(3, 2), (3, 4)]))

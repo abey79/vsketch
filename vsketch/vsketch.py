@@ -1005,8 +1005,8 @@ class Vsketch:
     def geometry(self, shape: Any) -> None:
         """Draw a Shapely geometry.
 
-        This function should accept any of LineString, LinearRing, MultiPolygon,
-        MultiLineString, or Polygon.
+        This function should accept any of LineString, LinearRing, MultiPoint,
+        MultiPolygon, MultiLineString, Point, or Polygon.
 
         Args:
             shape (Shapely geometry): a supported shapely geometry object
@@ -1027,6 +1027,11 @@ class Vsketch:
                     self.polygon(
                         p.exterior.coords, holes=[hole.coords for hole in p.interiors]
                     )
+            elif shape.geom_type in ["Point", "MultiPoint"]:
+                if shape.geom_type == "Point":
+                    shape = [shape]
+                for p in shape:
+                    self.point(p.x, p.y)
             else:
                 raise ValueError("unsupported Shapely geometry")
         except AttributeError:
