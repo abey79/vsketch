@@ -1,4 +1,5 @@
 import pathlib
+from traceback import format_exc
 from typing import Any, Optional, Type
 
 import vpype as vp
@@ -22,7 +23,11 @@ class SketchRunnerThread(QThread):
         self._seed = seed
 
     def run(self) -> None:
-        sketch = self._sketch_class.execute(seed=self._seed, finalize=False)
+        sketch = None
+        try:
+            sketch = self._sketch_class.execute(seed=self._seed, finalize=False)
+        except Exception as err:
+            print(f"Unexpected error when running sketch: {err}\n{format_exc()}")
         if not self.isInterruptionRequested():
             # noinspection PyUnresolvedReferences
             self.completed.emit(sketch)  # type: ignore
