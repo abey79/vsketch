@@ -32,7 +32,7 @@ You can help by providing feedback and improving the documentation.*
 
 ## Installing and Running the examples
 
-The easiest way to get started is to obtain a local copy of *vsketch*'s repository and run the examples:
+The easiest way to get started is to obtain a local copy of *vsketch*'s repository and run the examples. Please note that you need to have at least `Python 3.7x` to install and run vsketch:
 
 ```bash
 $ git clone https://github.com/abey79/vsketch
