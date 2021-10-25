@@ -1441,7 +1441,7 @@ class Vsketch:
                 )
 
         try:
-            with open(file, "w") as fo:
+            with open(file, "w") as fo:  # type: ignore
                 write_to_file(fo)
         except TypeError:
             write_to_file(file)
