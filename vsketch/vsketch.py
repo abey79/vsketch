@@ -1401,43 +1401,50 @@ class Vsketch:
             _, ext = os.path.splitext(file.name if isinstance(file, TextIO) else file)
             format = ext.lstrip(".").lower()
 
-        if isinstance(file, str):
-            file = open(file, "w")
+        # inner function to accept only file-like object
+        def write_to_file(file_object):
+            nonlocal paper_size
 
-        if format == "svg":
-            vp.write_svg(
-                file,
-                self.document,
-                center=self._center_on_page,
-                color_mode=color_mode,
-                layer_label_format=layer_label,
-                source_string="Generated with vsketch",
-            )
-        elif format == "hpgl":
-            if device is None:
-                raise ValueError(f"'device' must be provided")
-            if paper_size is None:
-                config = vp.CONFIG_MANAGER.get_plotter_config(device)
-                paper_config = config.paper_config_from_size(self.document.page_size)
-                if paper_config:
-                    paper_size = paper_config.name
-                else:
-                    raise ValueError(f"page size is not available for device {device}")
+            if format == "svg":
+                vp.write_svg(
+                    file_object,
+                    self.document,
+                    center=self._center_on_page,
+                    color_mode=color_mode,
+                    layer_label_format=layer_label,
+                    source_string="Generated with vsketch",
+                )
+            elif format == "hpgl":
+                if device is None:
+                    raise ValueError(f"'device' must be provided")
+                if paper_size is None:
+                    config = vp.CONFIG_MANAGER.get_plotter_config(device)
+                    paper_config = config.paper_config_from_size(self.document.page_size)
+                    if paper_config:
+                        paper_size = paper_config.name
+                    else:
+                        raise ValueError(f"page size is not available for device {device}")
 
-            vp.write_hpgl(
-                file,
-                self.document,
-                page_size=paper_size,
-                landscape=self.document.page_size[0] > self.document.page_size[1],
-                center=self._center_on_page,
-                device=device,
-                velocity=velocity,
-                quiet=quiet,
-            )
-        else:
-            raise ValueError(
-                f"unknown format '{format}', specify format with 'format' argument "
-            )
+                vp.write_hpgl(
+                    file_object,
+                    self.document,
+                    page_size=paper_size,
+                    landscape=self.document.page_size[0] > self.document.page_size[1],
+                    center=self._center_on_page,
+                    device=device,
+                    velocity=velocity,
+                    quiet=quiet,
+                )
+            else:
+                raise ValueError(
+                    f"unknown format '{format}', specify format with 'format' argument "
+                )
+
+        try:
+            with open(file, "w") as fo:
+                write_to_file(fo)
+        except TypeError:
+            write_to_file(file)
 
     ####################
     # RANDOM FUNCTIONS #
