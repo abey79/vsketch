@@ -36,7 +36,7 @@ pnoise = "^0.1.0"
 PySide2 = "^5.15.2"
 qasync = "^0.15.0"
 Shapely = {extras = ["vectorized"], version = "^1.7.1"}
-vpype = { version = "1.7.0", extras = ["all"] }
+vpype = { version = "1.8.0", extras = ["all"] }
 watchgod = "^0.7"
 
 # colab
@@ -65,7 +65,7 @@ types-requests = "^0.1.9"
 jupyter = "^1.0.0"
 nbconvert = "^6.0.7"
 nbformat = "^5.0.8"
-jupyter-client = "^6.1.7"
+jupyter-client = "^7.1.0"
 isort = "^5.7.0"
 black = "^21.5b2"
 
