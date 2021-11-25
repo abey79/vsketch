@@ -61,7 +61,7 @@ recommonmark = { version = ">=0.6,<0.8", optional = true }
 pytest = "^6.2.4"
 pytest-benchmark = "^3.4.1"
 mypy = ">=0.901"
-types-requests = "^0.1.9"
+types-requests = "^2.26.0"
 jupyter = "^1.0.0"
 nbconvert = "^6.0.7"
 nbformat = "^5.0.8"
