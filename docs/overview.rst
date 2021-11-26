@@ -221,7 +221,7 @@ Transforms
 Transformation matrices are fully supported::
 
     for i in range(5):
-        with pushMatrix():
+        with vsk.pushMatrix():
             vsk.rotate(i * 5, degrees=True)
             vsk.rect(-2, -2, 2, 2)
 
