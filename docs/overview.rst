@@ -193,6 +193,20 @@ intended to be plotted with different pens each::
     vsk.stroke(2)
     vsk.circle(14, 8, 3)
 
+Stroke can be made thicker with configurable join style::
+
+    # set pen width for layer 1
+    vsk.penWidth("0.5mm", 1)
+
+    # set current stroke layer to 1
+    vsk.stroke(1)
+
+    # make a thick stroke -- it will be drawn 5 times using the pen width as offset
+    vsk.strokeWeight(5)
+
+    # choose the join style: "round" (default), "mitre", or "bevel"
+    vsk.strokeJoin("mitre")
+
 No reason plotters should miss on the "fill" party! This works just as you didn't dare to expect::
 
     # let's use a pen width of 0.5mm for layer 2

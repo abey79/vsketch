@@ -46,6 +46,7 @@ class Vsketch:
         self._document = vp.Document(page_size=vp.convert_page_size("a3"))
         self._cur_stroke: Optional[int] = 1
         self._stroke_weight: int = 1
+        self._join_style: str = "round"
         self._cur_fill: Optional[int] = None
         self._pipeline = ""
         self._figure = None
@@ -244,12 +245,34 @@ class Vsketch:
 
         Args:
             weight (strictly positive ``int``): number of plotted lines to use for strokes
-
         """
 
         if weight < 1:
             raise ValueError("width should be a strictly positive integer")
         self._stroke_weight = weight
+
+    def strokeJoin(self, join_style: str) -> None:
+        """Set the style of the joints that connects line segments.
+
+        Defines how joints between line segments are drawn when stroke weight is greater than
+        1. The available styles are ``"round"`` (default), ``"mitre"``, and ``"bevel"``.
+
+        .. seealso::
+
+            * :func:`stroke`
+            * :func:`strokeWeight`
+
+        Args:
+            join_style (``"round"``, ``"mitre"``, or ``"bevel"``): join style to use
+        """
+
+        if join_style not in ("round", "mitre", "bevel"):
+            raise ValueError(
+                f'incorrect join style "{join_style}", must be one of "round", "mitre", or '
+                '"bevel"'
+            )
+
+        self._join_style = join_style
 
     def fill(self, c: int) -> None:
         """Set the current fill color.
@@ -695,6 +718,7 @@ class Vsketch:
                     weight=self._stroke_weight,
                     pen_width=self.strokePenWidth,
                     detail=self._detail,
+                    join_style="round",
                 )
             )
             self._document.add(lc, self._cur_stroke)
@@ -1176,6 +1200,7 @@ class Vsketch:
                         weight=self._stroke_weight,
                         pen_width=self.strokePenWidth,
                         detail=self._detail,
+                        join_style=self._join_style,
                     )
                 )
             self._document.add(lc, self._cur_stroke)
