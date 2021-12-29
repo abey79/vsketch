@@ -77,7 +77,7 @@ class FloatParamWidget(QDoubleSpinBox):
         elif val == 0.0:
             decimals = 1
         else:
-            decimals = max(1, 1 - math.floor(math.log10(val)))
+            decimals = max(1, 1 - math.floor(math.log10(abs(val))))
         self.setDecimals(decimals)
         if param.step is not None:
             self.setSingleStep(param.step)
