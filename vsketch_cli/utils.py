@@ -97,6 +97,7 @@ def throttle(wait):
     have elapsed since the last time it was invoked."""
 
     def decorator(fn):
+        @functools.wraps(fn)
         def throttled(*args, **kwargs):
             def call_it():
                 throttled._timer = None
