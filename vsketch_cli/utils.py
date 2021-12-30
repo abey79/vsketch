@@ -2,6 +2,8 @@ import inspect
 import json
 import os
 import pathlib
+import threading
+import time
 import traceback
 from runpy import run_path
 from typing import Dict, Optional, Type
@@ -87,3 +89,32 @@ def load_config(path: pathlib.Path) -> Dict[str, vsketch.ParamType]:
     with open(path, "r") as fp:
         param_set = json.load(fp)
     return param_set
+
+
+def throttle(wait):
+    """Decorator that will postpone a functions
+    execution until after wait seconds
+    have elapsed since the last time it was invoked."""
+
+    def decorator(fn):
+        def throttled(*args, **kwargs):
+            def call_it():
+                throttled._timer = None
+                throttled._last_call = time.time()
+                return fn(*args, **kwargs)
+
+            time_since_last_call = time.time() - throttled._last_call
+            if time_since_last_call >= wait:
+                return call_it()
+
+            if throttled._timer:
+                throttled._timer.cancel()
+            throttled._timer = threading.Timer(wait - time_since_last_call, call_it)
+            throttled._timer.start()
+
+        throttled._timer = None
+        throttled._last_call = 0
+
+        return throttled
+
+    return decorator
