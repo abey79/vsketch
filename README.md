@@ -32,7 +32,9 @@ You can help by providing feedback and improving the documentation.*
 
 ## Installing and Running the examples
 
-The easiest way to get started is to obtain a local copy of *vsketch*'s repository and run the examples:
+**Note**: A Python interpreter must be installed to use *vsketch*. Python 3.9 is recommanded. Python 3.7 and 3.8 are also compatible but *vsketch* is not yet compatible with Python 3.10. See *vpype*'s [installation instructions](https://vpype.readthedocs.io/en/latest/install.html) for more information and platform-specific details.
+
+The easiest way to get started is to obtain a local copy of *vsketch*'s repository and run the examples. 
 
 ```bash
 $ git clone https://github.com/abey79/vsketch
