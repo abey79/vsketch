@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import shapely.wkt
 from shapely.geometry import (
     LinearRing,
     LineString,
@@ -76,3 +77,9 @@ def test_geometry_single_path(vsk, data, expected):
 def test_geometry_wrong_arg(vsk):
     with pytest.raises(ValueError):
         vsk.geometry(np.arange(10))
+
+
+def test_geometry_geometry_collection(vsk):
+    g = shapely.wkt.loads("GEOMETRYCOLLECTION (LINESTRING (2 7, 7 9), POINT (4 8))")
+    vsk.geometry(g)
+    assert line_count_equal(vsk, 2)
