@@ -70,7 +70,7 @@ def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.SketchClass]]
 
     for cls in sketch_scripts.values():
         if inspect.isclass(cls) and issubclass(cls, vsketch.SketchClass):
-            cls.__vsketch_cwd__ = cwd_path
+            cls.__vsketch_cwd__ = cwd_path  # type: ignore
             return cls
     return None
 

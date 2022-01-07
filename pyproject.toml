@@ -31,10 +31,10 @@ colorama = "^0.4.4"
 cookiecutter = "^1.7.2"
 matplotlib = "^3.3.3"
 multiprocess = "^0.70.11"
-numpy = "^1.20.1"
+numpy = ">=1.20.1"
 pnoise = "^0.1.0"
 PySide2 = "^5.15.2"
-qasync = "^0.15.0"
+qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = "^1.7.1"}
 vpype = { version = "1.8.0", extras = ["all"] }
 watchgod = "^0.7"
@@ -46,14 +46,14 @@ requests = {version = "^2.25.1", optional = true}
 jupyterlab = {version = "^3.0.1", optional = true}
 jupyter_nbextensions_configurator = {version = "^0.4.1", optional = true}
 jupyterlab-code-formatter = {version = "^1.4.1", optional = true}
-ipympl = {version = "^0.7.0", optional = true}
+ipympl = {version = ">=0.7.0", optional = true}
 black = {version = "^21.5b2", optional = true}
 isort = {version = "^5.6.4", optional = true}
 
 # these needs to be there because of https://github.com/python-poetry/poetry/issues/1145
-Sphinx = { version = "^3.4.3", optional = true }
-sphinx-autodoc-typehints = { version = "^1.12.0", optional = true }
-sphinx-rtd-theme = { version = "^0.5.1", optional = true }
+Sphinx = { version = ">=3.4.3", optional = true }
+sphinx-autodoc-typehints = { version = ">=1.12.0", optional = true }
+sphinx-rtd-theme = { version = ">=0.5.1", optional = true }
 recommonmark = { version = ">=0.6,<0.8", optional = true }
 
 
@@ -61,11 +61,11 @@ recommonmark = { version = ">=0.6,<0.8", optional = true }
 pytest = "^6.2.4"
 pytest-benchmark = "^3.4.1"
 mypy = ">=0.901"
-types-requests = "^0.1.9"
+types-requests = ">=0.1.9"
 jupyter = "^1.0.0"
 nbconvert = "^6.0.7"
 nbformat = "^5.0.8"
-jupyter-client = "^6.1.7"
+jupyter-client = ">=6.1.7"
 isort = "^5.7.0"
 black = "^21.5b2"
 

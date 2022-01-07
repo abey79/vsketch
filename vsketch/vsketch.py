@@ -1039,7 +1039,10 @@ class Vsketch:
             return
 
         try:
-            if shape.geom_type in ["LineString", "LinearRing"]:
+            if shape.geom_type == "GeometryCollection":
+                for geom in shape.geoms:
+                    self.geometry(geom)
+            elif shape.geom_type in ["LineString", "LinearRing"]:
                 self.polygon(shape.coords)
             elif shape.geom_type == "MultiLineString":
                 for ls in shape:
@@ -1057,7 +1060,7 @@ class Vsketch:
                 for p in shape:
                     self.point(p.x, p.y)
             else:
-                raise ValueError("unsupported Shapely geometry")
+                raise ValueError(f"unsupported Shapely geometry: {shape.geom_type}")
         except AttributeError:
             raise ValueError("the input must be a supported Shapely geometry")
 
