@@ -766,7 +766,7 @@ test = ["coverage", "pytest (>=6.0)", "pytest-cov", "pytest-mock", "requests", "
 
 [[package]]
 name = "jupyterlab"
-version = "3.2.7"
+version = "3.2.8"
 description = "JupyterLab computational environment"
 category = "main"
 optional = true
@@ -1906,7 +1906,7 @@ jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, !=3.9.0, <3.10"
-content-hash = "30c5cede4b363c6035ff2611eb88fa871b7b445707d1b36b09453710b6ef0d08"
+content-hash = "3d9fcfa4a63a22e2b1d067f44568b2909074e9ba7257f056e9a6142b183b23a6"
 
 [metadata.files]
 alabaster = [
@@ -2258,8 +2258,8 @@ jupyter-server = [
     {file = "jupyter_server-1.13.2.tar.gz", hash = "sha256:04fb03a53229223e02b211193d5cfcd0141f9949d706d8569e225e64b0999aff"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-3.2.7-py3-none-any.whl", hash = "sha256:bc43ff83de60b970a51aece08ee39e9f8d0e03b7941a0e833c3342bc9cbddc1b"},
-    {file = "jupyterlab-3.2.7.tar.gz", hash = "sha256:1e3f8e3d0215048f5970c94f29eae7e069869dcf13857632c1e4b3ec4e65c13c"},
+    {file = "jupyterlab-3.2.8-py3-none-any.whl", hash = "sha256:43c87a6686715091607ab12e30f51dc259955f5862c5c61a9b1adc860e9b7f91"},
+    {file = "jupyterlab-3.2.8.tar.gz", hash = "sha256:5e4e99868c4f385372686767781408acbb9004b690b198b45597ba869802334b"},
 ]
 jupyterlab-code-formatter = [
     {file = "jupyterlab_code_formatter-1.4.10-py3-none-any.whl", hash = "sha256:10a7f2ab44a4539a44ec6bf3fc3b27e7ed22c7ab975e6503823e21d7e60abae7"},
@@ -2848,6 +2848,9 @@ requests = [
     {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
 ]
 scipy = [
+    {file = "scipy-1.7.3-1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:c9e04d7e9b03a8a6ac2045f7c5ef741be86727d8f49c45db45f244bdd2bcff17"},
+    {file = "scipy-1.7.3-1-cp38-cp38-macosx_12_0_arm64.whl", hash = "sha256:b0e0aeb061a1d7dcd2ed59ea57ee56c9b23dd60100825f98238c06ee5cc4467e"},
+    {file = "scipy-1.7.3-1-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:b78a35c5c74d336f42f44106174b9851c783184a85a3fe3e68857259b37b9ffb"},
     {file = "scipy-1.7.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:173308efba2270dcd61cd45a30dfded6ec0085b4b6eb33b5eb11ab443005e088"},
     {file = "scipy-1.7.3-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:21b66200cf44b1c3e86495e3a436fc7a26608f92b8d43d344457c54f1c024cbc"},
     {file = "scipy-1.7.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ceebc3c4f6a109777c0053dfa0282fddb8893eddfb0d598574acfb734a926168"},
