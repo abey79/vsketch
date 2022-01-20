@@ -203,19 +203,22 @@ class Param:
         """Assign a value without validation."""
         self.value = value
 
-    def set_value_with_validation(self, v: Any) -> None:
+    def set_value_with_validation(self, v: Any) -> bool:
         """Assign a value to the parameter provided that the value can be validated.
 
         The value must be of a compatible type and comply with the parameter's choices and
         bounds if defined.
+
+        Returns:
+            returns True if the value was successfully updated
         """
         try:
             value = self.type(v)  # type: ignore
         except ValueError:
-            return
+            return False
 
         if self.choices and value not in self.choices:
-            return
+            return False
 
         if self.min:
             value = max(self.min, value)
@@ -224,6 +227,7 @@ class Param:
             value = min(self.max, value)
 
         self.value = value
+        return True
 
     def __get__(self, instance: Any, owner: Any = None) -> Any:
         if instance is None:

@@ -1045,19 +1045,23 @@ class Vsketch:
             elif shape.geom_type in ["LineString", "LinearRing"]:
                 self.polygon(shape.coords)
             elif shape.geom_type == "MultiLineString":
-                for ls in shape:
+                for ls in shape.geoms:
                     self.polygon(ls.coords)
             elif shape.geom_type in ["Polygon", "MultiPolygon"]:
                 if shape.geom_type == "Polygon":
-                    shape = [shape]
-                for p in shape:
+                    geoms = [shape]
+                else:
+                    geoms = shape.geoms
+                for p in geoms:
                     self.polygon(
                         p.exterior.coords, holes=[hole.coords for hole in p.interiors]
                     )
             elif shape.geom_type in ["Point", "MultiPoint"]:
                 if shape.geom_type == "Point":
-                    shape = [shape]
-                for p in shape:
+                    geoms = [shape]
+                else:
+                    geoms = shape.geoms
+                for p in geoms:
                     self.point(p.x, p.y)
             else:
                 raise ValueError(f"unsupported Shapely geometry: {shape.geom_type}")

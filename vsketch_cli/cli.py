@@ -1,7 +1,9 @@
+import dataclasses
+import itertools
 import os
 import pathlib
 import random
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union, cast
 
 import click
 import vpype as vp
@@ -206,6 +208,60 @@ def run(target: Optional[str], editor: Optional[str], fullscreen: bool) -> None:
     show(str(path), second_screen=fullscreen)
 
 
+@dataclasses.dataclass()
+class _ParamSpec:
+    """Helper class to handle the various way to specify parameter.
+
+    This would probably be better implemented as a click type.
+    """
+
+    name: str
+    value_string: dataclasses.InitVar[str]
+    values: List[Union[int, float, str]] = dataclasses.field(init=False)
+
+    def __post_init__(self, value_string: str) -> None:
+        if "," in value_string:
+            if ".." in value_string:
+                raise click.BadParameter(
+                    f"parameter value '{value_string}' invalid, "
+                    "ranges cannot be combined with list"
+                )
+
+            self.values = list(value_string.split(","))
+        elif ".." in value_string:
+            fields = value_string.split("..")
+            if len(fields) not in {2, 3}:
+                raise click.BadParameter(
+                    f"parameter value '{value_string}' invalid, "
+                    "ranges must have 2 or 3 components"
+                )
+
+            try:
+                start = float(fields[0])
+                end = float(fields[1])
+                if len(fields) == 3:
+                    stride = float(fields[2])
+                else:
+                    stride = 1
+            except ValueError:
+                raise click.BadParameter(
+                    f"parameter value '{value_string}' invalid, ranges must be numbers"
+                )
+
+            if end < start:
+                raise click.BadParameter(
+                    f"parameter value '{value_string}' invalid, "
+                    "END cannot be lower than START"
+                )
+
+            self.values = []
+            while start <= end:
+                self.values.append(start)
+                start += stride
+        else:
+            self.values = [value_string]
+
+
 @cli.command()
 @click.argument("target", required=False)
 @click.option("--name", "-n", metavar="NAME", help="Output name (without extension).")
@@ -219,6 +275,15 @@ def run(target: Optional[str], editor: Optional[str], fullscreen: bool) -> None:
     ),
 )
 @click.option("--seed", "-s", metavar="[SEED|FIRST..LAST]", help="Seed or seed range to use.")
+@click.option(
+    "--param",
+    "-p",
+    "params",
+    type=(str, str),
+    multiple=True,
+    metavar="PARAM [VALUE[,VALUE2,...]|FIRST..LAST|FIRST..LAST..INC]",
+    help="Set a specific parameter.",
+)
 @click.option("--destination", "-d", metavar="DEST", help="Destination path.")
 @click.option(
     "--multiprocessing",
@@ -232,6 +297,7 @@ def save(
     name: Optional[str],
     config: Optional[str],
     seed: Optional[str],
+    params: List[Tuple[str, str]],
     destination: Optional[str],
     multiprocessing: bool,
 ) -> None:
@@ -243,8 +309,33 @@ def save(
     By default, the output is named after the sketch and the provided options. An alternative
     name my be provided with the --name option.
 
-    If the sketch as parameters, their default values are used. Alternatively, a pre-existing
+    If the sketch has parameters, their default values are used. Alternatively, a pre-existing
     configuration can be used instead with the --config option.
+
+    The value of an individual parameter can be overridden using the --param option. The value
+    for this option may take multiple forms:
+
+        --param PARAM VALUE
+
+            The parameter is set to VALUE.
+
+        --param PARAM VAL1,VAL2,VAL3,...
+
+            One output file will be generated for each of the provided value.
+
+        --param PARAM START..END
+
+            One output file will be generated for each values in the provided range (i.e.
+    START, START+1, START+2,...,END).
+
+        --param PARAM START..END..STRIDE
+
+            One output file will be generated for each value in the range starting with START,
+    then incremented by STRIDE, until it reaches END. The value END is included if, and only
+    if, the difference between END and START is an integer multiple of STRIDE.
+
+    If multiple instances of the --param option are used, a file will be generated for all
+    possible combinations of values.
 
     By default, a random seed is used for vsketch's random number generator. If --config is
     used, the seed saved in the configuration is used instead. A seed may also be provided with
@@ -281,11 +372,15 @@ def save(
         else:
             print_error("Config file not found: ", str(config_path))
 
+    # prepare params
+    param_specs = [_ParamSpec(name, value) for name, value in params]
+
     # compute name
     if name is None:
         name = canonical_name(path) + config_postfix
     seed_in_name = seed is not None
 
+    # prepare seed
     if seed is None:
         if param_set is not None and "__seed__" in param_set:
             seed_start = seed_end = int(param_set["__seed__"])
@@ -318,7 +413,9 @@ def save(
             raise click.Abort()
 
     # noinspection PyShadowingNames
-    def _write_output(seed: int) -> None:
+    def _write_output(seed_and_params: Tuple) -> None:
+        seed, *param_values = seed_and_params
+
         # this needs to be there because the sketch class cannot be pickled apparently
         sketch_class = load_sketch_class(path)
         if sketch_class is None:
@@ -327,10 +424,24 @@ def save(
 
         sketch_class.set_param_set(param_set)
 
-        output_name = name
+        # apply parameters
+        sketch_params = sketch_class.get_params()
+        param_name_ext = ""
+        for spec, value in zip(param_specs, param_values):
+            if spec.name not in sketch_params:
+                raise click.BadParameter(f"parameter '{spec.name}' not found in sketch")
+            success = sketch_params[spec.name].set_value_with_validation(value)
+            if not success:
+                raise click.BadParameter(
+                    f"value '{value}' incompatible with parameter '{spec.name}'"
+                )
+            param_name_ext += "_" + spec.name + "_" + str(sketch_params[spec.name].value)
+
+        output_name = cast(str, name)
+        output_name += param_name_ext
         if seed_in_name:
-            output_name += "_s" + str(seed)  # type: ignore
-        output_name += ".svg"  # type: ignore
+            output_name += "_s" + str(seed)
+        output_name += ".svg"
 
         output_file = output_path / output_name
 
@@ -347,14 +458,16 @@ def save(
                 fp, doc, source_string=f"vsketch save -s {seed} {path}", color_mode="layer"
             )
 
-    seed_range = range(seed_start, seed_end + 1)
+    all_output_iterator = itertools.product(
+        range(seed_start, seed_end + 1), *[spec.values for spec in param_specs]
+    )
 
-    if len(seed_range) < 4 or not multiprocessing:
-        for s in seed_range:
-            _write_output(s)
+    if not multiprocessing:
+        for seed_and_params in all_output_iterator:
+            _write_output(seed_and_params)
     else:
         with Pool() as p:
-            list(p.imap(_write_output, seed_range))
+            list(p.imap(_write_output, all_output_iterator))
 
 
 if __name__ == "__main__":
