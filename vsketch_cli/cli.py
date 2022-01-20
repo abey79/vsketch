@@ -352,6 +352,8 @@ def save(
     overridden using the --destination option.
     """
 
+    current_directory = pathlib.Path.cwd()
+
     try:
         path = _find_sketch_script(target)
     except ValueError as err:
@@ -361,6 +363,7 @@ def save(
     # load configuration
     param_set: Dict[str, vsketch.ParamType] = {}
     config_postfix = ""
+    cmd_line_config_ext = ""
     if config is not None:
         config_path = pathlib.Path(config)
         if not config_path.exists():
@@ -369,6 +372,7 @@ def save(
         if config_path.exists():
             param_set = load_config(config_path)
             config_postfix = "_" + config_path.stem
+            cmd_line_config_ext = f"-c {config_path} "
         else:
             print_error("Config file not found: ", str(config_path))
 
@@ -427,6 +431,7 @@ def save(
         # apply parameters
         sketch_params = sketch_class.get_params()
         param_name_ext = ""
+        cmd_line_param_ext = ""
         for spec, value in zip(param_specs, param_values):
             if spec.name not in sketch_params:
                 raise click.BadParameter(f"parameter '{spec.name}' not found in sketch")
@@ -436,6 +441,7 @@ def save(
                     f"value '{value}' incompatible with parameter '{spec.name}'"
                 )
             param_name_ext += "_" + spec.name + "_" + str(sketch_params[spec.name].value)
+            cmd_line_param_ext += f"-p {spec.name} {str(sketch_params[spec.name].value)} "
 
         output_name = cast(str, name)
         output_name += param_name_ext
@@ -453,9 +459,18 @@ def save(
 
         doc = sketch.vsk.document
         with open(output_file, "w") as fp:
-            print_info("Exporting SVG: ", str(output_file))
+            try:
+                path_to_print = str(output_file.relative_to(current_directory))
+            except ValueError:
+                path_to_print = str(output_file)
+            print_info("Exporting SVG: ", path_to_print)
+            source_string = (
+                f"vsk save -s {seed} {cmd_line_config_ext}{cmd_line_param_ext}{path}"
+            )
             vp.write_svg(
-                fp, doc, source_string=f"vsketch save -s {seed} {path}", color_mode="layer"
+                fp,
+                doc,
+                source_string=source_string,
             )
 
     all_output_iterator = itertools.product(
