@@ -15,7 +15,10 @@ from PySide2.QtWidgets import (
 
 import vsketch
 
+from .utils import throttle
+
 _MAX_INT = (2 ** 31) - 1
+_THROTTLE_SECONDS = 0.3
 
 
 class ChoiceParamWidget(QComboBox):
@@ -200,6 +203,7 @@ class ParamsWidget(QGroupBox):
     #         if name in self._widgets and hasattr(self._widgets[name], "set_value"):
     #             self._widgets[name].set_value(value)
 
+    @throttle(_THROTTLE_SECONDS)
     def emitParamUpdated(self) -> None:
         # noinspection PyUnresolvedReferences
         self.paramUpdated.emit()  # type: ignore
