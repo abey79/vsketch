@@ -389,7 +389,7 @@ def save(
         if param_set is not None and "__seed__" in param_set:
             seed_start = seed_end = int(param_set["__seed__"])
         else:
-            seed_start = seed_end = random.randint(0, 2 ** 31 - 1)
+            seed_start = seed_end = random.randint(0, 2**31 - 1)
     else:
         try:
             seed_start, seed_end = _parse_seed(seed)

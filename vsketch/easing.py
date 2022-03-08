@@ -21,7 +21,7 @@ EASING_FUNCTIONS = {
     "cubic_in": lambda v, a: v * v * v,
     "cubic_out": lambda v, a: (v - 1) ** 3 + 1,
     "cubic_inout": lambda v, a: np.where(v < 0.5, 4 * v * v * v, 4 * (v - 1) ** 3 + 1),
-    "power_in": lambda v, a: v ** a,
+    "power_in": lambda v, a: v**a,
     "power_out": lambda v, a: 1 - (1 - v) ** a,
     "power_inout": lambda v, a: np.where(
         v < 0.5, (2 * v) ** a / 2, 1.0 - 0.5 * (2 - 2 * v) ** a

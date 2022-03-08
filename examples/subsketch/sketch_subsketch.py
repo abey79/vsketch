@@ -18,7 +18,7 @@ class SubSketchSketch(vsketch.SketchClass):
 
         for i in range(8):
             with vsk.pushMatrix():
-                vsk.scale(0.95 ** i)
+                vsk.scale(0.95**i)
                 vsk.rotate(8 * i, degrees=True)
                 vsk.sketch(sub)
 

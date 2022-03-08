@@ -59,7 +59,7 @@ class Vsketch:
         self._rect_mode = "corner"
         self._ellipse_mode = "center"
         self._random = random.Random()
-        self._random.seed(random.randint(0, 2 ** 31))
+        self._random.seed(random.randint(0, 2**31))
         self._noise = Noise()
         self.resetMatrix()
 

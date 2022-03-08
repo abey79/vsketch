@@ -21,7 +21,7 @@ class PointTransformSketch(vsketch.SketchClass):
 
         with vsk.pushMatrix():
             vsk.rotate(80, degrees=True)
-            vsk.scale(0.95 ** 40)
+            vsk.scale(0.95**40)
             vsk.square(0, 0, 150, mode="center")
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
