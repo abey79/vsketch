@@ -1741,6 +1741,38 @@ class Vsketch:
 
         return ((value - start1) * (stop2 - start2)) / (stop1 - start1) + start2
 
+    # noinspection PyNestedDecorators
+    @overload
+    @staticmethod
+    def easing(
+        value: float,
+        mode: str = ...,
+        start1: float = ...,
+        stop1: float = ...,
+        start2: float = ...,
+        stop2: float = ...,
+        low_dead: float = ...,
+        high_dead: float = ...,
+        param: float = ...,
+    ) -> float:
+        ...
+
+    # noinspection PyNestedDecorators
+    @overload
+    @staticmethod
+    def easing(
+        value: np.ndarray,
+        mode: str = ...,
+        start1: float = ...,
+        stop1: float = ...,
+        start2: float = ...,
+        stop2: float = ...,
+        low_dead: float = ...,
+        high_dead: float = ...,
+        param: float = ...,
+    ) -> np.ndarray:
+        ...
+
     @staticmethod
     def easing(
         value: Union[float, np.ndarray],
@@ -1752,7 +1784,7 @@ class Vsketch:
         low_dead: float = 0.0,
         high_dead: float = 0.0,
         param: float = 10,
-    ):
+    ) -> Union[float, np.ndarray]:
         """Map a value from one range to another, using an easing function.
 
         Easing functions specify the rate of change of a parameter over time (or any other

@@ -1,6 +1,7 @@
 import numpy as np
 
 import vsketch
+from vsketch import Vsketch
 
 
 class EasingSketch(vsketch.SketchClass):
@@ -16,7 +17,7 @@ class EasingSketch(vsketch.SketchClass):
         vsk.translate(2.5, 2.5)
         vsk.scale(15)
         input_coord = np.linspace(0.0, 1.0, num=1000)
-        output_coord = vsk.easing(
+        output_coord = Vsketch.easing(
             input_coord,
             mode=self.mode,
             low_dead=self.low_deadzone / 100.0,
