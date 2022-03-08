@@ -25,6 +25,7 @@ from shapely.geometry import Polygon
 
 from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
 from .display import display
+from .easing import EASING_FUNCTIONS
 from .fill import generate_fill
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
@@ -1712,7 +1713,7 @@ class Vsketch:
         start2: float,
         stop2: float,
     ) -> Union[float, np.ndarray]:
-        """Re-map a value from one range to the other.
+        """Map a value from one range to the other.
 
         Input values are not clamped. This function accept float or NumPy array, in which case
         it also returns a Numpy array.
@@ -1739,3 +1740,63 @@ class Vsketch:
         """
 
         return ((value - start1) * (stop2 - start2)) / (stop1 - start1) + start2
+
+    @staticmethod
+    def easing(
+        value: Union[float, np.ndarray],
+        mode: str = "linear",
+        start1: float = 0.0,
+        stop1: float = 1.0,
+        start2: float = 0.0,
+        stop2: float = 1.0,
+        low_dead: float = 0.0,
+        high_dead: float = 0.0,
+        param: float = 10,
+    ):
+        """Map a value from one range to another, using an easing function.
+
+        Easing functions specify the rate of change of a parameter over time (or any other
+        input). This function provides a way to apply an easing function on a value.
+
+        The ``mode`` parameter specify the easing function to use. Check the ``easing`` example
+        for a list and a demo of all easing functions.
+
+        The input value may be a single float or a Numpy array of float.
+
+        Input values are clamped to ``[start1, stop1]`` and mapped to ``[start2, stop2]``.
+        Further, a lower and/or high dead zone can be specified as a fraction of the range
+        using ``low_dead`` and ``high_dead``. If ``delta = stop1 - start1``, the actual input
+        range is ``[start1 + low_dead * delta, stop1 - high_dead * delta]``.
+
+        The ``param`` argument is used by some easing functions.
+
+        Args:
+            value: input value(s)
+            mode: easing function to use
+            start1: start of the input range
+            stop1: end of the input range
+            start2: start of the output range
+            stop2: end of the output range
+            low_dead: lower dead zone (fraction of input range)
+            high_dead: higher dead zone (fraction of input range)
+            param: parameter use
+
+        Returns:
+            converted value(s)
+        """
+
+        input_low = start1 + low_dead * (stop1 - start1)
+        input_high = stop1 - high_dead * (stop1 - start1)
+        if input_low == input_high:
+            raise ValueError(f"invalid input span")
+        norm_value = np.clip((value - input_low) / (input_high - input_low), 0.0, 1.0)
+
+        if mode in EASING_FUNCTIONS:
+            out = EASING_FUNCTIONS[mode](norm_value, param)
+        else:
+            raise NotImplementedError(f"unknown easing function {mode}")
+
+        res = start2 + out * (stop2 - start2)
+        if getattr(res, "shape", None) == ():
+            res = float(res)
+        return res

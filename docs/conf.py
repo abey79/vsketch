@@ -17,7 +17,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "vsketch"
-copyright = "2020, Antoine Beyeler"
+copyright = "2020-2022, Antoine Beyeler"
 author = "Antoine Beyeler"
 
 # -- General configuration ---------------------------------------------------
