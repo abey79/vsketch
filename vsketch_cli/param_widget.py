@@ -15,7 +15,7 @@ from PySide2.QtWidgets import (
 
 import vsketch
 
-_MAX_INT = (2 ** 31) - 1
+_MAX_INT = (2**31) - 1
 
 
 class ChoiceParamWidget(QComboBox):

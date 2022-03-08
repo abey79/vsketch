@@ -17,7 +17,7 @@ class TransformsSketch(vsketch.SketchClass):
         with vsk.pushMatrix():
             for i in range(5):
                 with vsk.pushMatrix():
-                    vsk.scale(0.8 ** i)
+                    vsk.scale(0.8**i)
                     vsk.polygon(x, y)
 
                 vsk.translate(2, 0)

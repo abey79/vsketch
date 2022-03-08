@@ -2,7 +2,7 @@ import random
 
 from PySide2.QtWidgets import QFormLayout, QGroupBox, QPushButton, QSpinBox
 
-_MAX_SEED = 2 ** 31 - 1
+_MAX_SEED = 2**31 - 1
 
 
 class SeedWidget(QGroupBox):

@@ -1,7 +1,18 @@
 import os
 import pathlib
 import random
-from typing import Any, Dict, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
 
 import numpy as np
 import vpype as vp
@@ -129,7 +140,10 @@ class SketchClass:
         return {name: param.value for name, param in self._params.items()}
 
 
-class Param:
+_T = TypeVar("_T")
+
+
+class Param(Generic[_T]):
     """This class encapsulate a :class:`SketchClass` parameter.
 
     A sketch parameter can be interacted with in the ``vsk`` viewer.
@@ -137,11 +151,11 @@ class Param:
 
     def __init__(
         self,
-        value: ParamType,
-        min_value: Optional[ParamType] = None,
-        max_value: Optional[ParamType] = None,
+        value: _T,
+        min_value: Optional[_T] = None,
+        max_value: Optional[_T] = None,
         *,
-        choices: Optional[Sequence[ParamType]] = None,
+        choices: Optional[Iterable[_T]] = None,
         step: Union[None, float, int] = None,
         unit: str = "",
         decimals: Optional[int] = None,
@@ -186,7 +200,7 @@ class Param:
 
             mode = vsketch.Param("simple", choices=["simple", "complex", "versatile"])
         """
-        self.value: ParamType = value
+        self.value: _T = value
         self.type = type(value)
         self.min = self.type(min_value) if min_value is not None else None  # type: ignore
         self.max = self.type(max_value) if max_value is not None else None  # type: ignore
@@ -195,11 +209,11 @@ class Param:
         self.unit = unit
         self.factor: Optional[float] = None if unit == "" else vp.convert_length(unit)
 
-        self.choices: Optional[Tuple[ParamType, ...]] = None
+        self.choices: Optional[Tuple[_T, ...]] = None
         if choices is not None:
             self.choices = tuple(self.type(choice) for choice in choices)  # type: ignore
 
-    def set_value(self, value: ParamType) -> None:
+    def set_value(self, value: _T) -> None:
         """Assign a value without validation."""
         self.value = value
 
@@ -221,15 +235,25 @@ class Param:
             return False
 
         if self.min:
-            value = max(self.min, value)
+            value = max(self.min, value)  # type: ignore
 
         if self.max:
-            value = min(self.max, value)
+            value = min(self.max, value)  # type: ignore
 
         self.value = value
         return True
 
-    def __get__(self, instance: Any, owner: Any = None) -> Any:
+    @overload
+    def __get__(self, instance: None, owner: None) -> "Param":
+        ...
+
+    @overload
+    def __get__(self, instance: object, owner: Type[object]) -> _T:
+        ...
+
+    def __get__(
+        self, instance: Optional[object], owner: Optional[Type[object]] = None
+    ) -> Union[_T, "Param"]:
         if instance is None:
             return self
 
