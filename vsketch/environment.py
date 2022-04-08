@@ -1,5 +1,3 @@
-import sys
-
 try:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
     import google.colab
