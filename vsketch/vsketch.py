@@ -23,7 +23,7 @@ import vpype_cli
 from pnoise import Noise
 from shapely.geometry import Polygon
 
-from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
+from .curves import cubic_bezier_path, cubic_bezier_point, cubic_bezier_tangent
 from .display import display
 from .easing import EASING_FUNCTIONS
 from .fill import generate_fill
@@ -1108,7 +1108,7 @@ class Vsketch:
             y4: Y coordinate of the second anchor point
         """
 
-        path = quadratic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self.epsilon)
+        path = cubic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self.epsilon)
         self._add_polygon(path)
 
     # noinspection PyMethodMayBeStatic
@@ -1133,7 +1133,7 @@ class Vsketch:
         Returns:
             evaluated coordinate on the bezier curve
         """
-        x, y = quadratic_bezier_point(a, 0, b, 0, c, 0, d, 0, t)
+        x, y = cubic_bezier_point(a, 0, b, 0, c, 0, d, 0, t)
         return x
 
     # noinspection PyMethodMayBeStatic
@@ -1155,7 +1155,7 @@ class Vsketch:
         Returns:
             evaluated tangent on the bezier curve
         """
-        x, y = quadratic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
+        x, y = cubic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
         return x
 
     def sketch(self, sub_sketch: "Vsketch") -> None:

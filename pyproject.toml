@@ -26,7 +26,6 @@ vsk = "vsketch_cli.cli:cli"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
-bezier = ">=2021.2.12"
 colorama = "^0.4.4"
 cookiecutter = "^1.7.2"
 matplotlib = "^3.3.3"
@@ -43,11 +42,8 @@ watchfiles = ">=0.12"
 pytest = ">=6.2.4"
 pytest-benchmark = "^3.4.1"
 mypy = ">=0.901"
-types-requests = ">=0.1.9"
-jupyter = "^1.0.0"
 nbconvert = "^6.0.7"
 nbformat = "^5.0.8"
-jupyter-client = ">=6.1.7"
 isort = ">=5.10.1"
 black = ">=22.1"
 
@@ -56,10 +52,12 @@ black = ">=22.1"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.black]
 line-length = 95
-target-version = ["py36", "py37", "py38"]
+target-version = ["py38", "py39", "py310"]
 
 
 [tool.isort]
