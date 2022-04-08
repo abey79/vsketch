@@ -50,7 +50,8 @@ jobs:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install dependencies
-      run: poetry install
+      run: |
+        BEZIER_NO_EXTENSION=true poetry install
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
     - name: Lint and static analysis
       run: |
