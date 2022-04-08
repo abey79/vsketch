@@ -452,14 +452,18 @@ class Vsketch:
         """
 
         if isinstance(sx, str):
-            sx = vp.convert_length(sx)
+            scale_x = vp.convert_length(sx)
+        else:
+            scale_x = float(sx)
 
         if sy is None:
-            sy = sx
+            scale_y = scale_x
         elif isinstance(sy, str):
-            sy = vp.convert_length(sy)
+            scale_y = vp.convert_length(sy)
+        else:
+            scale_y = float(sy)
 
-        self.transform = self.transform @ np.diag([sx, sy, 1])
+        self.transform = self.transform @ np.diag([scale_x, scale_y, 1])
 
     def rotate(self, angle: float, degrees: bool = False) -> None:
         """Apply a rotation to the current transformation matrix.
@@ -1279,13 +1283,13 @@ class Vsketch:
         """
 
         @vpype_cli.cli.command(group="vsketch")
-        @vp.global_processor
+        @vpype_cli.global_processor
         def vsketchinput(document):
             document.extend(self._document)
             return document
 
         @vpype_cli.cli.command(group="vsketch")
-        @vp.global_processor
+        @vpype_cli.global_processor
         def vsketchoutput(document):
             self._document = document
             return document

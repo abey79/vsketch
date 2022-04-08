@@ -4,7 +4,7 @@ import pathlib
 from typing import Any, Dict, Optional, Type
 
 import vpype_viewer
-import watchgod
+import watchfiles
 from PySide2.QtCore import QThread, Signal
 from PySide2.QtWidgets import (
     QLabel,
@@ -197,10 +197,13 @@ class SketchViewer(vpype_viewer.QtViewer):
 
     async def watch(self):
         try:
-            async for changes in watchgod.awatch(self._path):
+            async for changes in watchfiles.awatch(self._path):
                 # noinspection PyTypeChecker
                 for change in changes:
-                    if change[1] == str(self._path) and change[0] == watchgod.Change.modified:
+                    if (
+                        change[1] == str(self._path)
+                        and change[0] == watchfiles.Change.modified
+                    ):
                         # noinspection PyUnresolvedReferences
                         self.sketchFileChanged.emit()
         except asyncio.CancelledError:

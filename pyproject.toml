@@ -25,7 +25,7 @@ include = [
 vsk = "vsketch_cli.cli:cli"
 
 [tool.poetry.dependencies]
-python = ">=3.7, !=3.9.0, <3.10"
+python = ">=3.8,<3.11"
 bezier = ">=2021.2.12"
 colorama = "^0.4.4"
 cookiecutter = "^1.7.2"
@@ -36,26 +36,8 @@ pnoise = "^0.1.0"
 PySide2 = "^5.15.2"
 qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = "^1.7.1"}
-vpype = { git = "https://github.com/abey79/vpype", tag = "1.9.0", extras = ["all"] }
-watchgod = "^0.7"
-
-# colab
-requests = {version = "^2.25.1", optional = true}
-
-# jupyterlab
-jupyterlab = {version = "^3.0.1", optional = true}
-jupyter_nbextensions_configurator = {version = "^0.4.1", optional = true}
-jupyterlab-code-formatter = {version = "^1.4.1", optional = true}
-ipympl = {version = ">=0.7.0", optional = true}
-black = {version = ">=22.1", optional = true}
-isort = {version = "^5.6.4", optional = true}
-
-# these needs to be there because of https://github.com/python-poetry/poetry/issues/1145
-Sphinx = { version = ">=3.4.3", optional = true }
-sphinx-autodoc-typehints = { version = ">=1.12.0", optional = true }
-sphinx-rtd-theme = { version = ">=0.5.1", optional = true }
-recommonmark = { version = ">=0.6,<0.8", optional = true }
-
+vpype = {extras = ["all"], version = ">=1.10"}
+watchfiles = ">=0.12"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.2.4"
@@ -66,14 +48,8 @@ jupyter = "^1.0.0"
 nbconvert = "^6.0.7"
 nbformat = "^5.0.8"
 jupyter-client = ">=6.1.7"
-isort = "^5.7.0"
+isort = ">=5.10.1"
 black = ">=22.1"
-
-
-[tool.poetry.extras]
-jupyterlab = ["jupyterlab", "jupyter_nbextensions_configurator", "jupyterlab", "ipympl", "black", "isort"]
-colab = ["requests"]
-docs = ["Sphinx", "sphinx-click", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "recommonmark"]
 
 
 [build-system]
