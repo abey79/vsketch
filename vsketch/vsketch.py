@@ -23,7 +23,7 @@ import vpype_cli
 from pnoise import Noise
 from shapely.geometry import Polygon
 
-from .curves import quadratic_bezier_path, quadratic_bezier_point, quadratic_bezier_tangent
+from .curves import cubic_bezier_path, cubic_bezier_point, cubic_bezier_tangent
 from .display import display
 from .easing import EASING_FUNCTIONS
 from .fill import generate_fill
@@ -452,14 +452,18 @@ class Vsketch:
         """
 
         if isinstance(sx, str):
-            sx = vp.convert_length(sx)
+            scale_x = vp.convert_length(sx)
+        else:
+            scale_x = float(sx)
 
         if sy is None:
-            sy = sx
+            scale_y = scale_x
         elif isinstance(sy, str):
-            sy = vp.convert_length(sy)
+            scale_y = vp.convert_length(sy)
+        else:
+            scale_y = float(sy)
 
-        self.transform = self.transform @ np.diag([sx, sy, 1])
+        self.transform = self.transform @ np.diag([scale_x, scale_y, 1])
 
     def rotate(self, angle: float, degrees: bool = False) -> None:
         """Apply a rotation to the current transformation matrix.
@@ -1104,7 +1108,7 @@ class Vsketch:
             y4: Y coordinate of the second anchor point
         """
 
-        path = quadratic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self.epsilon)
+        path = cubic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self.epsilon)
         self._add_polygon(path)
 
     # noinspection PyMethodMayBeStatic
@@ -1129,7 +1133,7 @@ class Vsketch:
         Returns:
             evaluated coordinate on the bezier curve
         """
-        x, y = quadratic_bezier_point(a, 0, b, 0, c, 0, d, 0, t)
+        x, y = cubic_bezier_point(a, 0, b, 0, c, 0, d, 0, t)
         return x
 
     # noinspection PyMethodMayBeStatic
@@ -1151,7 +1155,7 @@ class Vsketch:
         Returns:
             evaluated tangent on the bezier curve
         """
-        x, y = quadratic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
+        x, y = cubic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
         return x
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
@@ -1279,13 +1283,13 @@ class Vsketch:
         """
 
         @vpype_cli.cli.command(group="vsketch")
-        @vp.global_processor
+        @vpype_cli.global_processor
         def vsketchinput(document):
             document.extend(self._document)
             return document
 
         @vpype_cli.cli.command(group="vsketch")
-        @vp.global_processor
+        @vpype_cli.global_processor
         def vsketchoutput(document):
             self._document = document
             return document

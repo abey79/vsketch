@@ -26,15 +26,12 @@ author = "Antoine Beyeler"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
-    "sphinx_autodoc_typehints",
-    # "recommonmark",
-    # "autoapi.extension",
+    "sphinx.ext.napoleon",
+    "myst_parser",
+    "sphinx_copybutton",
 ]
 
 
@@ -64,15 +61,7 @@ smartquotes_action = "qe"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
-
-html_theme_options = {
-    # Toc options
-    # "collapse_navigation": False,
-    # "sticky_navigation": True,
-    "navigation_depth": 4,
-    # "titles_only": False,
-}
+html_theme = "furo"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
