@@ -1483,7 +1483,7 @@ all = ["Pillow (>=9.0.1)", "PySide2 (>=5.15.2,<6.0.0)", "glcontext (>=2.3.2)", "
 
 [[package]]
 name = "watchfiles"
-version = "0.12"
+version = "0.13"
 description = "Simple, modern and high performance file watching and code reload in python."
 category = "main"
 optional = false
@@ -2619,30 +2619,38 @@ vpype = [
     {file = "vpype-1.10.0.tar.gz", hash = "sha256:782aa5ceb87fd88c81caeb3382f380ef3854d50b27be8857feca611a7dfc60e5"},
 ]
 watchfiles = [
-    {file = "watchfiles-0.12-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:25448386a9460f513a0f45289c9ccd72f5d2a67c88807ee39d28628472a70bdf"},
-    {file = "watchfiles-0.12-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2600b259dc216d7121b51f799b80cbb27443920cf91d74c87a0d397659179f92"},
-    {file = "watchfiles-0.12-cp310-cp310-manylinux_2_24_i686.whl", hash = "sha256:7b962538e109e70f8c7232c7518f95a9d850650f635cdc6f7822a9046e928d14"},
-    {file = "watchfiles-0.12-cp310-cp310-manylinux_2_24_x86_64.whl", hash = "sha256:e2d9c5ee04d3da4c3393dea7de739646a7da67ca87fe5f6eacf20fa47aef9221"},
-    {file = "watchfiles-0.12-cp310-cp310-win32.whl", hash = "sha256:717f8202e358d751fc811c6ccba5a8d19e16d84c3f91448d82dcfe4ba14349fd"},
-    {file = "watchfiles-0.12-cp310-cp310-win_amd64.whl", hash = "sha256:4d8a0aec717a14e6107babcf0d53b19cf341ca4947679783fc76e7afb154b7bc"},
-    {file = "watchfiles-0.12-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e0d03db135f9827d76b53684b2d6fd8f916b55f00ae31e3b351494616c276dfe"},
-    {file = "watchfiles-0.12-cp37-cp37m-manylinux_2_24_i686.whl", hash = "sha256:b979461efb0950bdf73467e0ce556cc8243b74089218da282715a3147d96ba54"},
-    {file = "watchfiles-0.12-cp37-cp37m-manylinux_2_24_x86_64.whl", hash = "sha256:070b4405b3f6fb8efbd6920c9b185f643f19abda5af44fe861ea942bf4198567"},
-    {file = "watchfiles-0.12-cp37-cp37m-win32.whl", hash = "sha256:84f1ab85515cb9f2fc8d775d2658d7d9fd83878a7074862810400c392bce795a"},
-    {file = "watchfiles-0.12-cp37-cp37m-win_amd64.whl", hash = "sha256:5ae8dc1d3ad268e793f98a06e7c7239697a9f96e168b6497f597bfad1dd835c9"},
-    {file = "watchfiles-0.12-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:8b33d4140c7af67d08cd6443b26cd8f2dd41ccc0f59c2f6f37a285f7b6bb3412"},
-    {file = "watchfiles-0.12-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:c9a06ba08f0ca0dcc8bb79ce213a079a11a60808dd464c1940af9bcaba5bba48"},
-    {file = "watchfiles-0.12-cp38-cp38-manylinux_2_24_i686.whl", hash = "sha256:1a8ab59b81f86ce926df80396ea1b79e441fb10aed069656f21f1d429691953d"},
-    {file = "watchfiles-0.12-cp38-cp38-manylinux_2_24_x86_64.whl", hash = "sha256:0f0e6c4ea5d131495f2404021eefb5d5e774c11877456b35fc645a1e9a6c1e98"},
-    {file = "watchfiles-0.12-cp38-cp38-win32.whl", hash = "sha256:57aa5399d9a71843b920da6166dc8396254ac6acb6266c15d4a63d060d78dff3"},
-    {file = "watchfiles-0.12-cp38-cp38-win_amd64.whl", hash = "sha256:bef776fb46460592d8eecd0028f60dd39953bc911731f25dbc2cd9c66adbe6a3"},
-    {file = "watchfiles-0.12-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5de85d010085479b3a02f7b33c0fb5307e87ba95afaf308623bc61d0849741ee"},
-    {file = "watchfiles-0.12-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:234010bb28dc8258184f289d30385a6255c9e84e0001d84ad357f3cc0cf79046"},
-    {file = "watchfiles-0.12-cp39-cp39-manylinux_2_24_i686.whl", hash = "sha256:34ee9a6fea8778688f2eebede9b57467fc44ac252d7f59b575b701b6dc836f4e"},
-    {file = "watchfiles-0.12-cp39-cp39-manylinux_2_24_x86_64.whl", hash = "sha256:4a6bc1516265994b4ada1a14906fa4f4d2cdf43b19dd886da5a9f9a1c576b94a"},
-    {file = "watchfiles-0.12-cp39-cp39-win32.whl", hash = "sha256:0dde3b3f849ea7fcddf6f57324925c814a01fb59626711463efd714614a1f8b7"},
-    {file = "watchfiles-0.12-cp39-cp39-win_amd64.whl", hash = "sha256:3baa80003ec031c583c906a618868712c8d9753a66087479d8f7d3fe56cf571b"},
-    {file = "watchfiles-0.12.tar.gz", hash = "sha256:962aa5fcc212fe4d838f9b28fcf70b6a5c850930fc4d389f444edb821d264110"},
+    {file = "watchfiles-0.13-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ed060f861e8e89edd1c4c67b6074579f75f4c0e84b6d84696b503a8d4fd18741"},
+    {file = "watchfiles-0.13-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:bf145540fcc196da0af5e2eb58415f0dd64d73e2390e8b691ee5c9128094d58f"},
+    {file = "watchfiles-0.13-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:23edc0e0a90337160e7b3cb96a2ea62d3a514ceb73c7ad9df535a161e2d7e9aa"},
+    {file = "watchfiles-0.13-cp310-cp310-manylinux_2_24_i686.whl", hash = "sha256:cde46ddec1a182f74cb73eb6e6e9c92e3236567b89e5a93c415f19237e521b26"},
+    {file = "watchfiles-0.13-cp310-cp310-manylinux_2_24_x86_64.whl", hash = "sha256:27db8d3106267ab69de793dafe22ae551a8a3827f409430a9690b633ff718aa7"},
+    {file = "watchfiles-0.13-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:d62df849ff9e2c283408c168d4966cd4d0b395194a5170078c1abff16e9fb6b6"},
+    {file = "watchfiles-0.13-cp310-cp310-win32.whl", hash = "sha256:77ddb776640be101201602e2fe81dde206458c25ede4cf174260dc9594d50da6"},
+    {file = "watchfiles-0.13-cp310-cp310-win_amd64.whl", hash = "sha256:a4995664f7ac269397e3f28fae177c2d2688379e68cc93d99fdcf1bb0a75a7da"},
+    {file = "watchfiles-0.13-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:d7704263193ebbe27b9a02b63a16338fdef9d125f8ce46bba97bc8fe7eea2f5a"},
+    {file = "watchfiles-0.13-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b324253298f1211adf1be49cccf123bfcbfe31e2f6161493c5617903dc0eaafc"},
+    {file = "watchfiles-0.13-cp37-cp37m-manylinux_2_24_i686.whl", hash = "sha256:50696bb857e13f2a7f9788fddcbdcf7f4d6ceadc90fe969c0c2c7ea55908a5b2"},
+    {file = "watchfiles-0.13-cp37-cp37m-manylinux_2_24_x86_64.whl", hash = "sha256:ca8c7b2489b3ab22666e7114bf2bfd0f33344f3948480f1526eecaab7f41d1a5"},
+    {file = "watchfiles-0.13-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:c92ae6617846865285fcce7d56bb367f7d84685fae72fa9ae359adf88211be90"},
+    {file = "watchfiles-0.13-cp37-cp37m-win32.whl", hash = "sha256:39b60f71e4c4688641b1672726780dea219b1c9654c016b1776e0a8f0ca8f5d5"},
+    {file = "watchfiles-0.13-cp37-cp37m-win_amd64.whl", hash = "sha256:5d23b33f106db0c8daa3a146e0b5ee3d7729240f4185aa6200b27c6adfef4fe6"},
+    {file = "watchfiles-0.13-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f84ba7f1b5a03bcc34321fb8dc65fcdbf26d25bc3a7b17a80b7fe7125e8a02e3"},
+    {file = "watchfiles-0.13-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:cc63ce79a7c2dbbb9e0936cef70782c0a7b60ab774417d841a7e92a1c63af1fa"},
+    {file = "watchfiles-0.13-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7ae76ab695501192ccdf871c6ed6e53a124c43a3145878d121e7fd12728b4c08"},
+    {file = "watchfiles-0.13-cp38-cp38-manylinux_2_24_i686.whl", hash = "sha256:80bffe06ba2d8ed044783f7d7dd3f834cb3c4eb2ed20bee69eb18b3cb8b6ea9f"},
+    {file = "watchfiles-0.13-cp38-cp38-manylinux_2_24_x86_64.whl", hash = "sha256:426825c2552a1ff6e87eb4406a7c84e46e20c091d529e8dad4f2af252dd24066"},
+    {file = "watchfiles-0.13-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:4c4f63c1d717b93a13dbc637d2f592a0a78e1b4289651aac3b8d39862b41a96d"},
+    {file = "watchfiles-0.13-cp38-cp38-win32.whl", hash = "sha256:84ebdbabdebb4ecfae3e91aadf7b96ff69623266932c5f3efba9a93ac1e3aa12"},
+    {file = "watchfiles-0.13-cp38-cp38-win_amd64.whl", hash = "sha256:a591b5bd35921ea736c919c5f52c1d4daf5edec5a8728ad8db817144391f0dbb"},
+    {file = "watchfiles-0.13-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:474421c980b40346a36be417b97ef4e6edd6b65f303be33fc81a4826a6baf972"},
+    {file = "watchfiles-0.13-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:90f5edc42ee408e91eda36107692f0b2a8b8c1071096cd67c97a7a4a1c1ae9a8"},
+    {file = "watchfiles-0.13-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:245da818e4cd3e5c4a6261d9b82c1be17db4058331d6a6b374a56ac97b4e2f40"},
+    {file = "watchfiles-0.13-cp39-cp39-manylinux_2_24_i686.whl", hash = "sha256:841f4fe431962cf946b43b80251fe89efff8523856c4a347141b429825f5f627"},
+    {file = "watchfiles-0.13-cp39-cp39-manylinux_2_24_x86_64.whl", hash = "sha256:41c05f3ba09257df4b3fa56feddd1f32126569a276c1b1a81c526f67d096e138"},
+    {file = "watchfiles-0.13-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:8d07ee406f06fdd12bf75c8641c58efd5eecc4ce01027716846f49fd30978e1c"},
+    {file = "watchfiles-0.13-cp39-cp39-win32.whl", hash = "sha256:f2689146477a913447ea236c552900d75fd37a35f7cb87f757eded06b2b444bd"},
+    {file = "watchfiles-0.13-cp39-cp39-win_amd64.whl", hash = "sha256:2056a3b53154a5cd8e1502dbfb024afd6ff1512d10fb667eec90483b01e8b384"},
+    {file = "watchfiles-0.13.tar.gz", hash = "sha256:640a1201178d0d127911f7c7a39b4abb69793d9618ee527d9a8602a475960fb6"},
 ]
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
