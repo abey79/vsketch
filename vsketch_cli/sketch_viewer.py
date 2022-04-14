@@ -14,7 +14,6 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from qasync import asyncClose
 
 import vsketch
 
