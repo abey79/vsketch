@@ -16,7 +16,7 @@ async def _show(path: str, second_screen: bool = False) -> int:
         future.cancel()
 
     loop = asyncio.get_event_loop()
-    future = asyncio.Future()
+    future: asyncio.Future = asyncio.Future()
 
     if not QApplication.instance():
         app = QApplication()
@@ -50,7 +50,7 @@ async def _show(path: str, second_screen: bool = False) -> int:
 
 def show(path: str, second_screen: bool = False) -> int:
     try:
-        qasync.run(_show(path, second_screen))
+        return qasync.run(_show(path, second_screen))
     except asyncio.exceptions.CancelledError:
         sys.exit(0)
 
