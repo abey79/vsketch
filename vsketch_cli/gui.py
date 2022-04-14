@@ -1,23 +1,31 @@
 import asyncio
+import functools
 import pathlib
+import sys
 
+import qasync
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QApplication
-from qasync import QEventLoop
+from qasync import QApplication, QEventLoop
 
 from .sketch_viewer import SketchViewer
 
 
-def show(path: str, second_screen: bool = False) -> int:
+async def _show(path: str, second_screen: bool = False) -> int:
+    def close_future(future, loop):
+        loop.call_later(10, future.cancel)
+        future.cancel()
+
+    loop = asyncio.get_event_loop()
+    future: asyncio.Future = asyncio.Future()
+
     if not QApplication.instance():
         app = QApplication()
     else:
         app = QApplication.instance()
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    # setup asyncio loop
-    loop = QEventLoop(app)
-    asyncio.set_event_loop(loop)
+    if hasattr(app, "aboutToQuit"):
+        getattr(app, "aboutToQuit").connect(functools.partial(close_future, future, loop))
 
     # create widget
     widget = SketchViewer(pathlib.Path(path))
@@ -36,7 +44,15 @@ def show(path: str, second_screen: bool = False) -> int:
 
     # run
     widget.show()
+    await future
     return app.exec_()
+
+
+def show(path: str, second_screen: bool = False) -> int:
+    try:
+        return qasync.run(_show(path, second_screen))
+    except asyncio.exceptions.CancelledError:
+        sys.exit(0)
 
 
 if __name__ == "__main__":
