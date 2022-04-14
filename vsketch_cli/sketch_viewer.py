@@ -14,9 +14,9 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from qasync import asyncClose
 
 import vsketch
-from qasync import asyncClose
 
 from .config_widget import ConfigWidget
 from .param_widget import ParamsWidget
