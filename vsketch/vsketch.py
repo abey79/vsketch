@@ -61,6 +61,7 @@ class Vsketch:
         self._random = random.Random()
         self._random.seed(random.randint(0, 2**31))
         self._noise = Noise()
+        self._text_mode = "transform"
         self.resetMatrix()
 
     @property
@@ -1836,3 +1837,117 @@ class Vsketch:
         if getattr(res, "shape", None) == ():
             res = float(res)
         return res
+
+    ########
+    # TEXT #
+    ########
+
+    def textMode(self, mode: str) -> None:
+        """Controls how text is laid out.
+
+        There are two options for the text mode:
+          - "transform", where the font itself is subject to the current transform
+            matrix, including translation, scaling, rotation, skewing and flipping.
+          - "label", where the text is only scaled and translated using the current
+            transform matrix, but is not rotated, skewed or flipped.
+
+        .. seealso::
+
+            * :func:`text`
+
+        Args:
+            mode (``"transform"``, or ``"label"``): text layout mode to use.
+        """
+
+        if mode in ["label", "transform"]:
+            self._text_mode = mode
+        else:
+            raise ValueError("mode must be one of 'label', 'transform'")
+
+    def text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        *,
+        width: Optional[float] = None,
+        font: str = "futural",
+        size: Union[float, str] = "12pt",
+        mode: Optional[str] = None,
+        align: str = "left",
+        line_spacing: float = 1.0,
+        justify: bool = False,
+    ) -> None:
+        """Add text to your sketch!
+
+        This can add either lines or blocks of text to your sketch. The default is
+        to add a line of text, but if `width` is specified, then a block of text
+        will be created that width.
+
+        The fonts available are the same as those
+        `available from vpype <https://github.com/abey79/vpype/tree/master/vpype/fonts>`_.
+
+        A ``size`` of 1.0 means the maximum font height will be as long as a line 1.0
+        long (given current transform).
+
+        The ``mode`` here is special. There are two options for the mode:
+          - "transform", where the font itself is subject to the current transform
+            matrix, including translation, scaling, rotation, skewing and flipping.
+          - "label", where the text is only moved and scaled using the current
+            transform matrix, but is not rotated, skewed or flipped.
+
+        The text mode can also be set using :func:`textMode`.
+
+        ``align`` controls the text alignment, and can be "left", "right" or "center".
+
+        ``line_spacing`` and ``justify`` are only used when ``width`` is specified, and they
+        allow you to control the line spacing and justification of your block of text.
+
+        .. seealso::
+
+          - :func:`textMode`
+
+        Args:
+            text: text to add to the sketch
+            x: the x coordinate of the anchor point for the text. This sets either
+                the leftmost, rightmost, or centre point of the first line of
+                text, depending on the value of ``align``.
+            y: the y coordinate of the anchor point for the text. This sets the
+                centre line of the first line of text.
+            width: if given, wraps the text to this width and creates a text
+                block, not a text line. A text block may be multi-line.
+            size: the font size. It is highly recommended to give this as a float
+                (in document units) in "transform" mode, and an absolute size
+                such as "12pt" in "label" mode.
+            font: a vpype font
+            mode: "transform" or "label", see description for details.
+            align: "left", "right", or "center". See also `x` and `y` args.
+            line_spacing: Gives the line spacing for a text block, in multiples
+                of `size`. No effect without `width`.
+            justify: whether to justify the text block. No effect without `width`.
+
+        """
+
+        if mode is None:
+            mode = self._text_mode
+
+        size = vp.convert_length(size)
+
+        if width is None:
+            text_lc = vp.text_line(text, font, size, align=align)
+        else:
+            text_lc = vp.text_block(text, width, font, size, align, line_spacing, justify)
+
+        if mode == "transform":
+            # Move the text to the right place, and then apply the current
+            # transform.
+            text_lc.translate(x, y)
+            text_lc = vp.LineCollection([self._transform_line(line) for line in text_lc])
+        elif mode == "label":
+            # Then use a point to find out where to move the text to, given the
+            # current transformation.
+            location = self._transform_line(np.array([complex(x, y)]))
+            text_lc.translate(location.real, location.imag)
+
+        if self._cur_stroke is not None:
+            self._document.add(text_lc, self._cur_stroke)
