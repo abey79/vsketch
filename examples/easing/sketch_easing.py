@@ -48,15 +48,23 @@ class EasingSketch(vsketch.SketchClass):
         vsk.vpype("color --layer 1 #eee")
 
         # Draw text
-        vsk.vpype(f"text -l3 -p 2.5cm 19cm -a center '0'")
-        vsk.vpype(f"text -l3 -p 17.5cm 19cm -a center '1'")
-        vsk.vpype(f"text -l3 -p 10cm 19cm -a center 'input'")
-        vsk.vpype(f"text -l3 -p 1cm 2.5cm -a center '1'")
-        vsk.vpype(f"text -l3 -p 1cm 17.5cm -a center '0'")
-        vsk.vpype(
-            f"text -l4 -p 1cm 10cm -a center 'output' rotate -l4 -o 1cm 10cm -- -90 lmove 4 3"
-        )
-        vsk.vpype(f"text -l5 -p 10cm 1.5cm -a center -s 40 '{self.mode}' color -l5 black")
+        vsk.stroke(3)
+        vsk.textMode("label")
+        vsk.text("0", 0, 1.1, align="center")
+        vsk.text("1", 1, 1.1, align="center")
+        vsk.text("input", 0.5, 1.1, align="center")
+        vsk.text("0", -0.1, 1, align="center")
+        vsk.text("1", -0.1, 0, align="center")
+
+        # vsk.text() doesn't support vertical text in label mode
+        with vsk.pushMatrix():
+            vsk.translate(-0.1, 0.5)
+            vsk.rotate(-90, degrees=True)
+            vsk.text("output", align="center", mode="transform", size=0.03)
+
+        vsk.stroke(5)
+        vsk.text(self.mode, 0.5, -0.07, align="center", size="30pt")
+        vsk.vpype(f"color -l5 black")
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
         vsk.vpype("linemerge linesimplify reloop linesort")
