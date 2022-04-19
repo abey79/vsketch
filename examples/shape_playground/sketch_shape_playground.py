@@ -5,7 +5,9 @@ import vsketch
 
 class ShapePlaygroundSketch(vsketch.SketchClass):
     # Sketch parameters:
-    circle_op = vsketch.Param("union", choices=["union", "difference", "intersection", "xor"])
+    circle_op = vsketch.Param(
+        "union", choices=["union", "difference", "intersection", "symmetric_difference"]
+    )
     stroke = vsketch.Param("layer 1", choices=["off", "layer 1"])
     fill = vsketch.Param("off", choices=["off", "layer 1", "layer 2"])
     pen_width = vsketch.Param(0.3, 0, unit="mm", step=0.1)

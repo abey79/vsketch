@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence, Tuple, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Iterable, Literal, Sequence, cast
 
 import numpy as np
 import vpype as vp
@@ -19,15 +21,8 @@ from .utils import compute_ellipse_mode
 if TYPE_CHECKING:
     from .vsketch import Vsketch
 
-# TODO
-# [ ] clean up code duplicates
-# [x] add points
-# [ ] add Shape.shape() to merge shape into shape
-# [x] Vsketch.shape() must control if points/lines are diffed with MultiPolygon
-# [ ] tests! (degenerate cases)
-# [x] clean docstring
-# [ ] update readme/doc
-# [x] examples
+
+BooleanOperation = Literal["union", "difference", "intersection", "symmetric_difference"]
 
 
 class Shape:
@@ -86,14 +81,17 @@ class Shape:
         ready-to-be-plotted paths are added to the sketch.
     """
 
-    def __init__(self, vsk: "Vsketch"):
+    def __init__(self, vsk: Vsketch):
         self._vsk = vsk
         self._polygon = Polygon()
-        self._lines: List[LineString] = []
-        self._points: List[Point] = []
+        self._lines: list[LineString] = []
+        self._points: list[Point] = []
 
     def _add_polygon(
-        self, exterior: np.ndarray, holes: Sequence[np.ndarray] = (), op: str = "union"
+        self,
+        exterior: np.ndarray,
+        holes: Sequence[np.ndarray] = (),
+        op: BooleanOperation = "union",
     ) -> None:
         if exterior[0] != exterior[-1]:
             if len(holes) > 0:
@@ -111,14 +109,14 @@ class Shape:
                 self._polygon = self._polygon.difference(p)
             elif op == "intersection":
                 self._polygon = self._polygon.intersection(p)
-            elif op == "xor":
+            elif op == "symmetric_difference":
                 self._polygon = self._polygon.symmetric_difference(p)
             else:
                 raise ValueError(f"operation {op} invalid")
 
     def _compile(
         self, mask_lines: bool, mask_points: bool
-    ) -> Tuple[MultiPolygon, MultiLineString, MultiPoint]:
+    ) -> tuple[MultiPolygon, MultiLineString, MultiPoint]:
         """Returns the shape's content.
 
         This function returns three Shapely geometries:
@@ -193,10 +191,10 @@ class Shape:
         self,
         x: float,
         y: float,
-        diameter: Optional[float] = None,
-        radius: Optional[float] = None,
-        mode: Optional[str] = None,
-        op: str = "union",
+        diameter: float | None = None,
+        radius: float | None = None,
+        mode: str | None = None,
+        op: BooleanOperation = "union",
     ) -> None:
         """Add a circle to the shape.
 
@@ -208,7 +206,8 @@ class Shape:
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the circle is added to the shape), ``difference`` (the circle is cut off the
         shape), ``intersection`` (only the overlapping part of the circle is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and circle are kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        circle are kept).
 
         .. seealso::
 
@@ -229,7 +228,7 @@ class Shape:
             diameter: circle diameter (or None if using radius)
             radius: circle radius (or None if using diameter
             mode: one of 'center', 'radius', 'corner', 'corners'
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
 
         if (diameter is None) == (radius is None):
@@ -253,8 +252,8 @@ class Shape:
         y: float,
         w: float,
         h: float,
-        mode: Optional[str] = None,
-        op: str = "union",
+        mode: str | None = None,
+        op: BooleanOperation = "union",
     ) -> None:
         """Add an ellipse to the shape.
 
@@ -269,7 +268,8 @@ class Shape:
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the ellipse is added to the shape), ``difference`` (the ellipse is cut off
         the shape), ``intersection`` (only the overlapping part of the ellipse is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and ellipse are kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        ellipse are kept).
 
         .. seealso::
 
@@ -302,7 +302,7 @@ class Shape:
             w: by default, the ellipse width
             h: by default, the ellipse height
             mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         if mode is None:
             # noinspection PyProtectedMember
@@ -318,10 +318,10 @@ class Shape:
         h: float,
         start: float,
         stop: float,
-        degrees: Optional[bool] = False,
-        close: Optional[str] = "no",
-        mode: Optional[str] = None,
-        op: str = "union",
+        degrees: bool | None = False,
+        close: str | None = "no",
+        mode: str | None = None,
+        op: BooleanOperation = "union",
     ) -> None:
         """Add an arc to the shape.
 
@@ -336,7 +336,8 @@ class Shape:
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the arc is added to the shape), ``difference`` (the arc is cut off the
         shape), ``intersection`` (only the overlapping part of the arc is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and arc are kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        arc are kept).
 
         .. seealso::
             * :meth:`Vsketch.arc`
@@ -359,7 +360,7 @@ class Shape:
             degrees: set to True to use degrees for start and stop angles (default: False)
             close: "no", "chord" or "pie" (default: "no")
             mode: "corner", "corners", "radius", or "center" (see :meth:`ellipseMode`)
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         if not degrees:
             start = start * (180 / np.pi)
@@ -387,12 +388,12 @@ class Shape:
         w: float,
         h: float,
         *radii: float,
-        tl: Optional[float] = None,
-        tr: Optional[float] = None,
-        br: Optional[float] = None,
-        bl: Optional[float] = None,
-        mode: Optional[str] = None,
-        op: str = "union",
+        tl: float | None = None,
+        tr: float | None = None,
+        br: float | None = None,
+        bl: float | None = None,
+        mode: str | None = None,
+        op: BooleanOperation = "union",
     ) -> None:
         """Add a rectangle to the shape.
 
@@ -412,8 +413,8 @@ class Shape:
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the rectangle is added to the shape), ``difference`` (the rectangle is cut
         off the shape), ``intersection`` (only the overlapping part of the rectangle is kept in
-        the shape), or ``xor`` (only the none overlapping parts of the shape and rectangle
-        are kept).
+        the shape), or ``symmetric_difference`` (only the none overlapping parts of the shape
+        and rectangle are kept).
 
         .. seealso::
 
@@ -456,7 +457,7 @@ class Shape:
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
             mode: "corner", "corners", "redius", or "center" (see :meth:`rectMode`)
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         if len(radii) == 0:
             radii = (0, 0, 0, 0)
@@ -497,7 +498,12 @@ class Shape:
         self._add_polygon(line, op=op)
 
     def square(
-        self, x: float, y: float, extent: float, mode: Optional[str] = None, op: str = "union"
+        self,
+        x: float,
+        y: float,
+        extent: float,
+        mode: str | None = None,
+        op: BooleanOperation = "union",
     ) -> None:
         """Add a square to the shape.
 
@@ -508,7 +514,8 @@ class Shape:
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the square is added to the shape), ``difference`` (the square is cut off the
         shape), ``intersection`` (only the overlapping part of the square is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and square are kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        square are kept).
 
         .. seealso::
 
@@ -529,7 +536,7 @@ class Shape:
             mode: "corner", "redius", or "center" (see :meth:`rectMode`) — note that the
                 "corners" mode is meaningless for this function, and is interpreted as the
                 "corner" mode
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         # noinspection PyProtectedMember
         if mode == "corners" or (mode is None and self._vsk._rect_mode == "corners"):
@@ -546,14 +553,15 @@ class Shape:
         y3: float,
         x4: float,
         y4: float,
-        op: str = "union",
+        op: BooleanOperation = "union",
     ) -> None:
         """Add a quadrilateral to the shape.
 
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the quad is added to the shape), ``difference`` (the quad is cut off the
         shape), ``intersection`` (only the overlapping part of the quad is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and quad are kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        quad are kept).
 
         .. seealso::
 
@@ -574,7 +582,7 @@ class Shape:
             y3: Y coordinate of the third vertex
             x4: X coordinate of the last vertex
             y4: Y coordinate of the last vertex
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         line = np.array(
             [x1 + y1 * 1j, x2 + y2 * 1j, x3 + y3 * 1j, x4 + y4 * 1j, x1 + y1 * 1j],
@@ -590,15 +598,15 @@ class Shape:
         y2: float,
         x3: float,
         y3: float,
-        op: str = "union",
+        op: BooleanOperation = "union",
     ) -> None:
         """Add a triangle to the shape.
 
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the triangle is added to the shape), ``difference`` (the triangle is cut off
         the shape), ``intersection`` (only the overlapping part of the triangle is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and triangle are
-        kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        triangle are kept).
 
         .. seealso::
 
@@ -617,7 +625,7 @@ class Shape:
             y2: Y coordinate of the second corner
             x3: X coordinate of the third corner
             y3: Y coordinate of the third corner
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
 
         line = np.array(
@@ -627,18 +635,19 @@ class Shape:
 
     def polygon(
         self,
-        x: Union[Iterable[float], Iterable[Sequence[float]], Iterable[complex]],
-        y: Optional[Iterable[float]] = None,
+        x: Iterable[float] | Iterable[Sequence[float]] | Iterable[complex],
+        y: Iterable[float] | None = None,
         holes: Iterable[Iterable[Sequence[float]]] = (),
         close: bool = False,
-        op: str = "union",
+        op: BooleanOperation = "union",
     ) -> None:
         """Add a polygon to the shape.
 
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the polygon is added to the shape), ``difference`` (the polygon is cut off
         the shape), ``intersection`` (only the overlapping part of the polygon is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and polygon are kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        polygon are kept).
 
         .. seealso::
 
@@ -674,7 +683,7 @@ class Shape:
             y: Y coordinates
             holes: list of holes inside the polygon
             close: the polygon is closed if True
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         if y is None:
             try:
@@ -715,7 +724,11 @@ class Shape:
 
         self._add_polygon(line, holes=hole_lines, op=op)
 
-    def geometry(self, shape: Any, op: str = "union") -> None:
+    def geometry(
+        self,
+        shape: LineString | LinearRing | MultiPolygon | MultiLineString | Polygon,
+        op: BooleanOperation = "union",
+    ) -> None:
         """Add a Shapely geometry to the shape.
 
         This function should accept any of LineString, LinearRing, MultiPolygon,
@@ -724,8 +737,8 @@ class Shape:
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the geometry is added to the shape), ``difference`` (the geometry is cut off
         the shape), ``intersection`` (only the overlapping part of the geometry is kept in the
-        shape), or ``xor`` (only the none overlapping parts of the shape and geometry are
-        kept).
+        shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
+        geometry are kept).
 
         .. seealso::
 
@@ -733,7 +746,7 @@ class Shape:
 
         Args:
             shape (Shapely geometry): a supported shapely geometry object
-            op: one of 'union', 'difference', 'intersection', or 'xor'
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         if getattr(shape, "is_empty", False):
             return
@@ -742,12 +755,14 @@ class Shape:
             if shape.geom_type in ["LineString", "LinearRing"]:
                 self.polygon(shape.coords, op=op)
             elif shape.geom_type == "MultiLineString":
-                for ls in shape:
+                for ls in shape.geoms:
                     self.polygon(ls.coords, op=op)
             elif shape.geom_type in ["Polygon", "MultiPolygon"]:
                 if shape.geom_type == "Polygon":
-                    shape = [shape]
-                for p in shape:
+                    poly_list = [shape]
+                else:
+                    poly_list = shape.geoms
+                for p in poly_list:
                     self.polygon(
                         p.exterior.coords, holes=[hole.coords for hole in p.interiors], op=op
                     )
@@ -797,3 +812,22 @@ class Shape:
 
         path = cubic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self._vsk.epsilon)
         self._add_polygon(path, op="union")
+
+    def shape(self, shape: Shape, op: BooleanOperation = "union") -> None:
+        """Combine the shape with another shape.
+
+        This function can combine another shape with this shape, using various boolean mode.
+        When ``op`` is set to ``"union"``, the ``shape``'s polygons, lines and points are
+        merged into this instance. When using other operations (``"difference"``,
+        ``"intersection"``, or ``"symmetric_difference"``), the corresponding operation is
+        applied with ``shape``'s polygon, but its lines and points are ignored.
+
+        Args:
+            shape: the shape to combine
+            op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
+        """
+        self.geometry(shape._polygon, op=op)
+
+        if op == "union":
+            self._lines.extend(shape._lines)
+            self._points.extend(shape._points)

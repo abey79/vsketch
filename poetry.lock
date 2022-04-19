@@ -413,7 +413,7 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pnoise"
-version = "0.1.0"
+version = "0.2.0"
 description = "Vectorized port of Processing noise() function"
 category = "main"
 optional = false
@@ -673,32 +673,39 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "vpype"
-version = "1.10.0"
+version = "1.11.0-alpha.0"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 category = "main"
 optional = false
-python-versions = ">=3.8,<3.11"
+python-versions = ">=3.8, <3.11"
+develop = false
 
 [package.dependencies]
-asteval = ">=0.9.26,<0.10.0"
+asteval = ">=0.9.26"
 cachetools = ">=4.2.2"
 click = ">=8.0.1,<8.2.0"
-glcontext = {version = ">=2.3.2", optional = true, markers = "extra == \"all\""}
-matplotlib = {version = ">=3.3.2,<3.6.0", optional = true, markers = "extra == \"all\""}
-moderngl = {version = ">=5.6.2,<6.0.0", optional = true, markers = "extra == \"all\""}
-multiprocess = ">=0.70.11,<0.71.0"
+glcontext = {version = ">=2.3.2", optional = true}
+matplotlib = {version = ">=3.3.2,<3.6.0", optional = true}
+moderngl = {version = ">=5.6.2", optional = true}
+multiprocess = ">=0.70.11"
 numpy = ">=1.20"
-Pillow = {version = ">=9.0.1", optional = true, markers = "extra == \"all\""}
-pnoise = ">=0.1.0,<0.2.0"
-PySide2 = {version = ">=5.15.2,<6.0.0", optional = true, markers = "extra == \"all\""}
-scipy = ">=1.6,<2.0"
+Pillow = {version = ">=9.0.1", optional = true}
+pnoise = ">=0.2.0"
+PySide2 = {version = ">=5.15.2", optional = true}
+scipy = ">=1.6"
 Shapely = {version = ">=1.8.1.post1", extras = ["vectorized"]}
 svgelements = ">=1.6.10"
-svgwrite = ">=1.4,<1.5"
-tomli = ">=2.0.0,<3.0.0"
+svgwrite = "~1.4"
+tomli = ">=2.0.0"
 
 [package.extras]
-all = ["Pillow (>=9.0.1)", "PySide2 (>=5.15.2,<6.0.0)", "glcontext (>=2.3.2)", "matplotlib (>=3.3.2,<3.6.0)", "moderngl (>=5.6.2,<6.0.0)"]
+all = ["matplotlib (>=3.3.2,<3.6.0)", "glcontext (>=2.3.2)", "moderngl (>=5.6.2)", "Pillow (>=9.0.1)", "PySide2 (>=5.15.2)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/abey79/vpype"
+reference = "10b3077dcde9d35e7addefe95a7ccf6094fd1b5f"
+resolved_reference = "10b3077dcde9d35e7addefe95a7ccf6094fd1b5f"
 
 [[package]]
 name = "watchfiles"
@@ -714,7 +721,7 @@ anyio = ">=3.0.0,<4"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "963cc86bc27675e39ecc01987e877198a8ac7a2330134072723d7b2cf4d23941"
+content-hash = "cc28b87a09d67e20b28f828b285850c10d37397a783480c674fddd1da6894df7"
 
 [metadata.files]
 anyio = [
@@ -1177,8 +1184,8 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 pnoise = [
-    {file = "pnoise-0.1.0-py3-none-any.whl", hash = "sha256:89b792a07e39a069994e38642043f2c79088f64484db81fd1967d2bf8304d347"},
-    {file = "pnoise-0.1.0.tar.gz", hash = "sha256:ad51bc5e48cf86785d446b14e6ce088eb2c0e96555a3cdc39dc5140b25a88bd3"},
+    {file = "pnoise-0.2.0-py3-none-any.whl", hash = "sha256:953afe8710033b5a0fc5578ba67c2e6cee8e9669b4dffe7680b641acc46f87a3"},
+    {file = "pnoise-0.2.0.tar.gz", hash = "sha256:76383310d602bcc7ed2355cd334f8ebc5b88e71d5bfdfee32d1b93d3981972cf"},
 ]
 poyo = [
     {file = "poyo-0.5.0-py2.py3-none-any.whl", hash = "sha256:3e2ca8e33fdc3c411cd101ca395668395dd5dc7ac775b8e809e3def9f9fe041a"},
@@ -1325,10 +1332,7 @@ urllib3 = [
     {file = "urllib3-1.26.9-py2.py3-none-any.whl", hash = "sha256:44ece4d53fb1706f667c9bd1c648f5469a2ec925fcf3a776667042d645472c14"},
     {file = "urllib3-1.26.9.tar.gz", hash = "sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e"},
 ]
-vpype = [
-    {file = "vpype-1.10.0-py3-none-any.whl", hash = "sha256:1f03226a917a898dadebe68cc60b446c9adbf4409ceee039ad90e0753966f17d"},
-    {file = "vpype-1.10.0.tar.gz", hash = "sha256:782aa5ceb87fd88c81caeb3382f380ef3854d50b27be8857feca611a7dfc60e5"},
-]
+vpype = []
 watchfiles = [
     {file = "watchfiles-0.13-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ed060f861e8e89edd1c4c67b6074579f75f4c0e84b6d84696b503a8d4fd18741"},
     {file = "watchfiles-0.13-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:bf145540fcc196da0af5e2eb58415f0dd64d73e2390e8b691ee5c9128094d58f"},
