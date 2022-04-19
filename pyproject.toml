@@ -31,11 +31,11 @@ cookiecutter = "^1.7.2"
 matplotlib = "^3.3.3"
 multiprocess = "^0.70.11"
 numpy = ">=1.20.1"
-pnoise = "^0.1.0"
+pnoise = ">=0.2.0"
 PySide2 = "^5.15.2"
 qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = "^1.7.1"}
-vpype = {extras = ["all"], version = ">=1.10"}
+vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "10b3077dcde9d35e7addefe95a7ccf6094fd1b5f"}
 watchfiles = ">=0.12"
 
 [tool.poetry.dev-dependencies]

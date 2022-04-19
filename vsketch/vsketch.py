@@ -27,6 +27,7 @@ from .curves import cubic_bezier_path, cubic_bezier_point, cubic_bezier_tangent
 from .display import display
 from .easing import EASING_FUNCTIONS
 from .fill import generate_fill
+from .shape import Shape
 from .style import stylize_path
 from .utils import MatrixPopper, ResetMatrixContextManager, complex_to_2d, compute_ellipse_mode
 
@@ -49,7 +50,6 @@ class Vsketch:
         self._stroke_weight: int = 1
         self._join_style: str = "round"
         self._cur_fill: Optional[int] = None
-        self._pipeline = ""
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self._center_on_page = True
@@ -1159,6 +1159,44 @@ class Vsketch:
         x, y = cubic_bezier_tangent(a, 0, b, 0, c, 0, d, 0, t)
         return x
 
+    def createShape(self) -> Shape:
+        return Shape(self)
+
+    def shape(
+        self, shp: Shape, mask_lines: Optional[bool] = None, mask_points: Optional[bool] = None
+    ) -> None:
+        """Draw a shape.
+
+        Draw a shape, including its area, lines, and points. If a :meth:`fill` layer is active,
+        it is used for the area. Likewise, the current :meth:`penWidth` is used for points
+        (see :meth:`points`).
+
+        By default, the shape's lines and points are masked by the its area if a fill layer is
+        active (such as to avoid unwanted interaction with the hatch fill), and left unmasked
+        if not. This behaviour can be overridden using the ``mask_lines`` and ``mask_points``
+        parameters.
+
+        Args:
+            shp: the shape to draw
+            mask_lines: controls whether the shape's line are masked by its area (default:
+                True if fill active, otherwise False)
+            mask_points: controls whether the shape's points are masked by its area (default:
+                True if fill active, otherwise False)
+        """
+
+        if mask_lines is None:
+            mask_lines = self._cur_fill is not None
+        if mask_points is None:
+            mask_points = self._cur_fill is not None
+
+        # noinspection PyProtectedMember
+        area, lines, points = shp._compile(mask_lines, mask_points)
+
+        self.geometry(area)
+        self.geometry(lines)
+        for point in points.geoms:
+            self.point(point.x, point.y)
+
     def sketch(self, sub_sketch: "Vsketch") -> None:
         """Draw the content of another Vsketch.
 
@@ -1218,7 +1256,7 @@ class Vsketch:
                 )
             self._document.add(lc, self._cur_stroke)
 
-        if self._cur_fill:
+        if self._cur_fill and len(transformed_exterior) > 2:
             p = Polygon(
                 complex_to_2d(transformed_exterior),
                 holes=[complex_to_2d(hole) for hole in transformed_holes],

@@ -78,7 +78,7 @@ intersphinx_mapping = {
 
 # -- Napoleon options
 
-napoleon_include_init_with_doc = True
+napoleon_include_init_with_doc = False
 
 
 # noinspection PyUnusedLocal
@@ -96,7 +96,7 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
         "execute_draw",
         "ensure_finalized",
     )
-    is_private = name.startswith("_") and name != "__init__"
+    is_private = name.startswith("_")  # and name != "__init__"
     exclude = name in exclusions or is_private
     return skip or exclude
 
