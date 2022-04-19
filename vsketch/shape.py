@@ -13,7 +13,7 @@ from shapely.geometry import (
 )
 from shapely.ops import unary_union
 
-from .curves import quadratic_bezier_path
+from .curves import cubic_bezier_path
 from .utils import compute_ellipse_mode
 
 if TYPE_CHECKING:
@@ -795,5 +795,5 @@ class Shape:
             y4: Y coordinate of the second anchor point
         """
 
-        path = quadratic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self._vsk.epsilon)
+        path = cubic_bezier_path(x1, y1, x2, y2, x3, y3, x4, y4, self._vsk.epsilon)
         self._add_polygon(path, op="union")

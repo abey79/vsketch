@@ -1,7 +1,7 @@
 """This module implements the vsketch API."""
 
-from .shape import Shape
 from .easing import EASING_FUNCTIONS
+from .shape import Shape
 from .sketch_class import Param, ParamType, SketchClass
 from .utils import working_directory
 from .vsketch import Vsketch

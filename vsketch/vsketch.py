@@ -1194,7 +1194,7 @@ class Vsketch:
 
         self.geometry(area)
         self.geometry(lines)
-        for point in points:
+        for point in points.geoms:
             self.point(point.x, point.y)
 
     def sketch(self, sub_sketch: "Vsketch") -> None:
