@@ -3,7 +3,7 @@ import itertools
 import os
 import pathlib
 import random
-from typing import Dict, List, Optional, Tuple, Union, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union, cast
 
 import click
 import vpype as vp
