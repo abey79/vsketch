@@ -40,7 +40,6 @@ watchfiles = ">=0.12"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.2.4"
-pytest-benchmark = "^3.4.1"
 mypy = ">=0.901"
 types-requests = ">=0.1.9"
 isort = ">=5.10.1"
