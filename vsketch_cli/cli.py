@@ -3,7 +3,7 @@ import itertools
 import os
 import pathlib
 import random
-from typing import Dict, List, Optional, Tuple, Union, cast
+from typing import Dict, List, Optional, Tuple, Union, cast, TYPE_CHECKING
 
 import click
 import vpype as vp
@@ -26,6 +26,11 @@ from .utils import (
 @click.group()
 def cli():
     pass
+
+
+# this is somehow needed to make PyCharm happy with runner.invoke(cli, ...)
+if TYPE_CHECKING:  # pragma: no cover
+    cli = cast(click.Group, cli)
 
 
 def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
