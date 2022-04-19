@@ -21,7 +21,7 @@ class ShapePlaygroundSketch(vsketch.SketchClass):
         shp = vsk.createShape()
 
         shp.square(0, 0, 3, mode="radius")
-        shp.circle(5, 0, 3, mode="radius", op=self.circle_op)
+        shp.circle(5, 0, 3, mode="radius", op=self.circle_op)  # type: ignore
 
         for i in range(13):
             x = -3.5 + i
