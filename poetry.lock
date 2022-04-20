@@ -704,8 +704,8 @@ all = ["matplotlib (>=3.3.2,<3.6.0)", "glcontext (>=2.3.2)", "moderngl (>=5.6.2)
 [package.source]
 type = "git"
 url = "https://github.com/abey79/vpype"
-reference = "10b3077dcde9d35e7addefe95a7ccf6094fd1b5f"
-resolved_reference = "10b3077dcde9d35e7addefe95a7ccf6094fd1b5f"
+reference = "ab39d5bfad2615f30ab248d48ec46b54dbc1aa83"
+resolved_reference = "ab39d5bfad2615f30ab248d48ec46b54dbc1aa83"
 
 [[package]]
 name = "watchfiles"
@@ -721,7 +721,7 @@ anyio = ">=3.0.0,<4"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "cc28b87a09d67e20b28f828b285850c10d37397a783480c674fddd1da6894df7"
+content-hash = "8a95f7f9978ec2d763dee3ade39264f4716f31221c0aec8bcd95f45ed6746348"
 
 [metadata.files]
 anyio = [
