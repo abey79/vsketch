@@ -30,37 +30,23 @@ _vsketch_ is the sum of two things:
 You can help by providing feedback and improving the documentation.*
 
 
-## Installing and Running the examples
+## Installing *vsketch*
 
-**Note**: A Python interpreter must be installed to use *vsketch*. Python 3.9 is recommanded. Python 3.7 and 3.8 are also compatible but *vsketch* is not yet compatible with Python 3.10. See *vpype*'s [installation instructions](https://vpype.readthedocs.io/en/latest/install.html) for more information and platform-specific details.
-
-The easiest way to get started is to obtain a local copy of *vsketch*'s repository and run the examples. 
+The recommended way to install *vsketch* is as a stand-alone installation using pipx:
 
 ```bash
-$ git clone https://github.com/abey79/vsketch
-$ cd vsketch
+$ pipx install git+https://github.com/abey79/vsketch
 ```
 
-Create a virtual environment and activate it:
+To run the examples, they must be [downloaded](https://github.com/abey79/vsketch/archive/refs/heads/master.zip) separately. After uncompressing the archive, they can be run using the following command:
 
 ```bash
-$ python3 -m venv venv
-$ source venv/bin/activate
+$ vsk run path/to/vsketch-master/examples/shotter
 ```
 
-Install *vsketch*:
+Check the [installation instructions](https://vsketch.readthedocs.io/en/latest/install.html) for more details.
 
-```bash
-$ pip install .
-```
-
-You are read to run the examples:
-
-```bash
-$ vsk run examples/quick_draw
-```
-
-Additional examples may be found in the author's [personal collection of sketches](https://github.com/abey79/sketches).
+**Note**: installing *vsketch* on Apple-silicon Macs requires special steps. Please check the [installation instructions](https://vsketch.readthedocs.io/en/latest/install.html) for more information.
 
 
 ## Getting started
