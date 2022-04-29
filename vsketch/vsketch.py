@@ -792,7 +792,7 @@ class Vsketch:
             tr: top-right corner radius (same as tl if not provided)
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
-            mode: "corner", "corners", "redius", or "center" (see :meth:`rectMode`)
+            mode: "corner", "corners", "radius", or "center" (see :meth:`rectMode`)
         """
         if len(radii) == 0:
             radii = (0, 0, 0, 0)
