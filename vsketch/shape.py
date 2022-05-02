@@ -456,7 +456,7 @@ class Shape:
             tr: top-right corner radius (same as tl if not provided)
             br: bottom-right corner radius (same as tr if not provided)
             bl: bottom-left corner radius (same as br if not provided)
-            mode: "corner", "corners", "redius", or "center" (see :meth:`rectMode`)
+            mode: "corner", "corners", "radius", or "center" (see :meth:`rectMode`)
             op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
         """
         if len(radii) == 0:
@@ -533,7 +533,7 @@ class Shape:
             x: X coordinate of top-left corner
             y: Y coordinate of top-left corner
             extent: width and height of the square
-            mode: "corner", "redius", or "center" (see :meth:`rectMode`) — note that the
+            mode: "corner", "radius", or "center" (see :meth:`rectMode`) — note that the
                 "corners" mode is meaningless for this function, and is interpreted as the
                 "corner" mode
             op: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
