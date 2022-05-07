@@ -1,21 +1,11 @@
+from __future__ import annotations
+
 import math
 import os
 import random
 import shlex
 from numbers import Number
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Optional,
-    Sequence,
-    TextIO,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from typing import Any, Iterable, Sequence, TextIO, TypeVar, cast, overload
 
 import numpy as np
 import vpype as vp
@@ -46,15 +36,15 @@ class Vsketch:
 
     def __init__(self):
         self._document = vp.Document(page_size=vp.convert_page_size("a3"))
-        self._cur_stroke: Optional[int] = 1
+        self._cur_stroke: int | None = 1
         self._stroke_weight: int = 1
         self._join_style: str = "round"
-        self._cur_fill: Optional[int] = None
+        self._cur_fill: int | None = None
         self._figure = None
         self._transform_stack = [np.empty(shape=(3, 3), dtype=float)]
         self._center_on_page = True
         self._detail = vp.convert_length("0.1mm")
-        self._pen_width: Dict[int, float] = {}
+        self._pen_width: dict[int, float] = {}
         self._default_pen_width = vp.convert_length("0.3mm")
         self._rect_mode = "corner"
         self._ellipse_mode = "center"
@@ -132,7 +122,7 @@ class Vsketch:
 
         return self._detail / scaling
 
-    def detail(self, epsilon: Union[float, str]) -> None:
+    def detail(self, epsilon: float | str) -> None:
         """Define the level of detail for curved paths.
 
         Vsketch internally stores exclusively so called line strings, i.e. paths made of
@@ -162,8 +152,8 @@ class Vsketch:
 
     def size(
         self,
-        width: Union[float, str],
-        height: Optional[Union[float, str]] = None,
+        width: float | str,
+        height: float | str | None = None,
         landscape: bool = False,
         center: bool = True,
     ) -> None:
@@ -290,7 +280,7 @@ class Vsketch:
         """Disable fill."""
         self._cur_fill = None
 
-    def penWidth(self, width: Union[float, str], layer: Optional[int] = None) -> None:
+    def penWidth(self, width: float | str, layer: int | None = None) -> None:
         """Configure the pen width.
 
         For some feature, vsketch needs to know the width of your pen to for an optimal output.
@@ -337,7 +327,7 @@ class Vsketch:
         return 0.0
 
     @property
-    def fillPenWidth(self) -> Optional[float]:
+    def fillPenWidth(self) -> float | None:
         """Returns the pen width to be used for fill, or None in :func:`noFill` mode.
 
         Returns:
@@ -431,7 +421,7 @@ class Vsketch:
         """Print the current transformation matrix."""
         print(self.transform)
 
-    def scale(self, sx: Union[float, str], sy: Optional[Union[float, str]] = None) -> None:
+    def scale(self, sx: float | str, sy: float | str | None = None) -> None:
         """Apply a scale factor to the current transformation matrix.
 
         Examples:
@@ -518,9 +508,9 @@ class Vsketch:
         self,
         x: float,
         y: float,
-        diameter: Optional[float] = None,
-        radius: Optional[float] = None,
-        mode: Optional[str] = None,
+        diameter: float | None = None,
+        radius: float | None = None,
+        mode: str | None = None,
     ) -> None:
         """Draw a circle.
 
@@ -561,9 +551,7 @@ class Vsketch:
 
         self.ellipse(x, y, 2 * radius, 2 * radius, mode=mode)
 
-    def ellipse(
-        self, x: float, y: float, w: float, h: float, mode: Optional[str] = None
-    ) -> None:
+    def ellipse(self, x: float, y: float, w: float, h: float, mode: str | None = None) -> None:
         """Draw an ellipse.
 
         The way ``x``, ``y``, ``w``, and ``h`` parameters are interpreted depends on the
@@ -613,9 +601,9 @@ class Vsketch:
         h: float,
         start: float,
         stop: float,
-        degrees: Optional[bool] = False,
-        close: Optional[str] = "no",
-        mode: Optional[str] = None,
+        degrees: bool | None = False,
+        close: str | None = "no",
+        mode: str | None = None,
     ) -> None:
         """Draw an arc.
 
@@ -736,11 +724,11 @@ class Vsketch:
         w: float,
         h: float,
         *radii: float,
-        tl: Optional[float] = None,
-        tr: Optional[float] = None,
-        br: Optional[float] = None,
-        bl: Optional[float] = None,
-        mode: Optional[str] = None,
+        tl: float | None = None,
+        tr: float | None = None,
+        br: float | None = None,
+        bl: float | None = None,
+        mode: str | None = None,
     ) -> None:
         """Draw a rectangle.
 
@@ -831,7 +819,7 @@ class Vsketch:
 
         self._add_polygon(line)
 
-    def square(self, x: float, y: float, extent: float, mode: Optional[str] = None) -> None:
+    def square(self, x: float, y: float, extent: float, mode: str | None = None) -> None:
         """Draw a square.
 
         As for the :meth:`rect` function, the way arguments are interpreted is influenced by
@@ -956,8 +944,8 @@ class Vsketch:
 
     def polygon(
         self,
-        x: Union[Iterable[float], Iterable[complex], Iterable[Sequence[float]]],
-        y: Optional[Iterable[float]] = None,
+        x: Iterable[float] | Iterable[complex] | Iterable[Sequence[float]],
+        y: Iterable[float] | None = None,
         holes: Iterable[Iterable[Sequence[float]]] = (),
         close: bool = False,
     ) -> None:
@@ -1163,7 +1151,7 @@ class Vsketch:
         return Shape(self)
 
     def shape(
-        self, shp: Shape, mask_lines: Optional[bool] = None, mask_points: Optional[bool] = None
+        self, shp: Shape, mask_lines: bool | None = None, mask_points: bool | None = None
     ) -> None:
         """Draw a shape.
 
@@ -1197,7 +1185,7 @@ class Vsketch:
         for point in points.geoms:
             self.point(point.x, point.y)
 
-    def sketch(self, sub_sketch: "Vsketch") -> None:
+    def sketch(self, sub_sketch: Vsketch) -> None:
         """Draw the content of another Vsketch.
 
         Vsketch objects being self-contained, multiple instances can be created by a single
@@ -1338,14 +1326,13 @@ class Vsketch:
 
     def display(
         self,
-        mode: Optional[str] = None,
         paper: bool = True,
         pen_up: bool = False,
-        color_mode: str = "layer",
+        colorful: bool = False,
         axes: bool = False,
         grid: bool = False,
         unit: str = "px",
-        fig_size: Optional[Tuple[float, float]] = None,
+        fig_size: tuple[float, float] | None = None,
     ) -> None:
         """Display the sketch on screen.
 
@@ -1383,26 +1370,22 @@ class Vsketch:
                 >>> vsk.display(mode="matplotlib", axes=True, grid=True, unit="cm")
 
         Args:
-            mode (``"matplotlib"`` or ``"ipython"``): override the default display mode
             paper: if True, the sketch is laid out on the desired page size (default: True)
             pen_up: if True, the pen-up trajectories will be displayed (default: False)
-            color_mode (``"none"``, ``"layer"``, or ``"path"``): controls how color is used for
-                display (``"none"``: black and white, ``"layer"``: one color per layer,
-                ``"path"``: one color per path — default: ``"layer"``)
-            axes: (``"matplotlib"`` only) if True, labelled axes are displayed (default: False)
-            grid: (``"matplotlib"`` only) if True, a grid is displayed (default: False)
-            unit: (``"matplotlib"`` only) use a specific unit for the axes (default: "px")
-            fig_size: (``"matplotlib"`` only) specify the figure size
+            colorful: if True, use one color per path instead of per layer (default: False)
+            axes: if True, labelled axes are displayed (default: False)
+            grid: if True, a grid is displayed (default: False)
+            unit: use a specific unit for the axes (default: "px")
+            fig_size: specify the figure size
         """
         display(
             self.document,
             page_size=self.document.page_size if paper else None,
-            mode=mode,
             center=self._center_on_page,
             show_axes=axes,
             show_grid=grid,
             show_pen_up=pen_up,
-            color_mode=color_mode,
+            colorful=colorful,
             unit=unit,
             fig_size=fig_size,
         )
@@ -1410,14 +1393,14 @@ class Vsketch:
     # noinspection PyShadowingBuiltins
     def save(
         self,
-        file: Union[str, TextIO],
-        device: Optional[str] = None,
+        file: str | TextIO,
+        device: str | None = None,
         *,
-        format: Optional[str] = None,
+        format: str | None = None,
         color_mode: str = "layer",
         layer_label: str = "%d",
-        paper_size: Optional[str] = None,
-        velocity: Optional[float] = None,
+        paper_size: str | None = None,
+        velocity: float | None = None,
         quiet: bool = False,
     ) -> None:
         """Save the current sketch to a SVG or HPGL file.
@@ -1526,7 +1509,7 @@ class Vsketch:
     # RANDOM FUNCTIONS #
     ####################
 
-    def random(self, a: float, b: Optional[float] = None) -> float:
+    def random(self, a: float, b: float | None = None) -> float:
         """Return a random number with an uniform distribution between specified bounds.
 
         .. seealso::
@@ -1590,8 +1573,8 @@ class Vsketch:
     def noise(
         self,
         x: Number,
-        y: Optional[Number] = None,
-        z: Optional[Number] = None,
+        y: Number | None = None,
+        z: Number | None = None,
         grid_mode: bool = True,
     ) -> float:
         ...
@@ -1599,9 +1582,9 @@ class Vsketch:
     @overload
     def noise(
         self,
-        x: Union[Sequence[float], np.ndarray],
-        y: Union[None, Number, Sequence[float], np.ndarray] = None,
-        z: Union[None, Number, Sequence[float], np.ndarray] = None,
+        x: Sequence[float] | np.ndarray,
+        y: None | Number | Sequence[float] | np.ndarray = None,
+        z: None | Number | Sequence[float] | np.ndarray = None,
         grid_mode: bool = True,
     ) -> np.ndarray:
         ...
@@ -1680,7 +1663,7 @@ class Vsketch:
             grid_mode=grid_mode,
         )
 
-    def noiseDetail(self, lod: int, falloff: Optional[float] = None) -> None:
+    def noiseDetail(self, lod: int, falloff: float | None = None) -> None:
         """Adjusts parameters of the Perlin noise function.
 
         By default, noise is computed over 4 octaves with each octave contributing exactly half
@@ -1720,10 +1703,10 @@ class Vsketch:
 
     @staticmethod
     def lerp(
-        start: Union[float, complex, np.ndarray],
-        stop: Union[float, complex, np.ndarray],
+        start: float | complex | np.ndarray,
+        stop: float | complex | np.ndarray,
         amt: float,
-    ) -> Union[float, complex, np.ndarray]:
+    ) -> float | complex | np.ndarray:
         """Interpolate between two numbers or arrays.
 
         The ``amt`` parameter is the amount to interpolate between the two values where 0.0
@@ -1750,12 +1733,12 @@ class Vsketch:
 
     @staticmethod
     def map(
-        value: Union[float, np.ndarray],
+        value: float | np.ndarray,
         start1: float,
         stop1: float,
         start2: float,
         stop2: float,
-    ) -> Union[float, np.ndarray]:
+    ) -> float | np.ndarray:
         """Map a value from one range to the other.
 
         Input values are not clamped. This function accept float or NumPy array, in which case
@@ -1818,7 +1801,7 @@ class Vsketch:
 
     @staticmethod
     def easing(
-        value: Union[float, np.ndarray],
+        value: float | np.ndarray,
         mode: str = "linear",
         start1: float = 0.0,
         stop1: float = 1.0,
@@ -1827,7 +1810,7 @@ class Vsketch:
         low_dead: float = 0.0,
         high_dead: float = 0.0,
         param: float = 10,
-    ) -> Union[float, np.ndarray]:
+    ) -> float | np.ndarray:
         """Map a value from one range to another, using an easing function.
 
         Easing functions specify the rate of change of a parameter over time (or any other
@@ -1908,10 +1891,10 @@ class Vsketch:
         x: float = 0.0,
         y: float = 0.0,
         *,
-        width: Optional[float] = None,
+        width: float | None = None,
         font: str = "futural",
-        size: Union[float, str] = "12pt",
-        mode: Optional[str] = None,
+        size: float | str = "12pt",
+        mode: str | None = None,
         align: str = "left",
         line_spacing: float = 1.0,
         justify: bool = False,

@@ -15,12 +15,3 @@ __all__ = [
     "working_directory",
     "EASING_FUNCTIONS",
 ]
-
-
-def _init():
-    from .environment import setup
-
-    setup()
-
-
-_init()

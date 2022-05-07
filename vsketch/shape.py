@@ -19,7 +19,7 @@ from .curves import cubic_bezier_path
 from .utils import compute_ellipse_mode
 
 if TYPE_CHECKING:
-    from .vsketch import Vsketch
+    from . import Vsketch
 
 
 BooleanOperation = Literal["union", "difference", "intersection", "symmetric_difference"]

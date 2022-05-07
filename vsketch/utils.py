@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 import os
 import pathlib
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Iterator, Tuple
+from typing import TYPE_CHECKING, Iterator
 
 import numpy as np
 
 if TYPE_CHECKING:
-    import vsketch
+    from . import Vsketch
 
 
 class MatrixPopper:
-    def __init__(self, vsk: "vsketch.Vsketch"):
+    def __init__(self, vsk: Vsketch):
         self._vsk = vsk
 
     def __enter__(self):
@@ -25,7 +27,7 @@ class ResetMatrixContextManager:
     __exit__() will only be called if used as a context manager (`with` statement)
     """
 
-    def __init__(self, vsk: "vsketch.Vsketch"):
+    def __init__(self, vsk: Vsketch):
         self._vsk = vsk
         self._old_transform = vsk.transform
         self._vsk.transform = np.identity(3)
@@ -46,7 +48,7 @@ def complex_to_2d(line: np.ndarray) -> np.ndarray:
 
 def compute_ellipse_mode(
     mode: str, x: float, y: float, w: float, h: float
-) -> Tuple[float, float, float, float]:
+) -> tuple[float, float, float, float]:
     """Interpret parameters based on :meth:`ellipseMode` and compute the ellipse center and
     radii.
 
