@@ -1,18 +1,9 @@
+from __future__ import annotations
+
 import os
 import pathlib
 import random
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Iterable,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import Any, Generic, Iterable, Optional, TypeVar, Union, overload
 
 import numpy as np
 import vpype as vp
@@ -64,9 +55,9 @@ class SketchClass:
     @classmethod
     def execute(
         cls,
-        seed: Optional[int] = None,
+        seed: int | None = None,
         finalize: bool = False,
-    ) -> Optional["SketchClass"]:
+    ) -> Optional[SketchClass]:
         cwd = getattr(cls, "__vsketch_cwd__", pathlib.Path(os.getcwd()))
         with working_directory(cwd):
             sketch = cls()
@@ -121,7 +112,7 @@ class SketchClass:
         raise NotImplementedError()
 
     @classmethod
-    def get_params(cls) -> Dict[str, "Param"]:
+    def get_params(cls) -> dict[str, Param]:
         res = {}
         for name in cls.__dict__:
             param = getattr(cls, name)
@@ -130,13 +121,13 @@ class SketchClass:
         return res
 
     @classmethod
-    def set_param_set(cls, param_set: Dict[str, Any]) -> None:
+    def set_param_set(cls, param_set: dict[str, Any]) -> None:
         for name, value in param_set.items():
             if name in cls.__dict__ and isinstance(cls.__dict__[name], Param):
                 cls.__dict__[name].set_value_with_validation(value)
 
     @property
-    def param_set(self) -> Dict[str, Any]:
+    def param_set(self) -> dict[str, Any]:
         return {name: param.value for name, param in self._params.items()}
 
 
@@ -144,21 +135,23 @@ _T = TypeVar("_T")
 
 
 class Param(Generic[_T]):
-    """This class encapsulate a :class:`SketchClass` parameter.
+    """Generic parameter for :class:`SketchClass`.
 
-    A sketch parameter can be interacted with in the ``vsk`` viewer.
+    This class implements a generic parameter for :class:`SketchClass` instances. Parameters
+    can be interacted with in the ``vsk`` viewer and support functionalities such as saved
+    configuration and parameter space exploration with ``vsk save``.
     """
 
     def __init__(
         self,
         value: _T,
-        min_value: Optional[_T] = None,
-        max_value: Optional[_T] = None,
+        min_value: _T | None = None,
+        max_value: _T | None = None,
         *,
-        choices: Optional[Iterable[_T]] = None,
-        step: Union[None, float, int] = None,
+        choices: Iterable[_T] | None = None,
+        step: None | float | int = None,
         unit: str = "",
-        decimals: Optional[int] = None,
+        decimals: int | None = None,
     ):
         """Create a sketch parameter.
 
@@ -207,9 +200,9 @@ class Param(Generic[_T]):
         self.step = step
         self.decimals = decimals
         self.unit = unit
-        self.factor: Optional[float] = None if unit == "" else vp.convert_length(unit)
+        self.factor: float | None = None if unit == "" else vp.convert_length(unit)
 
-        self.choices: Optional[Tuple[_T, ...]] = None
+        self.choices: tuple[_T, ...] | None = None
         if choices is not None:
             self.choices = tuple(self.type(choice) for choice in choices)  # type: ignore
 
@@ -244,16 +237,16 @@ class Param(Generic[_T]):
         return True
 
     @overload
-    def __get__(self, instance: None, owner: None) -> "Param":
+    def __get__(self, instance: None, owner: None) -> Param:
         ...
 
     @overload
-    def __get__(self, instance: object, owner: Type[object]) -> _T:
+    def __get__(self, instance: object, owner: type[object]) -> _T:
         ...
 
     def __get__(
-        self, instance: Optional[object], owner: Optional[Type[object]] = None
-    ) -> Union[_T, "Param"]:
+        self, instance: object | None, owner: type[object] | None = None
+    ) -> Union[_T, Param]:
         if instance is None:
             return self
 

@@ -4,15 +4,6 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
@@ -26,21 +17,12 @@ author = "Antoine Beyeler"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "myst_parser",
     "sphinx_copybutton",
+    "autoapi.extension",
 ]
-
-
-# -- Autodoc
-
-autodoc_default_flags = ["members"]
-autosummary_generate = True
-add_module_names = False
-autosummary_imported_members = True
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -73,33 +55,90 @@ intersphinx_mapping = {
     "shapely": ("https://shapely.readthedocs.io/en/latest/", None),
     "vpype": ("https://vpype.readthedocs.io/en/latest/", None),
     "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
 }
 
-
 # -- Napoleon options
-
 napoleon_include_init_with_doc = False
+
+# -- autoapi configuration ---------------------------------------------------
+
+autodoc_typehints = "signature"  # autoapi respects this
+
+autoapi_type = "python"
+autoapi_dirs = ["../vsketch"]
+autoapi_template_dir = "_templates/autoapi"
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "imported-members",
+]
+# autoapi_python_use_implicit_namespaces = True
+autoapi_keep_files = True
+# autoapi_generate_api_docs = False
+
+
+# -- custom auto_summary() macro ---------------------------------------------
+
+
+def contains(seq, item):
+    """Jinja2 custom test to check existence in a container.
+
+    Example of use:
+    {% set class_methods = methods|selectattr("properties", "contains", "classmethod") %}
+
+    Related doc: https://jinja.palletsprojects.com/en/3.1.x/api/#custom-tests
+    """
+    return item in seq
+
+
+def prepare_jinja_env(jinja_env) -> None:
+    """Add `contains` custom test to Jinja environment."""
+    jinja_env.tests["contains"] = contains
+
+
+autoapi_prepare_jinja_env = prepare_jinja_env
+
+# Custom role for labels used in auto_summary() tables.
+rst_prolog = """
+.. role:: summarylabel
+"""
+
+# Related custom CSS
+html_css_files = [
+    "css/label.css",
+]
 
 
 # noinspection PyUnusedLocal
-def autodoc_skip_member(app, what, name, obj, skip, options):
-
-    exclusions = (
-        # vsketch/param.py
-        "get_params",
-        "set_param_set",
-        "params",
-        "param_set",
-        # misc from vsk
-        "working_directory",
-        "execute",
-        "execute_draw",
-        "ensure_finalized",
-    )
-    is_private = name.startswith("_")  # and name != "__init__"
-    exclude = name in exclusions or is_private
-    return skip or exclude
+def autoapi_skip_members(app, what, name, obj, skip, options):
+    # skip submodules
+    if what == "module":
+        skip = True
+    elif what == "data":
+        if obj.name in ["EASING_FUNCTIONS", "ParamType"]:
+            skip = True
+    elif what == "function":
+        if obj.name in ["working_directory"]:
+            skip = True
+    elif "vsketch.SketchClass" in name:
+        if obj.name in [
+            "vsk",
+            "param_set",
+            "execute_draw",
+            "ensure_finalized",
+            "execute",
+            "get_params",
+            "set_param_set",
+        ]:
+            skip = True
+    elif "vsketch.Param" in name:
+        if obj.name in ["set_value", "set_value_with_validation"]:
+            skip = True
+    return skip
 
 
 def setup(app):
-    app.connect("autodoc-skip-member", autodoc_skip_member)
+    app.connect("autoapi-skip-member", autoapi_skip_members)

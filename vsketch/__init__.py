@@ -1,10 +1,15 @@
 """This module implements the vsketch API."""
 
-from .easing import EASING_FUNCTIONS
-from .shape import Shape
-from .sketch_class import Param, ParamType, SketchClass
-from .utils import working_directory
+# isort: skip_file
+
+# Ordered for the documentation
 from .vsketch import Vsketch
+from .shape import Shape
+from .sketch_class import SketchClass, Param, ParamType
+
+from .easing import EASING_FUNCTIONS
+from .utils import working_directory
+
 
 __all__ = [
     "Vsketch",
@@ -15,12 +20,3 @@ __all__ = [
     "working_directory",
     "EASING_FUNCTIONS",
 ]
-
-
-def _init():
-    from .environment import setup
-
-    setup()
-
-
-_init()

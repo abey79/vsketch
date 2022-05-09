@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import Tuple, overload
+from typing import overload
 
 import numpy as np
 
@@ -195,7 +195,7 @@ def cubic_bezier_point(
     x4: float,
     y4: float,
     t: float,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Evaluate a bezier curve at a given point, based on t in [0, 1]."""
 
     return _cubic_bezier(x1, y1, x2, y2, x3, y3, x4, y4, t)
@@ -211,7 +211,7 @@ def cubic_bezier_tangent(
     x4: float,
     y4: float,
     t: float,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Evaluate a bezier curve at a given point, based on t in [0, 1]."""
 
     return _cubic_bezier_tangent(x1, y1, x2, y2, x3, y3, x4, y4, t)

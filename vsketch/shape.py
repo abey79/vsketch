@@ -19,14 +19,14 @@ from .curves import cubic_bezier_path
 from .utils import compute_ellipse_mode
 
 if TYPE_CHECKING:
-    from .vsketch import Vsketch
+    from . import Vsketch
 
 
 BooleanOperation = Literal["union", "difference", "intersection", "symmetric_difference"]
 
 
 class Shape:
-    """Shape class.
+    """Reusable and drawable shape with support for boolean operations.
 
     A shape is a reusable graphical element made of polygons, lines and points. Shapes are
     built using primitives in a very similar way to how :class:`Vsketch` works with the added
@@ -198,10 +198,10 @@ class Shape:
     ) -> None:
         """Add a circle to the shape.
 
-        The level of detail used to approximate the circle is controlled by :func:`detail`.
-        As for the :meth:`ellipse` function, the way arguments are interpreted is influenced by
-        the mode set with :meth:`ellipseMode` or the ``mode`` argument of the :class:`Vsketch`
-        instance used to create the shape.
+        The level of detail used to approximate the circle is controlled by
+        :func:`Vsketch.detail`. As for the :meth:`ellipse` function, the way arguments are
+        interpreted is influenced by  the ``mode`` argument or the mode set with
+        :meth:`Vsketch.ellipseMode` of the :class:`Vsketch` instance used to create the shape.
 
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the circle is added to the shape), ``difference`` (the circle is cut off the
@@ -213,7 +213,7 @@ class Shape:
 
             * :meth:`Vsketch.circle`
             * :meth:`ellipse`
-            * :meth:`ellipseMode`
+            * :meth:`Vsketch.ellipseMode`
 
         Example:
 
@@ -262,8 +262,8 @@ class Shape:
 
         By default, ``x`` and ``y`` set the location of the  ellipse center, ``w`` sets its
         width, and ``h`` sets its height. The way these parameters are interpreted can be
-        changed with the :meth:`ellipseMode` function (which changes the default for subsequent
-        calls to :func:`ellipse`) or the ``mode`` argument (which only affects this call).
+        changed with the ``mode`` argument or the :meth:`Vsketch.ellipseMode` function of the
+        :class:`Vsketch` instance used to create the shape.
 
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the ellipse is added to the shape), ``difference`` (the ellipse is cut off
@@ -274,7 +274,7 @@ class Shape:
         .. seealso::
 
             * :meth:`Vsketch.ellipse`
-            * :meth:`ellipseMode`
+            * :meth:`Vsketch.ellipseMode`
 
         Examples:
 
@@ -341,7 +341,7 @@ class Shape:
 
         .. seealso::
             * :meth:`Vsketch.arc`
-            * :meth:`ellipseMode`
+            * :meth:`Vsketch.ellipseMode`
             * :meth:`ellipse`
 
         Example:
@@ -402,8 +402,8 @@ class Shape:
 
         By default, ``x`` and ``y`` set the location of the upper-left corner, ``w`` sets the
         width, and ``h`` sets the height. The way these parameters are interpreted can be
-        changed with the :meth:`rectMode` function (which changes the default for subsequent
-        calls to :func:`rect`) or the ``mode`` argument (which only affects this call).
+        changed with the ``mode`` argument or the :meth:`rectMode` function of the
+        :class:`Vsketch` instance used to create this shape.
 
         The optional parameters ``tl``, ``tr``, ``br`` and ``bl`` define the radius used for
         each corner (default: 0). If some corner radius is not specified, it will be set equal
@@ -419,6 +419,7 @@ class Shape:
         .. seealso::
 
             * :meth:`Vsketch.rect`
+            * :meth:`Vsketch.rectMode`
 
         Examples:
 
@@ -508,8 +509,8 @@ class Shape:
         """Add a square to the shape.
 
         As for the :meth:`rect` function, the way arguments are interpreted is influenced by
-        the mode set with :meth:`rectMode` or the ``mode`` argument of the :class:`Vsketch`
-        instance used to create the shape.
+        the mode set with the ``mode`` argument or the :meth:`Vsketch.rectMode` of the
+        :class:`Vsketch` instance used to create the shape.
 
         This function support multiple boolean mode with the ``op`` argument: ``union``
         (default, the square is added to the shape), ``difference`` (the square is cut off the
@@ -521,7 +522,7 @@ class Shape:
 
             * :meth:`Vsketch.square`
             * :meth:`rect`
-            * :meth:`rectMode`
+            * :meth:`Vsketch.rectMode`
 
         Example:
 
@@ -794,9 +795,9 @@ class Shape:
 
         .. seealso::
 
-            * :func:`bezierPoint`
-            * :func:`bezierTangent`
-            * :func:`detail`
+            * :func:`Vsketch.bezierPoint`
+            * :func:`Vsketch.bezierTangent`
+            * :func:`Vsketch.detail`
             * :func:`Vsketch.bezier`
 
         Args:

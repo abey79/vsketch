@@ -49,5 +49,5 @@ Contents
    install
    overview
    contributing
-   reference
+   autoapi/index
    license

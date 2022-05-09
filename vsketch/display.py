@@ -1,21 +1,9 @@
-import io
-import logging
-import random
-import sys
-from typing import List, Optional, Tuple, Union
+from __future__ import annotations
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import vpype as vp
-
-from .environment import COLAB, JUPYTERLAB, get_svg_pan_zoom_url
-
-try:
-    # noinspection PyPackageRequirements
-    import IPython
-except ModuleNotFoundError:
-    pass
 
 COLORS = [
     (0, 0, 1),
@@ -29,17 +17,37 @@ COLORS = [
 ]
 
 
-def display_matplotlib(
+def display(
     document: vp.Document,
-    page_size: Tuple[float, float] = None,
+    page_size: tuple[float, float] = None,
     center: bool = False,
     show_axes: bool = True,
     show_grid: bool = False,
     show_pen_up: bool = False,
     colorful: bool = False,
     unit: str = "px",
-    fig_size: Tuple[float, float] = None,
+    fig_size: tuple[float, float] = None,
 ) -> None:
+    """Display a layout with vector data using the best method given the environment.
+
+    Supported modes:
+
+        "matplotlib": use matplotlib to render the preview
+        "ipython": use SVG with zoom/pan capability (requires IPython)
+
+    Note: all options are not necessarily implemented by all display modes.
+
+    Args:
+        document: the document to display
+        page_size: size of the page in pixels
+        center: if True, the geometries are centered on the page
+        show_axes: if True, display axes
+        show_grid: if True, display a grid
+        show_pen_up: if True, display pen-up trajectories
+        colorful: if True, use one color per path instead of per layer
+        unit: display unit
+        fig_size: if provided, set the matplotlib figure size
+    """
     scale = 1 / vp.convert_length(unit)
 
     if fig_size:
@@ -75,7 +83,7 @@ def display_matplotlib(
     collections = {}
     for layer_id, lc in document.layers.items():
         if colorful:
-            color: Union[Tuple[float, float, float], List[Tuple[float, float, float]]] = (
+            color: tuple[float, float, float] | list[tuple[float, float, float]] = (
                 COLORS[color_idx:] + COLORS[:color_idx]
             )
             color_idx += len(lc)
@@ -127,154 +135,3 @@ def display_matplotlib(
         plt.grid("on")
 
     plt.show()
-
-
-def display_ipython(
-    document: vp.Document,
-    page_size: Optional[Tuple[float, float]],
-    center: bool = False,
-    show_pen_up: bool = False,
-    color_mode: str = "layer",
-) -> None:
-    """Implements a SVG previsualisation with pan/zoom support for IPython.
-
-    If page_size is provided, a page is displayed and the sketch is laid out on it. Otherwise
-    the sketch is displayed using its intrinsic boundaries.
-    """
-    if "IPython" not in sys.modules:
-        raise RuntimeError("IPython display cannot be used outside of IPython")
-
-    svg_io = io.StringIO()
-    vp.write_svg(
-        svg_io,
-        document,
-        page_size if page_size is not None else (0, 0),
-        center,
-        show_pen_up=show_pen_up,
-        color_mode=color_mode,
-    )
-
-    MARGIN = 10
-
-    if page_size is None:
-        bounds = document.bounds()
-        if bounds:
-            svg_width = bounds[2] - bounds[0]
-            svg_height = bounds[3] - bounds[1]
-        else:
-            svg_width = 0
-            svg_height = 0
-    else:
-        svg_width = page_size[0]
-        svg_height = page_size[1]
-
-    page_boundaries = f"""
-        <polygon points="{svg_width},{MARGIN}
-            {svg_width + MARGIN},{MARGIN}
-            {svg_width + MARGIN},{svg_height + MARGIN}
-            {MARGIN},{svg_height + MARGIN}
-            {MARGIN},{svg_height}
-            {svg_width},{svg_height}"
-            style="fill:black;stroke:none;opacity:0.3;" />
-        <rect width="{svg_width}" height="{svg_height}"
-            style="fill:none;stroke-width:1;stroke:rgb(0,0,0)" />
-    """
-
-    svg_margin = MARGIN if page_size is not None else 0
-    svg_id = f"svg_display_{random.randint(0, 10000)}"
-
-    IPython.display.display_html(
-        f"""<div id="container" style="width: 80%; height: {svg_height + svg_margin}px;">
-            <svg id="{svg_id}" width="{svg_width + svg_margin}px"
-                    height={svg_height + svg_margin}
-                    viewBox="0 0 {svg_width + svg_margin} {svg_height + svg_margin}">
-                {page_boundaries if page_size is not None else ""}
-                {svg_io.getvalue()}
-            </svg>
-        </div>
-        <script src="{get_svg_pan_zoom_url()}"></script>
-        <script>
-            svgPanZoom('#{svg_id}', {{
-                zoomEnabled: true,
-                controlIconsEnabled: true,
-                center: true,
-                zoomScaleSensitivity: 0.3,
-                contain: true,
-            }});
-          </script>
-        """,
-        raw=True,
-    )
-
-
-def display(
-    document: vp.Document,
-    page_size: Optional[Tuple[float, float]],
-    center: bool = False,
-    show_axes: bool = True,
-    show_grid: bool = False,
-    show_pen_up: bool = False,
-    color_mode: str = "layer",
-    unit: str = "px",
-    mode: Optional[str] = None,
-    fig_size: Tuple[float, float] = None,
-) -> None:
-    """Display a layout with vector data using the best method given the environment.
-
-    Supported modes:
-
-        "matplotlib": use matplotlib to render the preview
-        "ipython": use SVG with zoom/pan capability (requires IPython)
-
-    Note: all options are not necessarily implemented by all display modes.
-
-    Args:
-        document: the document to display
-        page_size: size of the page in pixels
-        center: if True, the geometries are centered on the page
-        show_axes: if True, display axes
-        show_grid: if True, display a grid
-        show_pen_up: if True, display pen-up trajectories
-        color_mode: "none" (everything is black and white), "layer" (one color per layer), or
-            "path" (one color per path)
-        unit: display unit
-        mode: if provided, force a specific display mode
-        fig_size: if provided, set the matplotlib figure size
-    """
-
-    if mode is None:
-        if COLAB or JUPYTERLAB:
-            mode = "ipython"
-        else:
-            mode = "matplotlib"
-
-    if mode == "ipython":
-        if show_axes:
-            logging.warning("show_axis is not supported by the IPython display mode")
-
-        if show_grid:
-            logging.warning("show_grid is not supported by the IPython display mode")
-
-        if unit != "px":
-            logging.warning("custom units are not supported by the IPython display mode")
-
-        if fig_size is not None:
-            logging.warning("setting fig_size is not supported by the IPython display mode")
-
-        display_ipython(
-            document, page_size, center, show_pen_up=show_pen_up, color_mode=color_mode
-        )
-    elif mode == "matplotlib":
-        display_matplotlib(
-            document,
-            page_size,
-            center=center,
-            show_axes=show_axes,
-            show_grid=show_grid,
-            show_pen_up=show_pen_up,
-            colorful=(color_mode == "path"),
-            unit=unit,
-            fig_size=fig_size,
-        )
-    else:
-        raise ValueError(f"unsupported display mode: {mode}")
