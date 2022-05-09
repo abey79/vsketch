@@ -29,9 +29,21 @@ T = TypeVar("T")
 
 # noinspection PyPep8Naming
 class Vsketch:
-    """This class implement the core *vsketch* API.
+    """Core drawing API.
 
     All drawing are created through an instance of :class:`Vsketch`.
+
+    Typically, a :class:`Vsketch` instance is provided to your :class:`SketchClass` subclass by
+    *vsketch*.
+
+    Alternatively, :class:`Vsketch` instance may be manually created and used in a standalone
+    script::
+
+        >>> import vsketch
+        >>> vsk = vsketch.Vsketch()
+        >>> vsk.rect(10, 10, 50, 50)
+        >>> vsk.display()
+        >>> vsk.save("output.svg")
     """
 
     def __init__(self):
@@ -133,7 +145,7 @@ class Vsketch:
         Note: :func:`detail` applies to all primitives, including e.g. :func:`bezier`. As such,
         it replaces some of Processing's API, such as ``bezierDetail()`` or ``curveDetail()``.
 
-        Examples::
+        Examples:
 
             :func:`detail` accepts string values with unit::
 
@@ -1275,9 +1287,10 @@ class Vsketch:
             :func:`display` and :func:`save`. The pipeline is applied on the un-centered
             geometries. In some case, it may be useful to pass ``center=False`` to
             :func:`size` to avoid confusion.
-          - It is not recommended to use layer manipulation commands (e.g. ``lmove``,
-            ``ldelete``, and ``lcopy``) as this can lead to discrepancies with some of the
-            metadata vsketch maintains, such as the attached pen widths (see :func:`penWidth`).
+          - It is not recommended to use layer manipulation commands (e.g. :ref:`cmd_lmove`,
+            :ref:`cmd_ldelete`, and :ref:`cmd_lcopy`) as this can lead to discrepancies with
+            some of the metadata vsketch maintains, such as the attached pen widths (see
+            :func:`penWidth`).
 
         Example:
 
@@ -1334,14 +1347,7 @@ class Vsketch:
         unit: str = "px",
         fig_size: tuple[float, float] | None = None,
     ) -> None:
-        """Display the sketch on screen.
-
-        This function displays the sketch on screen using the most appropriate mode depending
-        on the environment.
-
-        In standalone mode (vsketch used as a library), ``"matplotlib"`` mode is used by
-        default. Otherwise (i.e. in Jupyter Lab or Google Colab), ``"ipython"`` mode is used
-        instead.
+        """Display the sketch on screen using matplotlib.
 
         The default options are the following:
 
@@ -1365,9 +1371,9 @@ class Vsketch:
 
                 >>> vsk.display(paper=False)
 
-            The ``"matplotlib"`` mode has additional options that can occasionaly be useful::
+            Additional options may occasionaly be useful::
 
-                >>> vsk.display(mode="matplotlib", axes=True, grid=True, unit="cm")
+                >>> vsk.display(axes=True, grid=True, unit="cm")
 
         Args:
             paper: if True, the sketch is laid out on the desired page size (default: True)
@@ -1406,7 +1412,7 @@ class Vsketch:
         """Save the current sketch to a SVG or HPGL file.
 
         ``file`` may  either be a file path or a IO stream handle (such as the one returned
-        by Python's ``open()`` built-in).
+        by Python's :func:`open` built-in).
 
         This function uses the page layout as defined by :func:`size`.
 
@@ -1772,14 +1778,14 @@ class Vsketch:
     @staticmethod
     def easing(
         value: float,
-        mode: str = ...,
-        start1: float = ...,
-        stop1: float = ...,
-        start2: float = ...,
-        stop2: float = ...,
-        low_dead: float = ...,
-        high_dead: float = ...,
-        param: float = ...,
+        mode: str = "linear",
+        start1: float = 0.0,
+        stop1: float = 1.0,
+        start2: float = 0.0,
+        stop2: float = 1.0,
+        low_dead: float = 0.0,
+        high_dead: float = 0.0,
+        param: float = 10,
     ) -> float:
         ...
 
@@ -1788,14 +1794,14 @@ class Vsketch:
     @staticmethod
     def easing(
         value: np.ndarray,
-        mode: str = ...,
-        start1: float = ...,
-        stop1: float = ...,
-        start2: float = ...,
-        stop2: float = ...,
-        low_dead: float = ...,
-        high_dead: float = ...,
-        param: float = ...,
+        mode: str = "linear",
+        start1: float = 0.0,
+        stop1: float = 1.0,
+        start2: float = 0.0,
+        stop2: float = 1.0,
+        low_dead: float = 0.0,
+        high_dead: float = 0.0,
+        param: float = 10,
     ) -> np.ndarray:
         ...
 

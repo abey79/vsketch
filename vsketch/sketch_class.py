@@ -135,9 +135,11 @@ _T = TypeVar("_T")
 
 
 class Param(Generic[_T]):
-    """This class encapsulate a :class:`SketchClass` parameter.
+    """Generic parameter for :class:`SketchClass`.
 
-    A sketch parameter can be interacted with in the ``vsk`` viewer.
+    This class implements a generic parameter for :class:`SketchClass` instances. Parameters
+    can be interacted with in the ``vsk`` viewer and support functionalities such as saved
+    configuration and parameter space exploration with ``vsk save``.
     """
 
     def __init__(

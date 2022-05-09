@@ -55,8 +55,8 @@ intersphinx_mapping = {
     "shapely": ("https://shapely.readthedocs.io/en/latest/", None),
     "vpype": ("https://vpype.readthedocs.io/en/latest/", None),
     "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
 }
-
 
 # -- Napoleon options
 napoleon_include_init_with_doc = False
@@ -122,6 +122,20 @@ def autoapi_skip_members(app, what, name, obj, skip, options):
             skip = True
     elif what == "function":
         if obj.name in ["working_directory"]:
+            skip = True
+    elif "vsketch.SketchClass" in name:
+        if obj.name in [
+            "vsk",
+            "param_set",
+            "execute_draw",
+            "ensure_finalized",
+            "execute",
+            "get_params",
+            "set_param_set",
+        ]:
+            skip = True
+    elif "vsketch.Param" in name:
+        if obj.name in ["set_value", "set_value_with_validation"]:
             skip = True
     return skip
 
