@@ -27,21 +27,21 @@ vsk = "vsketch_cli.cli:cli"
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
 colorama = "^0.4.4"
-cookiecutter = "^1.7.2"
+cookiecutter = ">=2.1"
 matplotlib = "^3.3.3"
-multiprocess = "^0.70.11"
+multiprocess = ">=0.70"
 numpy = ">=1.20.1"
 pnoise = ">=0.2.0"
 PySide2 = "^5.15.2"
 qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = "1.8.2"}
-vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "6f28cef03ebae5d12420b9c14648bb3588c05e57"}
+vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "8d7e0fc1674a67c484073c0da71934ff31c2c7c0"}
 watchfiles = ">=0.12"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.2.4"
 mypy = ">=0.901"
-types-requests = ">=0.1.9"
+types-requests = ">=2.0"
 isort = ">=5.10.1"
 black = ">=22.1"
 

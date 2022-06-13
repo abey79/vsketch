@@ -67,7 +67,7 @@ class SketchViewer(vpype_viewer.QtViewer):
 
         self._sketch_class: Optional[Type[vsketch.SketchClass]] = None
         self._sketch: Optional[vsketch.SketchClass] = None
-        self._path = path
+        self._path = path.resolve(strict=True)  # make sure the path has no symlink
         self._param_set: Dict[str, Any] = {}
         self._seed: Optional[int] = None
         self._thread: Optional[QThread] = None
@@ -207,7 +207,7 @@ class SketchViewer(vpype_viewer.QtViewer):
                 # noinspection PyTypeChecker
                 for change in changes:
                     if (
-                        change[1] == str(self._path)
+                        pathlib.Path(change[1]) == self._path
                         and change[0] == watchfiles.Change.modified
                     ):
                         # noinspection PyUnresolvedReferences
