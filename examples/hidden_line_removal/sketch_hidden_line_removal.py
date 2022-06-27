@@ -11,13 +11,7 @@ from shapely.geometry import Point
 import vsketch
 
 # check if vpype-occult is installed
-spec = importlib.util.find_spec("occult", package="vpype-occult")
-if spec is None:
-    print(
-        "vpype-occult (https://github.com/LoicGoulefert/occult) must be installed for this "
-        "example to work"
-    )
-    sys.exit(1)
+OCCULT_INSTALLED = importlib.util.find_spec("occult", package="vpype-occult") is not None
 
 
 def two_circles_shapely(vsk: vsketch.Vsketch) -> None:
@@ -31,9 +25,14 @@ def two_circles_shapely(vsk: vsketch.Vsketch) -> None:
 
 def two_circles_occult(vsk: vsketch.Vsketch, layer_id: int) -> None:
     """Use the `occult` vpype plug-in."""
-    vsk.circle(0, 0, radius=4)
-    vsk.circle(3, 0, radius=4)
-    vsk.vpype(f"occult -l{layer_id}")
+    if OCCULT_INSTALLED:
+        vsk.circle(0, 0, radius=4)
+        vsk.circle(3, 0, radius=4)
+        vsk.vpype(f"occult -l{layer_id}")
+    else:
+        vsk.text(
+            "occult must be installed for this method", x=1.5, mode="label", align="center"
+        )
 
 
 def two_circles_shapes(vsk: vsketch.Vsketch) -> None:
