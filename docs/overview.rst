@@ -85,6 +85,13 @@ If configurations have been saved using ``vsk run``, they can be used for export
     $ vsk save --config my_config my_project
 
 
+Shortcuts
+---------
+
+* 's' to like the sketch
+* 'r' to generate a new seed
+
+
 Beyond the basics?
 ------------------
 
