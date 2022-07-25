@@ -360,7 +360,7 @@ version = "1.23.0"
 description = "NumPy is the fundamental package for array computing with Python."
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 
 [[package]]
 name = "packaging"
@@ -544,7 +544,7 @@ version = "1.8.1"
 description = "SciPy: Scientific Library for Python"
 category = "main"
 optional = false
-python-versions = ">=3.8,<3.11"
+python-versions = ">=3.7,<3.10"
 
 [package.dependencies]
 numpy = ">=1.17.3,<1.25.0"
@@ -684,7 +684,7 @@ version = "1.11.0-alpha.0"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 category = "main"
 optional = false
-python-versions = ">=3.8, <3.11"
+python-versions = ">=3.7, <3.11"
 develop = false
 
 [package.dependencies]
@@ -727,7 +727,7 @@ anyio = ">=3.0.0,<4"
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.8,<3.11"
+python-versions = ">=3.7,<3.10"
 content-hash = "a6c3f73c7fce5c4ec29e24d9033ce638c1ddbd37a114c952b1428d86b9bf325c"
 
 [metadata.files]
