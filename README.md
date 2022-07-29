@@ -41,7 +41,7 @@ $ pipx install git+https://github.com/abey79/vsketch
 To run the examples, they must be [downloaded](https://github.com/abey79/vsketch/archive/refs/heads/master.zip) separately. After uncompressing the archive, they can be run using the following command:
 
 ```bash
-$ vsk run path/to/vsketch-master/examples/shotter
+$ vsk run path/to/vsketch-master/examples/schotter
 ```
 
 Check the [installation instructions](https://vsketch.readthedocs.io/en/latest/install.html) for more details.
