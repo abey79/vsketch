@@ -4,6 +4,7 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
 
 # -- Project information -----------------------------------------------------
 
@@ -60,6 +61,10 @@ intersphinx_mapping = {
 
 # -- Napoleon options
 napoleon_include_init_with_doc = False
+
+# -- Plausible support
+ENABLE_PLAUSIBLE = os.environ.get("READTHEDOCS_VERSION_TYPE", "") in ["branch", "tag"]
+html_context = {"enable_plausible": ENABLE_PLAUSIBLE}
 
 # -- autoapi configuration ---------------------------------------------------
 
