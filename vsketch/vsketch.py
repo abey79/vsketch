@@ -1483,7 +1483,7 @@ class Vsketch:
                 if device is None:
                     raise ValueError(f"'device' must be provided")
                 if paper_size is None:
-                    config = vp.CONFIG_MANAGER.get_plotter_config(device)
+                    config = vp.config_manager.get_plotter_config(device)
                     paper_config = config.paper_config_from_size(self.document.page_size)
                     if paper_config:
                         paper_size = paper_config.name
