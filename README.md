@@ -46,8 +46,6 @@ $ vsk run path/to/vsketch-master/examples/schotter
 
 Check the [installation instructions](https://vsketch.readthedocs.io/en/latest/install.html) for more details.
 
-**Note**: installing *vsketch* on Apple-silicon Macs requires special steps. Please check the [installation instructions](https://vsketch.readthedocs.io/en/latest/install.html) for more information.
-
 
 ## Getting started
 

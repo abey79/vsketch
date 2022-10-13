@@ -31,10 +31,10 @@ matplotlib = ">=3.3.3"
 multiprocess = ">=0.70"
 numpy = ">=1.20.1"
 pnoise = ">=0.2.0"
-PySide2 = "^5.15.2"
+PySide6 = ">=6.3.2"
 qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = "1.8.2"}
-vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "91d32f9bca8f94992ea089558e72cdd3aa401877"}
+vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "344d110e3ffbb47aa822918a63533b25a43e8cec"}
 watchfiles = ">=0.12"
 
 [tool.poetry.group.dev.dependencies]

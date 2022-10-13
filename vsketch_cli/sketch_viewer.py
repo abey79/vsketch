@@ -5,13 +5,12 @@ from typing import Any, Dict, Optional, Type
 
 import vpype_viewer
 import watchfiles
-from PySide2.QtCore import QThread, Signal
-from PySide2.QtGui import QKeySequence
-from PySide2.QtWidgets import (
+from PySide6.QtCore import QThread, Signal
+from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QScrollArea,
-    QShortcut,
     QSizePolicy,
     QVBoxLayout,
     QWidget,
@@ -86,7 +85,7 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._seed = self._sidebar.seed_widget.seed_spin.value()
         self._sidebar.config_widget.saveConfig.connect(self.save_config)  # type: ignore
         self._sidebar.config_widget.loadConfig.connect(self.load_config)  # type: ignore
-        self._sidebar.like_btn.clicked.connect(self.on_like)
+        self._sidebar.like_btn.clicked.connect(self.on_like)  # type: ignore
 
         scroller = QScrollArea()
         scroller.setWidget(self._sidebar)
@@ -97,10 +96,12 @@ class SketchViewer(vpype_viewer.QtViewer):
         self.add_side_widget(scroller)
 
         likeShortcut = QShortcut(QKeySequence("S"), self)
-        likeShortcut.activated.connect(self.on_like)
+        likeShortcut.activated.connect(self.on_like)  # type: ignore
 
         randomizeShortcut = QShortcut(QKeySequence("R"), self)
-        randomizeShortcut.activated.connect(self._sidebar.seed_widget.randomize_seed)
+        randomizeShortcut.activated.connect(  # type: ignore
+            self._sidebar.seed_widget.randomize_seed
+        )
 
         self._trigger_fit_to_viewport = True
         self.reload_sketch_class()
