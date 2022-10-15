@@ -31,10 +31,10 @@ matplotlib = ">=3.3.3"
 multiprocess = ">=0.70"
 numpy = ">=1.20.1"
 pnoise = ">=0.2.0"
-PySide2 = "^5.15.2"
+PySide6 = ">=6.3.2"
 qasync = ">=0.22"
-Shapely = {extras = ["vectorized"], version = "1.8.2"}
-vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "91d32f9bca8f94992ea089558e72cdd3aa401877"}
+Shapely = {extras = ["vectorized"], version = ">=1.8.2"}
+vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "df6c877ce0d5d2b17a1b9859f302768896abab92"}
 watchfiles = ">=0.12"
 
 [tool.poetry.group.dev.dependencies]
@@ -46,7 +46,7 @@ black = ">=22.1"
 
 
 [build-system]
-requires = ["setuptools", "poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.2"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]

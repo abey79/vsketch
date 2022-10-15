@@ -1,8 +1,8 @@
 import pathlib
 
 import click
-from PySide2.QtCore import Signal
-from PySide2.QtWidgets import (
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QInputDialog,
@@ -35,17 +35,19 @@ class ConfigWidget(QGroupBox):
         size_policy = self._config_list.sizePolicy()
         size_policy.setHorizontalPolicy(QSizePolicy.Minimum)
         self._config_list.setSizePolicy(size_policy)
-        self._config_list.itemSelectionChanged.connect(self.on_selection_changed)
+        self._config_list.itemSelectionChanged.connect(  # type: ignore
+            self.on_selection_changed
+        )
         self.update_config_list()
 
         self._load_btn = QPushButton("Load")
         self._load_btn.setEnabled(False)
-        self._load_btn.clicked.connect(self.on_load_btn)
+        self._load_btn.clicked.connect(self.on_load_btn)  # type: ignore
         save_btn = QPushButton("Save")
-        save_btn.clicked.connect(self.on_save_btn)
+        save_btn.clicked.connect(self.on_save_btn)  # type: ignore
         self._delete_btn = QPushButton("Delete")
         self._delete_btn.setEnabled(False)
-        self._delete_btn.clicked.connect(self.on_delete_btn)
+        self._delete_btn.clicked.connect(self.on_delete_btn)  # type: ignore
 
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(self._delete_btn)

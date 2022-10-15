@@ -1,8 +1,8 @@
 import math
 from typing import Any, Dict, Mapping
 
-from PySide2.QtCore import Signal
-from PySide2.QtWidgets import (
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
     QAbstractSpinBox,
     QCheckBox,
     QComboBox,
@@ -28,7 +28,7 @@ class ChoiceParamWidget(QComboBox):
             for choice in param.choices:
                 self.addItem(str(choice), choice)
         self.setCurrentText(str(param.value))
-        self.currentTextChanged.connect(self.update_param)
+        self.currentTextChanged.connect(self.update_param)  # type: ignore
 
     def update_param(self) -> None:
         self._param.set_value_with_validation(self.currentData())
@@ -54,7 +54,7 @@ class IntParamWidget(QSpinBox):
         )
 
         self.setValue(int(param.value))
-        self.valueChanged.connect(self.update_param)
+        self.valueChanged.connect(self.update_param)  # type: ignore
 
     def update_param(self) -> None:
         self._param.set_value_with_validation(self.value())
@@ -90,7 +90,7 @@ class FloatParamWidget(QDoubleSpinBox):
         )
 
         self.setValue(val)
-        self.valueChanged.connect(self.update_param)
+        self.valueChanged.connect(self.update_param)  # type: ignore
 
     def update_param(self):
         self._param.set_value_with_validation(self.value())
@@ -109,7 +109,7 @@ class TextParamWidget(QTextEdit):
         self._param = param
 
         self.setText(str(param.value))
-        self.textChanged.connect(self.update_param)
+        self.textChanged.connect(self.update_param)  # type: ignore
 
     def update_param(self):
         self._param.set_value_with_validation(self.text())
@@ -128,7 +128,7 @@ class BoolParamWidget(QCheckBox):
         self._param = param
 
         self.setChecked(bool(param.value))
-        self.stateChanged.connect(self.update_param)
+        self.stateChanged.connect(self.update_param)  # type: ignore
 
     def update_param(self):
         self._param.set_value_with_validation(self.isChecked())
@@ -168,7 +168,7 @@ class ParamsWidget(QGroupBox):
         # create new widgets
         for name, param in params.items():
             if param.choices is not None:
-                widget = ChoiceParamWidget(param)
+                widget: Any = ChoiceParamWidget(param)
             elif param.type is int:
                 widget = IntParamWidget(param)
             elif param.type is float:

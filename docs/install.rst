@@ -9,9 +9,6 @@ Installation
 
    *vsketch* heavily relies on `vpype <https://github.com/abey79/vpype>`__. Although *vpype* is automatically installed as a dependency when installing *vsketch*, it may be useful to review *vpype*'s `installation instructions <https://vpype.readthedocs.io/en/latest/install.html>`__ for additional details and troubleshooting.
 
-.. caution::
-
-   Like *vpype*, installing *vsketch* on **Apple-silicon-based Macs** requires special steps. Please carefully review the present instructions as well as *vpype*'s `installation instructions <https://vpype.readthedocs.io/en/latest/install.html>`__.
 
 Installing using pipx
 =====================
@@ -20,19 +17,8 @@ Installing using pipx
 
 The recommended way to install *vsketch* is using pipx as a stand-alone installation::
 
-    $ pipx install git+https://github.com/abey79/vsketch
+    $ pipx install "git+https://github.com/abey79/vsketch"
 
-
-Installing Apple Silicon/M1 Mac
-===============================
-
-On Apple-Silicon-based Mac, pipx is also the recommended installation method. However, specific steps are required.
-
-First, follow the steps and requirements from *vpype* `Mac installation instructions <https://vpype.readthedocs.io/en/latest/install.html#macos>`__. Having *vpype* successfully installed means that all requirements for *vsketch* are met.
-
-Then, use the following command to create a standalone installation of *vsketch*::
-
-  $ pipx install git+https://github.com/abey79/vsketch --system-site-packages
 
 
 Running the examples
@@ -60,34 +46,34 @@ For example, run the following command to install `vpype-perspective <https://gi
 Installing from the repository
 ==============================
 
-If you want to make modification to *vsketch* itself (whether or not you intend to share them for upstream integration), cloning the repository and installing from the source is a better alterative to using pipx.
+If you want to make modifications to *vsketch* itself (whether or not you intend to share them for upstream integration), you must clone the repository and install *vsketch* from source.
 
-First, clone the repository using git::
+Like *vpype*, *vsketch* uses `Poetry <https://python-poetry.org>`__ as project manager. `Various methods <https://python-poetry.org/docs/#installation>`__ are available to install Poetry. Using pipx is one of them::
+
+  $ pipx install poetry
+
+Once Poetry is installed, clone the repository using git::
 
   $ git clone https://github.com/abey79/vsketch
   $ cd vsketch
 
-Then, create a virtual environment and activate it::
+From there, Poetry can install everything needed for development environment using a few commands. Though this can be done automatically, it is a good practice to explicitly create a virtual environment by specifying which Python interpreter to use::
 
-  $ python -m venv venv
-  $ source venv/bin/activate
+  $ poetry env use /opt/local/bin/python3.10
 
-.. caution::
+This command will create a new virtual environment for the project using the provided Python interpreter (here Python 3.10 as installed by `MacPorts <https://www.macports.org>`__ on macOS – adjust as needed), and mark it as the default. Note that Poetry can handle any number of virtual environments for the project, for example with different versions of Python. At any time, one of the virtual environment is marked as default and used by other Poetry commands.
 
-   The Apple-Silicon Mac limitations described above and in *vpype* documentation apply here too. On this platform, it strongly suggested to use a MacPorts install of Python, to use the MacPorts to install key dependencies such as PySide2 and Shapely, and create the virtual environment with the following command::
+Then, everything needed to run *vsketch*, including what's needed for development, can be installed with this command::
 
-    $ python -m venv venv --system-site-packages
+  $ poetry install
 
-Finally, install *vsketch*::
+By default, Poetry doesn't activate the virtual environment, but provides ``poetry run`` to execute commands it contains::
 
-  $ pip install -e .
+  $ poetry run vsk run examples/quick_draw
 
-The ``-e`` option creates a so-called "editable" install of *vsketch*. This means that any modification made to the source code in the ``vsketch/`` or ``vsketch_cli/`` subdirectories are immediately in effect in your install.
+Alternatively, the project's default virtual environment can be activated using the following command::
 
-At the point, you are read to use *vsketch*::
-
+  $ poetry shell
   $ vsk run examples/quick_draw
 
-Note that you will need to activate the virtual environment each time you open a new terminal window::
-
-  $ source venv/bin/activate
+Poetry is a very powerful tool with many capabilities. Make sure to review `its documentation <https://python-poetry.org/docs/>`__.

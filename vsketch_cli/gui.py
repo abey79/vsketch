@@ -4,7 +4,7 @@ import pathlib
 import sys
 
 import qasync
-from PySide2.QtCore import Qt
+from PySide6.QtCore import Qt
 from qasync import QApplication, QEventLoop
 
 from .sketch_viewer import SketchViewer
