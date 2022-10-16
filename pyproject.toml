@@ -34,7 +34,7 @@ pnoise = ">=0.2.0"
 PySide6 = ">=6.3.2"
 qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = ">=1.8.2"}
-vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "df6c877ce0d5d2b17a1b9859f302768896abab92"}
+vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "fe70ed40faeab0dbde7b45c8130cf251a79d0793"}
 watchfiles = ">=0.12"
 
 [tool.poetry.group.dev.dependencies]

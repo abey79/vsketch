@@ -705,7 +705,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.25"
+version = "1.26.25.1"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
@@ -765,8 +765,8 @@ all = ["Pillow (>=9.0.1)", "PySide6 (>=6.3.2,<6.4.0)", "glcontext (>=2.3.2)", "m
 [package.source]
 type = "git"
 url = "https://github.com/abey79/vpype"
-reference = "df6c877ce0d5d2b17a1b9859f302768896abab92"
-resolved_reference = "df6c877ce0d5d2b17a1b9859f302768896abab92"
+reference = "fe70ed40faeab0dbde7b45c8130cf251a79d0793"
+resolved_reference = "fe70ed40faeab0dbde7b45c8130cf251a79d0793"
 
 [[package]]
 name = "watchfiles"
@@ -782,7 +782,7 @@ anyio = ">=3.0.0,<4"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "d4a5e7a7c6e68060a4d7d933295f5ea44ea08a17062e702623e01c6bc0ae8e17"
+content-hash = "4e4941ceb93b2d1a07fd1881e481f3be48a350bd9fb964ce26ada9515dfef8d6"
 
 [metadata.files]
 anyio = [
@@ -1567,8 +1567,8 @@ types-requests = [
     {file = "types_requests-2.28.11.2-py3-none-any.whl", hash = "sha256:14941f8023a80b16441b3b46caffcbfce5265fd14555844d6029697824b5a2ef"},
 ]
 types-urllib3 = [
-    {file = "types-urllib3-1.26.25.tar.gz", hash = "sha256:5aef0e663724eef924afa8b320b62ffef2c1736c1fa6caecfc9bc6c8ae2c3def"},
-    {file = "types_urllib3-1.26.25-py3-none-any.whl", hash = "sha256:c1d78cef7bd581e162e46c20a57b2e1aa6ebecdcf01fd0713bb90978ff3e3427"},
+    {file = "types-urllib3-1.26.25.1.tar.gz", hash = "sha256:a948584944b2412c9a74b9cf64f6c48caf8652cb88b38361316f6d15d8a184cd"},
+    {file = "types_urllib3-1.26.25.1-py3-none-any.whl", hash = "sha256:f6422596cc9ee5fdf68f9d547f541096a20c2dcfd587e37c804c9ea720bf5cb2"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
