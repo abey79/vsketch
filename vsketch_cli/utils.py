@@ -2,6 +2,7 @@ import inspect
 import json
 import os
 import pathlib
+import sys
 import traceback
 from runpy import run_path
 from typing import Dict, Optional, Type
@@ -62,6 +63,8 @@ def load_sketch_class(path: pathlib.Path) -> Optional[Type[vsketch.SketchClass]]
     # noinspection PyBroadException
     try:
         with vsketch.working_directory(cwd_path):
+            if str(cwd_path) not in sys.path:
+                sys.path.insert(0, str(cwd_path))
             sketch_scripts = run_path(str(path))  # type: ignore
     except Exception:
         traceback.print_exc()
