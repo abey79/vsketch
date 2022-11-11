@@ -25,7 +25,7 @@ def test_fill(line, lw):
     """
 
     p = Polygon(complex_to_2d(line))
-    fill_lc = generate_fill(line, lw)
+    fill_lc = generate_fill(line, lw, lw)
 
     overfill_p = _simulate_pen(fill_lc, 1.2 * lw / 2)
     underfill_p = _simulate_pen(fill_lc, 0.8 * lw / 2)

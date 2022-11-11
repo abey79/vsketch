@@ -12,7 +12,7 @@ class SeedWidget(QGroupBox):
         self.seed_spin = QSpinBox()
         self.seed_spin.setRange(0, _MAX_SEED)
         randomize_btn = QPushButton("Randomize")
-        randomize_btn.clicked.connect(self.randomize_seed)
+        randomize_btn.clicked.connect(self.randomize_seed)  # type: ignore
 
         layout = QFormLayout()
         layout.addRow("Seed:", self.seed_spin)

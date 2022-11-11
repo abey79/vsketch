@@ -34,7 +34,7 @@ pnoise = ">=0.2.0"
 PySide6 = ">=6.3.2"
 qasync = ">=0.22"
 Shapely = {extras = ["vectorized"], version = ">=1.8.2"}
-vpype = {extras = ["all"], git = "https://github.com/abey79/vpype", rev = "fe70ed40faeab0dbde7b45c8130cf251a79d0793"}
+vpype = {extras = ["all"], version = "1.12"}
 watchfiles = ">=0.12"
 
 [tool.poetry.group.dev.dependencies]
@@ -69,4 +69,5 @@ known_third_party = ["shapely"]
 ignore_missing_imports = true
 allow_redefinition = true
 disallow_incomplete_defs = true
+check_untyped_defs = true
 files = "vsketch,vsketch_cli,examples,tests"
