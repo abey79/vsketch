@@ -81,7 +81,7 @@ class SketchViewer(vpype_viewer.QtViewer):
 
         self._sidebar = SideBarWidget(get_config_path(self._path))
         self._sidebar.params_widget.paramUpdated.connect(self.redraw_sketch)  # type: ignore
-        self._sidebar.seed_widget.seed_spin.valueChanged.connect(self.set_seed)
+        self._sidebar.seed_widget.seed_spin.valueChanged.connect(self.set_seed)  # type: ignore
         self._seed = self._sidebar.seed_widget.seed_spin.value()
         self._sidebar.config_widget.saveConfig.connect(self.save_config)  # type: ignore
         self._sidebar.config_widget.loadConfig.connect(self.load_config)  # type: ignore

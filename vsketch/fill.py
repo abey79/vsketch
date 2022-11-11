@@ -10,7 +10,7 @@ from .utils import complex_to_2d
 
 
 def generate_fill(poly: Polygon, pen_width: float, stroke_width: float) -> vp.LineCollection:
-    """Draw a fill pattern for the the input polygon.
+    """Draw a fill pattern for the input polygon.
 
     The fill pattern should take into account the stroke width.
 

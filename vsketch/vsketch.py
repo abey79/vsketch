@@ -4,7 +4,7 @@ import math
 import os
 import random
 import shlex
-from numbers import Number
+from numbers import Real
 from typing import Any, Iterable, Sequence, TextIO, TypeVar, cast, overload
 
 import numpy as np
@@ -46,7 +46,7 @@ class Vsketch:
         >>> vsk.save("output.svg")
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._document = vp.Document(page_size=vp.convert_page_size("a3"))
         self._cur_stroke: int | None = 1
         self._stroke_weight: int = 1
@@ -1578,9 +1578,9 @@ class Vsketch:
     @overload
     def noise(
         self,
-        x: Number,
-        y: Number | None = None,
-        z: Number | None = None,
+        x: float,
+        y: float | None = None,
+        z: float | None = None,
         grid_mode: bool = True,
     ) -> float:
         ...
@@ -1589,8 +1589,8 @@ class Vsketch:
     def noise(
         self,
         x: Sequence[float] | np.ndarray,
-        y: None | Number | Sequence[float] | np.ndarray = None,
-        z: None | Number | Sequence[float] | np.ndarray = None,
+        y: None | float | Sequence[float] | np.ndarray = None,
+        z: None | float | Sequence[float] | np.ndarray = None,
         grid_mode: bool = True,
     ) -> np.ndarray:
         ...
@@ -1655,9 +1655,9 @@ class Vsketch:
 
         # force grid mode to True in scalar mode
         if (
-            isinstance(x, Number)
-            and (isinstance(y, Number) or y is None)
-            and (isinstance(z, Number) or z is None)
+            isinstance(x, Real)
+            and (isinstance(y, Real) or y is None)
+            and (isinstance(z, Real) or z is None)
         ):
             grid_mode = True
 

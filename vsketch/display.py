@@ -19,14 +19,14 @@ COLORS = [
 
 def display(
     document: vp.Document,
-    page_size: tuple[float, float] = None,
+    page_size: tuple[float, float] | None = None,
     center: bool = False,
     show_axes: bool = True,
     show_grid: bool = False,
     show_pen_up: bool = False,
     colorful: bool = False,
     unit: str = "px",
-    fig_size: tuple[float, float] = None,
+    fig_size: tuple[float, float] | None = None,
 ) -> None:
     """Display a layout with vector data using the best method given the environment.
 
