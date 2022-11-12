@@ -330,7 +330,7 @@ setuptools_scm = ">=7"
 
 [[package]]
 name = "moderngl"
-version = "5.7.2"
+version = "5.7.0"
 description = "ModernGL: High performance rendering for Python 3"
 category = "main"
 optional = false
@@ -738,7 +738,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "vpype"
-version = "1.12.0"
+version = "1.12.1"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 category = "main"
 optional = false
@@ -750,7 +750,7 @@ cachetools = ">=4.2.2"
 click = ">=8.0.1,<8.2.0"
 glcontext = {version = ">=2.3.2", optional = true, markers = "extra == \"all\""}
 matplotlib = {version = ">=3.3.2", optional = true, markers = "extra == \"all\""}
-moderngl = {version = ">=5.6.2", optional = true, markers = "extra == \"all\""}
+moderngl = {version = ">=5.6.2,<=5.7.0", optional = true, markers = "extra == \"all\""}
 multiprocess = ">=0.70.11"
 numpy = ">=1.20"
 Pillow = {version = ">=9.0.1", optional = true, markers = "extra == \"all\""}
@@ -763,7 +763,7 @@ svgwrite = ">=1.4,<1.5"
 tomli = ">=2.0.0"
 
 [package.extras]
-all = ["Pillow (>=9.0.1)", "PySide6 (>=6.3.2,<6.4.0)", "glcontext (>=2.3.2)", "matplotlib (>=3.3.2)", "moderngl (>=5.6.2)"]
+all = ["Pillow (>=9.0.1)", "PySide6 (>=6.3.2,<6.4.0)", "glcontext (>=2.3.2)", "matplotlib (>=3.3.2)", "moderngl (>=5.6.2,<=5.7.0)"]
 
 [[package]]
 name = "watchfiles"
@@ -779,7 +779,7 @@ anyio = ">=3.0.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "249026fe0d3b1f97122b37265620bfd6c2c72c70139473ecc6ca5cf571a85533"
+content-hash = "1c2b6a88beea1a3ca121486e6320cabcb92f6ad21cff8f227285144dafb36ce6"
 
 [metadata.files]
 anyio = [
@@ -1168,56 +1168,51 @@ matplotlib = [
     {file = "matplotlib-3.6.2.tar.gz", hash = "sha256:b03fd10a1709d0101c054883b550f7c4c5e974f751e2680318759af005964990"},
 ]
 moderngl = [
-    {file = "moderngl-5.7.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d4155e2750426e2cbf7ae5d259435e8ebbb10ece3f608bc6701cf986df71227c"},
-    {file = "moderngl-5.7.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:cf8f091af1793327d6824a680be6d3adc7336c751b702b2a5691d8c5e7dc211c"},
-    {file = "moderngl-5.7.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1bade333f98352cebd988ae5efb687260f2a4326ca53871828e071fef6ee5ef0"},
-    {file = "moderngl-5.7.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:08ff1730e8c72f7121bf576b801c3370c47655c8cbd745b32589c4c590e7b9e4"},
-    {file = "moderngl-5.7.2-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a7e32b9923b216a6228aa3e1d28693ad7c612ebfb3b31a0ec418e70d504ecf8f"},
-    {file = "moderngl-5.7.2-cp310-cp310-win32.whl", hash = "sha256:0b86e1a90209e763959484396cbc0d74b929255b2cc18106766b14791b01ef65"},
-    {file = "moderngl-5.7.2-cp310-cp310-win_amd64.whl", hash = "sha256:ea6c54e347601e8c68687d4fe62a0e195da165e2e4a4f86956576197ee877d02"},
-    {file = "moderngl-5.7.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:6ff4329781de4e06250d0a802b9008617515688e1002b32e6b18e07242ddf6a8"},
-    {file = "moderngl-5.7.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:84025c2da2df69f3aa328a6f13b4410eb0e97878fcfe6b4dbe3c66920f4dfc48"},
-    {file = "moderngl-5.7.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0cf37df1cb6edaccdb8652389ed1817bcd450551c064b903cad412c76b4c22c8"},
-    {file = "moderngl-5.7.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e1abff0e84ac1d40a2916672880fecb34b0af1f07e9952d92e82c4f83aea9115"},
-    {file = "moderngl-5.7.2-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c392895f2019fe3c544b332dd4a5317d6d338ac52e30605cba11f3bff5d68c21"},
-    {file = "moderngl-5.7.2-cp311-cp311-win32.whl", hash = "sha256:d7e7e1d293e30b8d84b9d7f372ee8f32ce6ca72901e88f44d1a5db3b00a83494"},
-    {file = "moderngl-5.7.2-cp311-cp311-win_amd64.whl", hash = "sha256:ce5ea50d22bcbed60bb0739c5ef9490b403a0a17ba65e22c43e8a3741c3a684e"},
-    {file = "moderngl-5.7.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e3e4e3f21e167c5e2da6dce0917706e693b11acc77e502f9ebd05fa940b3de19"},
-    {file = "moderngl-5.7.2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:fce465c5e091d0fcf7fe7374e7918e10d7d351f2a1e5d6b4d490ab581a05aec3"},
-    {file = "moderngl-5.7.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f8694e715755ff0bf2ddf58aff8c15dde372e6c13b7caf35ddf16848919ceec8"},
-    {file = "moderngl-5.7.2-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:796d5659b9efce9c081832ff3540f9b5981fdfe0ca2a13ad19856de498529282"},
-    {file = "moderngl-5.7.2-cp37-cp37m-win32.whl", hash = "sha256:62088da6f3328137e6efc8b2bba1f2e8b64b48cfbd525fc4f384315fcc4d4a68"},
-    {file = "moderngl-5.7.2-cp37-cp37m-win_amd64.whl", hash = "sha256:50c0249b89318da48d8e557076c3f7c596411699c3881c5ed1536cf9be8bd9f4"},
-    {file = "moderngl-5.7.2-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:15524768ed4c3cce99df1a9e8ba7ba058286584551bdbaaf7ad5452c9c602318"},
-    {file = "moderngl-5.7.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:e6b9e6df483a395ece74efba8733c75dd2982a48adaa87a4fbfc25bb3f6b3377"},
-    {file = "moderngl-5.7.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:430d4485acd8a281c84f0641b263687d3c575127ec3d5ed6b1dddc0348096ef9"},
-    {file = "moderngl-5.7.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:43350bbe4f11fa277c3307f9db875c94b919d3a471dd147189f0876d8c608a15"},
-    {file = "moderngl-5.7.2-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2c24d1895810a995725a4a5abcc26996e2762297748027c8e1c6ee81c0310988"},
-    {file = "moderngl-5.7.2-cp38-cp38-win32.whl", hash = "sha256:01be0d8233d6715ce5dac7243bffb869504e09ca3f4818681d7e2e0f7bec606d"},
-    {file = "moderngl-5.7.2-cp38-cp38-win_amd64.whl", hash = "sha256:6ed7a9fd5586fb1edf6c0f5bc2ec8c41d5372a7ee8cd91510d71f97d1f960268"},
-    {file = "moderngl-5.7.2-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:d0c473eb1bcb1ee30f4a74eee1a71970a3ba89feaa0ca21dece998b4eb4b0445"},
-    {file = "moderngl-5.7.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:e5a9db686b09838692553fa675262ed305b5390ffa262eb72be52823957f67bd"},
-    {file = "moderngl-5.7.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:610f821250ca9ee20c63b9bae509ceac6e6308a6fe4ba9397581425884991508"},
-    {file = "moderngl-5.7.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d23b970fd2523daf156575d8e82233f5e12f3c87356826cf60d8bdab324830ce"},
-    {file = "moderngl-5.7.2-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:46f48481760f20ae478969e3c5a59853fbccc22bd4b06c779d0585bad5e84fd8"},
-    {file = "moderngl-5.7.2-cp39-cp39-win32.whl", hash = "sha256:10434c9606a17bfd83a28fb5ce8a1537b07f8e93c9e8d1631f86874989cd5745"},
-    {file = "moderngl-5.7.2-cp39-cp39-win_amd64.whl", hash = "sha256:b9e9be6ff27fc95dcc69af7eca52b26fd66a4907cc520ca110fabeb90fe57809"},
-    {file = "moderngl-5.7.2-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:b2afcb80c8997775311b3f87b6678f5b4c3fcda42946ed891ae919eac013ce72"},
-    {file = "moderngl-5.7.2-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d01f7bb31a2c2cf23bc911e103f748d8c4bffddaa51e5a5ef6b538cc17d7ad62"},
-    {file = "moderngl-5.7.2-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b4ff655c41dee992fa3e1e39dfa3ec2177794da08cedd54030a88017069053b2"},
-    {file = "moderngl-5.7.2-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:89de25eabdcbb563bc201fa4a789ff0f8fd8f956a887d2b3ddf994b790645f9e"},
-    {file = "moderngl-5.7.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:b0f80b2112aed2e1c78feafd4b95fed418591b74815d8b87700f79189df6d274"},
-    {file = "moderngl-5.7.2-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:320cf80f6506521853cb94d158c589f817fcdf5291fca2758bd58d8ae4a6caf3"},
-    {file = "moderngl-5.7.2-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:17506e2e72c59034e5ec33eb9385e9e142237376f82a9a26f5ccd39e25080908"},
-    {file = "moderngl-5.7.2-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:33b5db1649eca660e399944e9aa43186e661d741a9f98d8befb90762d699f8be"},
-    {file = "moderngl-5.7.2-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d44804852f5c9e97e6c2e9bd84845e4d933f776b4e44491f6e55f73ede9172fd"},
-    {file = "moderngl-5.7.2-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:e9f77a81ad8ee7967e8991f016ce2b9aa35035dae7cc3dee64d7cfdfb4a7f51b"},
-    {file = "moderngl-5.7.2-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:d8962954e560b8a69ee6263956a5dddc5b7220a406f36b8191d6e9f8d572a1e9"},
-    {file = "moderngl-5.7.2-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4eee30d58a72dc976c6fa36d25332c251f7504add1c82990569cfd6d03b76f5f"},
-    {file = "moderngl-5.7.2-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bac84f45f7f4784a8c5ff5cf05a29bfdc388f771330d5a59e7715289387c7ea2"},
-    {file = "moderngl-5.7.2-pp39-pypy39_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:049135a12781ec15e6ea6aa56f626900a01ee7ba053711bfbb6b542094f21f6f"},
-    {file = "moderngl-5.7.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:cec0b23a6af322b479be916095787ab31c3f5a9d3b37315f62d93ed20fb724f6"},
-    {file = "moderngl-5.7.2.tar.gz", hash = "sha256:b1f982639627cb51e065f10dd74004d44bf511543a244e75eb8e835e3a10c720"},
+    {file = "moderngl-5.7.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8dfd4bdd45a379575f2617d58b41f3d26bbf745efd17e62f09ce234c7b9caede"},
+    {file = "moderngl-5.7.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9cdc3b901e6086db7967d5e1fa2ba38b96ccc169b50b1ddb56e1118b9350b701"},
+    {file = "moderngl-5.7.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:43daa419bfe6716cd0de78b7a0e454cc5b6e66dced30b0ce8e41b90e93e271ec"},
+    {file = "moderngl-5.7.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d3e1278d6a1d1f5705e8fe3b707d834e0fbc69ba5e52ffdb793b5a2d31d2b65d"},
+    {file = "moderngl-5.7.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:833d2ec5aa9eaef54bf2af826115ca156ecf2ed887c838da955bf2e4d3263bfb"},
+    {file = "moderngl-5.7.0-cp310-cp310-win32.whl", hash = "sha256:4aec9c13530bd251fa743da7899e4fc78f0fec1e656118c4af87ec9fb7ca2d99"},
+    {file = "moderngl-5.7.0-cp310-cp310-win_amd64.whl", hash = "sha256:f15229cd9d342f4b86727b8a69dcbe440145efed290b8ef0837d728d091ebbb5"},
+    {file = "moderngl-5.7.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:7df011d6ee7c6629656867a5927f40d773641e42b4daffd81d1c6cb95c269755"},
+    {file = "moderngl-5.7.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d703ebed889f0f728eea2743a7e26c8968e61c4e0b36b792a93fe98a51f6bc5d"},
+    {file = "moderngl-5.7.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:443ececbbee9344ce14e0f5b60b152dfe3810cbae8c83aef6c4db2a6d971e7a6"},
+    {file = "moderngl-5.7.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbcb09a0d21d32b8edb0e1ebc18cc756116a6ce9a48dc16000d9bd5e90d23ccd"},
+    {file = "moderngl-5.7.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:330faf6cc99c2e9c742f3e16c32f721f9806bb69b8eabc727e6b47df05220cc8"},
+    {file = "moderngl-5.7.0-cp311-cp311-win32.whl", hash = "sha256:b45004464d784061710fe2f456e53f5602736a133180e3c3fa905b5a71f4a694"},
+    {file = "moderngl-5.7.0-cp311-cp311-win_amd64.whl", hash = "sha256:f4e10ecaa8e7d0e900b1b6692fc14568635f061dd028c064fcd3df3220bc328d"},
+    {file = "moderngl-5.7.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c838f770653d94234921f5653dde246d96d898e22040f1897dae75750949ca1d"},
+    {file = "moderngl-5.7.0-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2ffab1a06096de2336ed8002854b5b1639c7a5672e21b28a899a9ab7871c5eba"},
+    {file = "moderngl-5.7.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:301a6a32e14fcbc643cba95367f19e245aabb210db95b3508e2b5847785fa63a"},
+    {file = "moderngl-5.7.0-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:903576d4b686e2eb7fa773af31c4fe5cb840a0085be87c08299f4483d3bb6932"},
+    {file = "moderngl-5.7.0-cp37-cp37m-win32.whl", hash = "sha256:b29e51a4165355ae10b52c38b660101cb74a5d9ef8da4c5d29cc1b8bd516454b"},
+    {file = "moderngl-5.7.0-cp37-cp37m-win_amd64.whl", hash = "sha256:53e98fff2d20666d281e338d973e39d8c0b51f6230680e3c4d5c96c347e004de"},
+    {file = "moderngl-5.7.0-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:6e537c492cbe3b92d3519cda97f9a2917371b2756bb647dbcccb3040cdf495eb"},
+    {file = "moderngl-5.7.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:ecd3f5f3060f1075735b17ff30bdbe751b3cf87bc635381208591ce00033429b"},
+    {file = "moderngl-5.7.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:52c11c39aee0adceb2760b364730dcafa78e7b7da0141d927b1e8534d468cab3"},
+    {file = "moderngl-5.7.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:04e5cb209f8f5968d114e03c132788afb413098faed9e1321a7126fa7ca2ccc9"},
+    {file = "moderngl-5.7.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:58e10c8899d25945db2d777e7944f8b0a5acd056725d318d3f409bc8c47b99a6"},
+    {file = "moderngl-5.7.0-cp38-cp38-win32.whl", hash = "sha256:fe8c2a591334d201f2047907837348741ad6e16233932986ab9ded19f4bedb41"},
+    {file = "moderngl-5.7.0-cp38-cp38-win_amd64.whl", hash = "sha256:66d0689398cd16e5cb6075925dd6b9583064f09630e2718a725f12c308348b40"},
+    {file = "moderngl-5.7.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:b02506cee2bf9049b6dc3fa8e127d77723d0f0afaa167f384d1691e116dee32f"},
+    {file = "moderngl-5.7.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b60f8a838bb73489532c1ab72509850eff5586c528bfdfd336e2f4d148265b0f"},
+    {file = "moderngl-5.7.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a4e52111e0ec757f0d1f0feb8c1498287507c10d82d35815ced51291a4ff32f6"},
+    {file = "moderngl-5.7.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:30b49cd867b9b67a933bbfe05e8a626c3e490a32bd43e47561d14a7969d08efa"},
+    {file = "moderngl-5.7.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c70fa29265ee5886ac278bb049979bea9d20c4504eb436289019bc5e8311c01d"},
+    {file = "moderngl-5.7.0-cp39-cp39-win32.whl", hash = "sha256:232c5d3843ae26c58a9a2f4b4d1e731f037dd61755ab1fe00d0cc186a9ac9ff3"},
+    {file = "moderngl-5.7.0-cp39-cp39-win_amd64.whl", hash = "sha256:7060958eafdb6a0d27a2273839ca120e9e48891d905ee416817023421a0db176"},
+    {file = "moderngl-5.7.0-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:e2bf2dd0c6cbb7ab57d8c4ed94b5e993ee835f9cd378556bb1a909772e469e38"},
+    {file = "moderngl-5.7.0-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:846254df2e97fc51f18fe1f1faa51090bec669a26bd2970adcb1485689eb1a13"},
+    {file = "moderngl-5.7.0-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d818057300467728e38b441e890deec31574f737b54babf50f7c7854af78c8c4"},
+    {file = "moderngl-5.7.0-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:afe8ae2bf967c26fcfae3c59cfddfa528f2859be50d2b54b12a42ffb6a5fead6"},
+    {file = "moderngl-5.7.0-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:3d67f1d3294795e3e39823fdc53093027e7516d97a2c932e97c56061f23c9831"},
+    {file = "moderngl-5.7.0-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:2d1529e2a9289677076c0dd828053d4e926cb26cfd2e33aff68d7afb8f832a20"},
+    {file = "moderngl-5.7.0-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:20604a61e1ff42d978f0decbed0bb5ee27baef2609437d1da9d35efacd0f9520"},
+    {file = "moderngl-5.7.0-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:93d1cce616b636b0b553b2f4b77c3994fef0d181c90a6ed69ba2f3b5df34e967"},
+    {file = "moderngl-5.7.0-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:31e8ca1d30e604bfcd91c6c0bdc2251fe0bb398136f34fb71967062004632260"},
+    {file = "moderngl-5.7.0-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:501c98f7fde243ea3d35895c0b5aa59888c77b58c19d6a560daf2721386defe4"},
+    {file = "moderngl-5.7.0.tar.gz", hash = "sha256:3434d9e1ca268c963f744beb4ddc4747cf1f435959536cd2599e377fb62abd3f"},
 ]
 multiprocess = [
     {file = "multiprocess-0.70.14-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:560a27540daef4ce8b24ed3cc2496a3c670df66c96d02461a4da67473685adf3"},
@@ -1581,8 +1576,8 @@ urllib3 = [
     {file = "urllib3-1.26.12.tar.gz", hash = "sha256:3fa96cf423e6987997fc326ae8df396db2a8b7c667747d47ddd8ecba91f4a74e"},
 ]
 vpype = [
-    {file = "vpype-1.12.0-py3-none-any.whl", hash = "sha256:16b3841c732407313b7e6395add1c58a929fee60cd32728ef4ca14a78e957b1b"},
-    {file = "vpype-1.12.0.tar.gz", hash = "sha256:0c7f8547f364a57229c610b13dd381c7f7859399b99304914523cd407c962bc7"},
+    {file = "vpype-1.12.1-py3-none-any.whl", hash = "sha256:7401aa47fc635121765af82aef18abc66bb3b119670792ac6a040e5c666f39a4"},
+    {file = "vpype-1.12.1.tar.gz", hash = "sha256:fd898a05b3ccacc2fdb44a54b292ed608f011f552d25c993cb8087d6782e65c1"},
 ]
 watchfiles = [
     {file = "watchfiles-0.18.1-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:9891d3c94272108bcecf5597a592e61105279def1313521e637f2d5acbe08bc9"},
