@@ -306,13 +306,13 @@ def save(
     destination: Optional[str],
     multiprocessing: bool,
 ) -> None:
-    """Save the sketch to a SVG file.
+    """Save the sketch to an SVG file.
 
     TARGET may either point at a Python file or at a directory and is interpreted in the same
     way as the `vsk run` command (see `vsk run --help`).
 
     By default, the output is named after the sketch and the provided options. An alternative
-    name my be provided with the --name option.
+    name may be provided with the --name option.
 
     If the sketch has parameters, their default values are used. Alternatively, a pre-existing
     configuration can be used instead with the --config option.
@@ -353,7 +353,7 @@ def save(
     process. This behaviour can be disabled with --no-multiprocessing or the
     VSK_MULTIPROCESSING variable.
 
-    By default, all SVG are saved in the sketch's "output" sub-directory. This can be
+    By default, all SVG are saved in the sketch's "output" subdirectory. This can be
     overridden using the --destination option.
     """
 

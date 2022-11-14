@@ -158,7 +158,7 @@ class Param(Generic[_T]):
         This class implements a sketch parameter. Ts automatically recognized by ``vsk`` which
         generates the corresponding UI in the sketch interactive viewer. :class:`Param`
         instances must be declared as class member in the :class:`Vsketch` subclass and can
-        then be used using the calling convention::
+        then be used with the calling convention::
 
             import vsketch
             class MySketch(vsketch.Vsketch):
@@ -220,6 +220,10 @@ class Param(Generic[_T]):
             returns True if the value was successfully updated
         """
         try:
+            # bool("False") == True, so we need to check for str first
+            if self.type is bool and isinstance(v, str):
+                v = v.lower() in ("true", "1", "yes", "y")
+
             value = self.type(v)  # type: ignore
         except ValueError:
             return False
