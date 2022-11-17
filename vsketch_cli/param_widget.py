@@ -112,7 +112,7 @@ class TextParamWidget(QTextEdit):
         self.textChanged.connect(self.update_param)  # type: ignore
 
     def update_param(self):
-        self._param.set_value_with_validation(self.text())  # type: ignore
+        self._param.set_value_with_validation(self.toPlainText())  # type: ignore
         # noinspection PyUnresolvedReferences
         self.value_changed.emit()
 
