@@ -61,7 +61,8 @@ class Vsketch:
         self._rect_mode = "corner"
         self._ellipse_mode = "center"
         self._random = random.Random()
-        self._random.seed(random.randint(0, 2**31))
+        self.random_seed = random.randint(0, 2**31)
+        self._random.seed(self.random_seed)
         self._noise = Noise()
         self._text_mode = "transform"
         self.resetMatrix()
@@ -1573,7 +1574,21 @@ class Vsketch:
         Args:
             seed: the seed to use
         """
-        self._random.seed(seed)
+        self.random_seed = seed
+
+    @property
+    def random_seed(self) -> int:
+        """Get the current random seed.
+
+        Returns:
+            the current random seed as an integer
+        """
+        return self._random_seed
+
+    @random_seed.setter
+    def random_seed(self, seed: int) -> None:
+        self._random_seed = seed
+        self._random.seed(self._random_seed)
 
     @overload
     def noise(

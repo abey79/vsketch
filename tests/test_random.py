@@ -25,6 +25,23 @@ def test_random_seed(vsk):
     assert n1 == n3
 
 
+def test_get_random_seed(vsk):
+    vsk.randomSeed(0)
+    n1 = vsk.random(10)
+    assert vsk.random_seed == 0
+
+    vsk.randomSeed(42)
+    n2 = vsk.random(10)
+    assert vsk.random_seed == 42
+
+    vsk.randomSeed(0)
+    n3 = vsk.random(10)
+    assert vsk.random_seed == 0
+
+    assert n1 != n2
+    assert n1 == n3
+
+
 def test_randomGaussian_seed(vsk):
     vsk.randomSeed(0)
     n1 = vsk.randomGaussian()
