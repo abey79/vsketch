@@ -262,6 +262,51 @@ segment) can be adjusted. *vsketch* tries to be smart about this::
     vsk.circle(0, 0, radius=1)
 
 
+Random numbers and seed
+-----------------------
+
+vsketch offers two functions to generate pseudorandom numbers. :meth:`Vsketch.random` returns a random number between specified bounds::
+
+    # with a single argument the range is between 0 and the value given
+    >>> vsk.random(15)
+    7.805739629734665
+
+    # with two arguments the range is between the two values
+    >>> vsk.random(3,4)
+    3.641185534728005
+
+:meth:`Vsketch.randomGaussian` returns a random number fitting a gaussian distribution with a mean of 0 and a standard deviation of 1.0::
+
+    # randomGaussian() takes no arguments
+    >>> vsk.randomGaussian()
+    0.981842376792542
+
+By default vsketch will initialize the random number generator with a random seed, producing different results each time you run the
+sketch. If you prefer, you can set the seed using :meth:`Vsketch.randomSeed` which will produce random but predictable results::
+
+    >>> vsk.randomSeed(349872)
+    >>> vsk.random(15)
+    5.705844347182719
+    >>> vsk.random(100, 200)
+    151.53912704762564
+
+    # if you set the seed to the same value and request the same random values, you'll get the same results
+    >>> vsk.randomSeed(349872)
+    >>> vsk.random(15)
+    5.705844347182719
+    >>> vsk.random(100, 200)
+    151.53912704762564
+
+The seed can be read from :attr:`Vsketch.random_seed`::
+
+    >>> vsk.random_seed
+    1230026887
+
+    >>> vsk.randomSeed(234870)
+    >>> vsk.random_seed
+    234870
+
+
 Perlin noise
 ------------
 
