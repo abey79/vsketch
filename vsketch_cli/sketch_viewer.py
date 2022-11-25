@@ -151,7 +151,10 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._sketch.ensure_finalized()
 
         # launch saving process in a thread
-        thread = DocumentSaverThread(path, self._sketch.vsk.document, self)
+        params = dict(__seed__=self._sketch.vsk.random_seed, **self._sketch.param_set)
+        thread = DocumentSaverThread(
+            path, self._sketch.vsk.document, self, source=f"Vsketch with params {params}"
+        )
         self._sidebar.setEnabled(False)
         self._sidebar.like_btn.setText("saving...")
         thread.completed.connect(self.on_like_completed)  # type: ignore
