@@ -26,7 +26,7 @@ Running the examples
 
 Installing *vsketch* with pipx does *not* install the examples and they must be downloaded separately. An archive from the latest version of the *vsketch* `repository <https://github.com/abey79/vsketch>`__ can be downloaded `here <https://github.com/abey79/vsketch/archive/refs/heads/master.zip>`__. After uncompressing the archive, you can readily execute the examples::
 
-  $ vsk run path/to/vsketch-master/examples/shotter
+  $ vsk run path/to/vsketch-master/examples/schotter
 
 
 Installing plug-ins
