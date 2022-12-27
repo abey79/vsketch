@@ -65,7 +65,7 @@ This command will create a new virtual environment for the project using the pro
 
 Then, everything needed to run *vsketch*, including what's needed for development, can be installed with this command::
 
-  $ poetry install
+  $ poetry install --with docs
 
 By default, Poetry doesn't activate the virtual environment, but provides ``poetry run`` to execute commands it contains::
 
