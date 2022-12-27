@@ -1,3 +1,4 @@
+import json
 import pathlib
 from traceback import format_exc
 from typing import Any, Optional, Type
@@ -39,19 +40,20 @@ class DocumentSaverThread(QThread):
     def __init__(
         self,
         path: pathlib.Path,
-        document: vp.Document,
+        sketch: vsketch.SketchClass,
         *args: Any,
-        source: str = "",
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         self._path = path
-        self._document = document
-        self._source = source
+        self._sketch = sketch
 
     def run(self) -> None:
+        document = self._sketch.vsk.document
+        params = self._sketch.param_set
+        params["__seed__"] = self._sketch.vsk.random_seed
         with open(self._path, "w") as fp:
-            vp.write_svg(fp, self._document, source_string=self._source)
+            vp.write_svg(fp, document, source_string=json.dumps(params))
         # noinspection PyUnresolvedReferences
         self.completed.emit()  # type: ignore
         self.deleteLater()
