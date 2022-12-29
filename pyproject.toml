@@ -45,6 +45,18 @@ isort = ">=5.10.1"
 black = ">=22.1"
 
 
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+furo = ">=2022.4.7"
+sphinx = ">=4.5.0"
+myst_parser = ">=0.17.0"
+sphinx-copybutton = ">=0.5.0"
+sphinx-autoapi = ">=1.8.4"
+sphinx-autobuild = ">=2021.3.14"
+
+
 [build-system]
 requires = ["poetry-core>=1.2"]
 build-backend = "poetry.core.masonry.api"

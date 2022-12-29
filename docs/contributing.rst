@@ -30,7 +30,7 @@ setup a development environment. Vsketch uses `Poetry <https://python-poetry.org
 `installation instructions <https://python-poetry.org/docs/#installation>`_). Then, run the following commands::
 
     git clone https://github.com/abey79/vsketch
-    poetry install  # installs everything needed including vsketch in editable mode
+    poetry install --with docs # installs everything needed including vsketch in editable mode
 
 Poetry will automatically create a virtual environment. You can spawn a shell with the virtual environment activated
 with the following command::
@@ -40,6 +40,30 @@ with the following command::
 You can run tests with the following command::
 
   $ poetry run pytest
+
+
+Using ``just``
+--------------
+
+*vsketch* provides a ``justfile`` for common operations. `Just <https://just.systems/man/en/>`__ must be installed to use it.
+
+The following command list the available recipes:
+
+    just -l
+
+For example, you may build the documentation using this command:
+
+    just docs-build
+
+Available recipes include:
+
+- ``just docs-build`` : build the documentation
+- ``just docs-clean`` : clean the documentations build file
+- ``just docs-live`` : run a live server for the documentation
+- ``just install`` : install a complete dev environment
+- ``just test`` : run all tests
+- ``just test-failed`` : run previously failed tests
+- ``just update-deps`` : update Poetry's lockfile
 
 
 Donations
