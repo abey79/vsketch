@@ -42,6 +42,30 @@ You can run tests with the following command::
   $ poetry run pytest
 
 
+Using ``just``
+--------------
+
+*vsketch* provides a ``justfile`` for common operations. `Just <https://just.systems/man/en/>`__ must be installed to use it.
+
+The following command list the available recipes:
+
+    just -l
+
+For example, you may build the documentation using this command:
+
+    just docs-build
+
+Available recipes include:
+
+- ``just docs-build`` : build the documentation
+- ``just docs-clean`` : clean the documentations build file
+- ``just docs-live`` : run a live server for the documentation
+- ``just install`` : install a complete dev environment
+- ``just test`` : run all tests
+- ``just test-failed`` : run previously failed tests
+- ``just update-deps`` : update Poetry's lockfile
+
+
 Donations
 =========
 
