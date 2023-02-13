@@ -5,13 +5,14 @@ import pytest
 
 import vsketch
 
-from .utils import bounds_equal, line_count_equal, line_exists
+from .utils import bounds_equal, length_equal, line_count_equal, line_exists
 
 
 def test_rect_default_success(vsk: vsketch.Vsketch) -> None:
     vsk.rect(0, 0, 2, 4)
     assert line_count_equal(vsk, 1)
     assert line_exists(vsk, np.array([0, 2, 2 + 4j, 4j, 0], dtype=complex), strict=False)
+    assert length_equal(vsk, (2 + 4) * 2)
 
 
 @pytest.mark.parametrize(

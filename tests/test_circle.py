@@ -1,10 +1,11 @@
 from typing import Tuple
 
+import numpy as np
 import pytest
 
 import vsketch
 
-from .utils import bounds_equal, line_count_equal
+from .utils import bounds_equal, length_equal, line_count_equal
 
 
 def test_circle_default(vsk: vsketch.Vsketch) -> None:
@@ -12,12 +13,14 @@ def test_circle_default(vsk: vsketch.Vsketch) -> None:
     vsk.detail(0.01)  # make sure we have a tight bound match
     vsk.circle(0, 0, 5)
     assert line_count_equal(vsk, 1)
+    assert length_equal(vsk, 5 * np.pi)
     assert bounds_equal(vsk, -2.5, -2.5, 2.5, 2.5)
 
 
 def test_circle_radius(vsk: vsketch.Vsketch) -> None:
     vsk.circle(0, 0, radius=5)
     assert line_count_equal(vsk, 1)
+    assert length_equal(vsk, 5 * 2 * np.pi)
     assert bounds_equal(vsk, -5, -5, 5, 5)
 
 
@@ -25,6 +28,7 @@ def test_circle_diameter(vsk: vsketch.Vsketch) -> None:
     vsk.detail(0.01)  # make sure we have a tight bound match
     vsk.circle(0, 0, diameter=5)
     assert line_count_equal(vsk, 1)
+    assert length_equal(vsk, 5 * np.pi)
     assert bounds_equal(vsk, -2.5, -2.5, 2.5, 2.5)
 
 
