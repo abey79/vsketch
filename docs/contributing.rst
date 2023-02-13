@@ -30,6 +30,7 @@ setup a development environment. Vsketch uses `Poetry <https://python-poetry.org
 `installation instructions <https://python-poetry.org/docs/#installation>`_). Then, run the following commands::
 
     git clone https://github.com/abey79/vsketch
+    cd vsketch
     poetry install --with docs # installs everything needed including vsketch in editable mode
 
 Poetry will automatically create a virtual environment. You can spawn a shell with the virtual environment activated
