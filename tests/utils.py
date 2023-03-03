@@ -20,6 +20,13 @@ def bounds_equal(
     )
 
 
+def length_equal(vsk: vsketch.Vsketch, length: float) -> bool:
+    """Asserts that sketch length is approximately equal to those provided"""
+
+    length_ = vsk.document.length()
+    return bool(length is not None and np.isclose(length_, length, rtol=1e-03))
+
+
 def line_count_equal(vsk: vsketch.Vsketch, *args: Union[int, Tuple[int, int]]) -> bool:
     """Asserts that layers have the given number of path. Any number of path count can be
     passed as argument, either as single int (layer ID is then inferred or as (layer_ID, n)
