@@ -23,6 +23,10 @@ if TYPE_CHECKING:
 
 
 BooleanOperation = Literal["union", "difference", "intersection", "symmetric_difference"]
+""" Specify how to combine two shapes.
+
+Options: one of 'union', 'difference', 'intersection', or 'symmetric_difference'
+"""
 
 
 class Shape:
