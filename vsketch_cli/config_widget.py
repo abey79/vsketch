@@ -33,7 +33,7 @@ class ConfigWidget(QGroupBox):
 
         self._config_list = DeselectListWidget()
         size_policy = self._config_list.sizePolicy()
-        size_policy.setHorizontalPolicy(QSizePolicy.Minimum)
+        size_policy.setHorizontalPolicy(QSizePolicy.Policy.Minimum)
         self._config_list.setSizePolicy(size_policy)
         self._config_list.itemSelectionChanged.connect(  # type: ignore
             self.on_selection_changed
@@ -83,7 +83,7 @@ class ConfigWidget(QGroupBox):
 
     def on_save_btn(self) -> None:
         base_name, ok = QInputDialog.getText(
-            self, "Config Name", "Enter the configuration name:", QLineEdit.Normal
+            self, "Config Name", "Enter the configuration name:", QLineEdit.EchoMode.Normal
         )
 
         if not ok:

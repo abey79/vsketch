@@ -82,7 +82,7 @@ class FloatParamWidget(QDoubleSpinBox):
         if param.step is not None:
             self.setSingleStep(param.step)
         else:
-            self.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+            self.setStepType(QAbstractSpinBox.StepType.AdaptiveDecimalStepType)
             self.setSingleStep(val / 10)
         self.setRange(
             float(param.min) if param.min is not None else -1e100,
