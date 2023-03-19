@@ -1,31 +1,18 @@
-import asyncio
-import functools
 import pathlib
-import sys
 
-import qasync
 from PySide6.QtCore import Qt
-from qasync import QApplication, QEventLoop
+from PySide6.QtWidgets import QApplication
+from vpype_viewer.qtviewer.utils import set_sigint_handler
 
 from .sketch_viewer import SketchViewer
 
 
-async def _show(path: str, second_screen: bool = False) -> int:
-    def close_future(future, loop):
-        loop.call_later(10, future.cancel)
-        future.cancel()
-
-    loop = asyncio.get_event_loop()
-    future: asyncio.Future = asyncio.Future()
-
+def show(path: str, second_screen: bool = False) -> int:
     if not QApplication.instance():
         app = QApplication()
     else:
-        app = QApplication.instance()
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
-
-    if hasattr(app, "aboutToQuit"):
-        getattr(app, "aboutToQuit").connect(functools.partial(close_future, future, loop))
+        app = QApplication.instance()  # type: ignore
+    app.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     # create widget
     widget = SketchViewer(pathlib.Path(path))
@@ -44,15 +31,15 @@ async def _show(path: str, second_screen: bool = False) -> int:
 
     # run
     widget.show()
-    await future
-    return app.exec_()
 
+    # noinspection PyUnusedLocal
+    def sigint_handler(signum, frame):
+        QApplication.quit()
 
-def show(path: str, second_screen: bool = False) -> int:
-    try:
-        return qasync.run(_show(path, second_screen))
-    except asyncio.exceptions.CancelledError:
-        sys.exit(0)
+    with set_sigint_handler(sigint_handler):
+        res = app.exec_()
+
+    return res
 
 
 if __name__ == "__main__":

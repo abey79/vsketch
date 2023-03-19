@@ -1,11 +1,9 @@
-import asyncio
 import json
 import pathlib
 from typing import Any, Dict, Optional, Type
 
 import vpype_viewer
-import watchfiles
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QLabel,
@@ -21,7 +19,7 @@ import vsketch
 from .config_widget import ConfigWidget
 from .param_widget import ParamsWidget
 from .seed_widget import SeedWidget
-from .threads import DocumentSaverThread, SketchRunnerThread
+from .threads import DocumentSaverThread, FileWatcherThread, SketchRunnerThread
 from .utils import canonical_name, find_unique_path, get_config_path, load_sketch_class
 
 
@@ -48,7 +46,7 @@ class SideBarWidget(QWidget):
         self.like_btn.setStyleSheet("padding: 15px; font-weight: bold;")
         self.like_btn.setEnabled(False)
         spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        spacer.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
 
         layout = QVBoxLayout()
         layout.addWidget(self.seed_widget)
@@ -61,8 +59,6 @@ class SideBarWidget(QWidget):
 
 
 class SketchViewer(vpype_viewer.QtViewer):
-    sketchFileChanged = Signal()
-
     def __init__(self, path: pathlib.Path, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
@@ -72,12 +68,10 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._param_set: Dict[str, Any] = {}
         self._seed: Optional[int] = None
         self._thread: Optional[QThread] = None
-        self._stop_event = asyncio.Event()
 
-        self._task = asyncio.get_event_loop().create_task(self.watch())
-
-        # noinspection PyUnresolvedReferences
-        self.sketchFileChanged.connect(self.reload_sketch_class)  # type: ignore
+        # prepare file watcher thread
+        self._watch_thread = FileWatcherThread(self._path)
+        self._watch_thread.sketchFileChanged.connect(self.reload_sketch_class)
 
         self._sidebar = SideBarWidget(get_config_path(self._path))
         self._sidebar.params_widget.paramUpdated.connect(self.redraw_sketch)  # type: ignore
@@ -91,7 +85,7 @@ class SketchViewer(vpype_viewer.QtViewer):
         scroller.setWidget(self._sidebar)
         scroller.setWidgetResizable(True)
         sp = scroller.sizePolicy()
-        sp.setHorizontalPolicy(QSizePolicy.Minimum)
+        sp.setHorizontalPolicy(QSizePolicy.Policy.Minimum)
         scroller.setSizePolicy(sp)
         self.add_side_widget(scroller)
 
@@ -106,17 +100,15 @@ class SketchViewer(vpype_viewer.QtViewer):
         self._trigger_fit_to_viewport = True
         self.reload_sketch_class()
 
-    def __del__(self):
-        self._stop_event.set()
-        self._task.cancel()
+        self._watch_thread.start()
 
     def set_seed(self, seed: int) -> None:
         self._seed = seed
         self.redraw_sketch()
 
     def closeEvent(self, event):
-        self._stop_event.set()
-        self._task.cancel()
+        self._watch_thread.requestInterruption()
+        self._watch_thread.wait()
 
     def save_config(self, path: str) -> None:
         if self._sketch is None:
@@ -212,17 +204,3 @@ class SketchViewer(vpype_viewer.QtViewer):
             self._sidebar.status_label.failed()
             self._sidebar.like_btn.setEnabled(False)
             self.set_document(None)
-
-    async def watch(self):
-        try:
-            async for changes in watchfiles.awatch(self._path, stop_event=self._stop_event):
-                # noinspection PyTypeChecker
-                for change in changes:
-                    if (
-                        pathlib.Path(change[1]) == self._path
-                        and change[0] == watchfiles.Change.modified
-                    ):
-                        # noinspection PyUnresolvedReferences
-                        self.sketchFileChanged.emit()
-        except asyncio.CancelledError:
-            pass

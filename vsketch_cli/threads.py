@@ -3,6 +3,7 @@ from traceback import format_exc
 from typing import Any, Optional, Type
 
 import vpype as vp
+import watchfiles
 from PySide6.QtCore import QThread, Signal
 
 import vsketch
@@ -55,3 +56,26 @@ class DocumentSaverThread(QThread):
         # noinspection PyUnresolvedReferences
         self.completed.emit()  # type: ignore
         self.deleteLater()
+
+
+class FileWatcherThread(QThread):
+    sketchFileChanged = Signal()
+
+    def __init__(self, path: pathlib.Path, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._path = path
+        self._stop = False
+
+    def is_set(self) -> bool:
+        return self.isInterruptionRequested()
+
+    def run(self):
+        for changes in watchfiles.watch(self._path, stop_event=self):
+            # noinspection PyTypeChecker
+            for change in changes:
+                if (
+                    pathlib.Path(change[1]) == self._path
+                    and change[0] == watchfiles.Change.modified
+                ):
+                    # noinspection PyUnresolvedReferences
+                    self.sketchFileChanged.emit()
