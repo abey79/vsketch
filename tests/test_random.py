@@ -69,7 +69,6 @@ def test_noise_seed_different():
 
 
 def test_noise_seed(vsk):
-
     vsk.noiseSeed(0)
     n1 = vsk.noise(100)
     vsk.noiseSeed(2)

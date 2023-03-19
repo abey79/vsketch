@@ -44,7 +44,6 @@ def line_count_equal(vsk: vsketch.Vsketch, *args: Union[int, Tuple[int, int]]) -
 
     target_layer_counts = {}
     for i, p in enumerate(args):
-
         if isinstance(p, int):
             target_layer_counts[i + 1] = p
         else:
