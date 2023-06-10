@@ -1479,6 +1479,7 @@ class Vsketch:
                     color_mode=color_mode,
                     layer_label_format=layer_label,
                     source_string="Generated with vsketch",
+                    use_svg_metadata=True,
                 )
             elif format == "hpgl":
                 if device is None:
