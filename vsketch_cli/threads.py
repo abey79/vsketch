@@ -52,7 +52,12 @@ class DocumentSaverThread(QThread):
 
     def run(self) -> None:
         with open(self._path, "w") as fp:
-            vp.write_svg(fp, self._document, source_string=self._source)
+            vp.write_svg(
+                fp,
+                self._document,
+                source_string=self._source,
+                use_svg_metadata=True,
+            )
         # noinspection PyUnresolvedReferences
         self.completed.emit()  # type: ignore
         self.deleteLater()

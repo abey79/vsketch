@@ -476,6 +476,7 @@ def save(
                 fp,
                 doc,
                 source_string=source_string,
+                use_svg_metadata=True,
             )
 
     all_output_iterator = itertools.product(
