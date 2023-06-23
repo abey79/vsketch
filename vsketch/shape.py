@@ -731,19 +731,20 @@ class Shape:
 
     def geometry(
         self,
-        shape: LineString | LinearRing | MultiPolygon | MultiLineString | Polygon,
+        shape: LineString | LinearRing | MultiPolygon | MultiPoint | MultiLineString | Polygon,
         op: BooleanOperation = "union",
     ) -> None:
         """Add a Shapely geometry to the shape.
 
         This function should accept any of LineString, LinearRing, MultiPolygon,
-        MultiLineString, or Polygon.
+        MultiPoint, MultiLineString, or Polygon.
 
-        This function support multiple boolean mode with the ``op`` argument: ``union``
+        This function support multiple boolean modes with the ``op`` argument: ``union``
         (default, the geometry is added to the shape), ``difference`` (the geometry is cut off
         the shape), ``intersection`` (only the overlapping part of the geometry is kept in the
         shape), or ``symmetric_difference`` (only the none overlapping parts of the shape and
-        geometry are kept).
+        geometry are kept).  The ``op`` argument is ignored if ``shape`` is a MultiPoint
+        object.
 
         .. seealso::
 
@@ -771,6 +772,9 @@ class Shape:
                     self.polygon(
                         p.exterior.coords, holes=[hole.coords for hole in p.interiors], op=op
                     )
+            elif shape.geom_type == "MultiPoint":
+                for p in shape.geoms:
+                    self.point(p.x, p.y)
             else:
                 raise ValueError("unsupported Shapely geometry")
         except AttributeError:
