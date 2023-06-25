@@ -731,12 +731,18 @@ class Shape:
 
     def geometry(
         self,
-        shape: LineString | LinearRing | MultiPoint | MultiPolygon | MultiLineString | Point | Polygon,
+        shape: LineString
+        | LinearRing
+        | MultiPoint
+        | MultiPolygon
+        | MultiLineString
+        | Point
+        | Polygon,
         op: BooleanOperation = "union",
     ) -> None:
         """Add a Shapely geometry to the shape.
 
-        This function should accept any of LineString, LinearRing, MultiPoint, 
+        This function should accept any of LineString, LinearRing, MultiPoint,
         MultiPolygon, MultiLineString, Point, or Polygon.
 
         This function support multiple boolean modes with the ``op`` argument: ``union``
