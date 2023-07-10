@@ -1,4 +1,5 @@
 import pathlib
+from typing import Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
@@ -7,7 +8,9 @@ from vpype_viewer.qtviewer.utils import set_sigint_handler
 from .sketch_viewer import SketchViewer
 
 
-def show(path: str, second_screen: bool = False) -> int:
+def show(
+    path: pathlib.Path, output_dir: Optional[pathlib.Path], second_screen: bool = False
+) -> int:
     if not QApplication.instance():
         app = QApplication()
     else:
@@ -15,7 +18,7 @@ def show(path: str, second_screen: bool = False) -> int:
     app.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     # create widget
-    widget = SketchViewer(pathlib.Path(path))
+    widget = SketchViewer(path, output_dir)
 
     # handle window sizing
     screens = app.screens()
@@ -43,4 +46,8 @@ def show(path: str, second_screen: bool = False) -> int:
 
 
 if __name__ == "__main__":
-    show("/Users/hhip/src/vsketch/examples/simple_sketch/sketch.py", second_screen=True)
+    show(
+        pathlib.Path("/Users/hhip/src/vsketch/examples/simple_sketch/sketch.py"),
+        output_dir=None,
+        second_screen=True,
+    )

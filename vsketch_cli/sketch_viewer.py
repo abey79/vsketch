@@ -59,12 +59,17 @@ class SideBarWidget(QWidget):
 
 
 class SketchViewer(vpype_viewer.QtViewer):
-    def __init__(self, path: pathlib.Path, *args: Any, **kwargs: Any):
+    def __init__(
+        self, path: pathlib.Path, output_dir: Optional[pathlib.Path], *args: Any, **kwargs: Any
+    ):
         super().__init__(*args, **kwargs)
 
         self._sketch_class: Optional[Type[vsketch.SketchClass]] = None
         self._sketch: Optional[vsketch.SketchClass] = None
         self._path = path.resolve(strict=True)  # make sure the path has no symlink
+        self._output_dir = (
+            output_dir if output_dir is not None else self._path.parent / "output"
+        )
         self._param_set: Dict[str, Any] = {}
         self._seed: Optional[int] = None
         self._thread: Optional[QThread] = None
@@ -136,9 +141,10 @@ class SketchViewer(vpype_viewer.QtViewer):
             return
 
         base_name = canonical_name(self._path)
-        path = find_unique_path(
-            base_name + "_liked.svg", self._path.parent / "output", always_number=True
-        )
+
+        # Create output directory if it doesn't already exist
+        self._output_dir.mkdir(exist_ok=True)
+        path = find_unique_path(base_name + "_liked.svg", self._output_dir, always_number=True)
 
         self._sketch.ensure_finalized()
 
