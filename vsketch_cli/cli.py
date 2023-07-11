@@ -102,7 +102,7 @@ By default, the new project is based on the official template located here:
     https://github.com/abey79/cookiecutter-vsketch-sketch
 
 You can provide an alternative template address with the --template option.
- 
+
 Most options can use environment variables to set their default values. For example, the
 default template can be set with the VSK_TEMPLATE variable and the default page size with the
 VSK_PAGE_SIZE variable.
@@ -180,7 +180,18 @@ def _parse_seed(seed: str) -> Tuple[int, int]:
     envvar="VSK_FULLSCREEN",
     help="Display the viewer fullscreen on the second screen if available.",
 )
-def run(target: Optional[str], editor: Optional[str], fullscreen: bool) -> None:
+@click.option(
+    "--output-dir",
+    envvar="VSK_OUTPUT_DIR",
+    type=click.Path(path_type=pathlib.Path, file_okay=False, dir_okay=True),
+    help="Directory to save liked plots. If not provided, defaults to a directory called 'output' next to the sketch source file.",
+)
+def run(
+    target: Optional[str],
+    editor: Optional[str],
+    fullscreen: bool,
+    output_dir: Optional[pathlib.Path],
+) -> None:
     """Execute, display and monitor changes on a sketch.
 
     This command loads a sketch and opens an interactive viewer display the result. The viewer
@@ -210,7 +221,7 @@ def run(target: Optional[str], editor: Optional[str], fullscreen: bool) -> None:
     if editor is not None and editor != "":
         os.system(f"{editor} {path}")
 
-    show(str(path), second_screen=fullscreen)
+    show(path, output_dir, second_screen=fullscreen)
 
 
 @dataclasses.dataclass()

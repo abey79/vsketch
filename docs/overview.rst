@@ -60,6 +60,9 @@ If the ``--editor`` option is passed, it will be used to open the sketch script 
 Most popular IDE and editors have such a command (e.g. ``charm`` for PyCharm, ``code`` for VSCode, ``mate`` for
 TextMate, etc.). Again, setting the ``VSK_EDITOR`` environment variable enables this feature permanently.
 
+The "like" button will save an SVG the current sketch to a directory named ``output`` next to the
+sketch source file. The output directory can be overridden with the ``--output-dir`` option, or
+with the ``VSK_OUTPUT_DIR`` environment variable.
 
 Exporting SVG with ``vsk save``
 -------------------------------
