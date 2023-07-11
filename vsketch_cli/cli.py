@@ -46,21 +46,24 @@ def _find_candidates(path: pathlib.Path, glob: str) -> Optional[pathlib.Path]:
         return None
 
 
-def _find_sketch_script(path: Optional[str]) -> pathlib.Path:
+def _find_sketch_script(path: Optional[pathlib.Path]) -> pathlib.Path:
     """Implements the logics of finding the sketch script:
 
     - if path is dir, look for a unique ``sketch_*.py`` file (return if exists, fail if many)
+    - if none, look for a file named exactly ``sketch.py`` (return if exists)
     - if none, look for a unique  ``*.py`` file (return if exists, fail if none or many)
     - if path is file, check if it ends with ``.py`` and fail otherwise
 
     """
-    path = pathlib.Path().cwd() if path is None else pathlib.Path(path)
+    path = pathlib.Path().cwd() if path is None else path
 
     if path.is_dir():
         # find  suitable sketch
-        candidate_path = _find_candidates(path, "sketch_*.py")
-        if candidate_path is None:
-            candidate_path = _find_candidates(path, "*.py")
+        candidate_globs = ["sketch_*.py", "sketch.py", "*.py"]
+        for glob_pattern in candidate_globs:
+            candidate_path = _find_candidates(path, glob_pattern)
+            if candidate_path is not None:
+                break
 
         if candidate_path is None:
             raise ValueError(
@@ -166,7 +169,11 @@ def _parse_seed(seed: str) -> Tuple[int, int]:
 
 
 @cli.command()
-@click.argument("target", required=False)
+@click.argument(
+    "target",
+    type=click.Path(exists=True, path_type=pathlib.Path),
+    required=False,
+)
 @click.option(
     "--editor",
     "-e",
@@ -187,7 +194,7 @@ def _parse_seed(seed: str) -> Tuple[int, int]:
     help="Directory to save liked plots. If not provided, defaults to a directory called 'output' next to the sketch source file.",
 )
 def run(
-    target: Optional[str],
+    target: Optional[pathlib.Path],
     editor: Optional[str],
     fullscreen: bool,
     output_dir: Optional[pathlib.Path],
@@ -198,11 +205,11 @@ def run(
     will refresh the display each time the sketch file is saved. If the sketch defines any
     parameters, they will be displayed by the viewer and may be interactively changed.
 
-    TARGET may either point at a Python file or at a directory. If omitted, the current
-    directory is assumed. When TARGET points at a directory, this command looks for a single
-    Python file whose name starts wit `sketch_`. If none are found, it will look for a single
-    Python file with arbitrary name. If no or multiple candidates are found, the command will
-    fail.
+    TARGET may either point at a Python file or at a directory. If omitted, the current directory
+    is assumed. When TARGET points at a directory, this command looks for a single Python file
+    whose name starts with `sketch_`. If none are found, it will attempt to use a Python file named
+    `sketch.py`. If no such file exists, it will look for a single Python file with arbitrary name.
+    If no or multiple candidates are found, the command will fail.
 
     If the --editor option is provided or the VSK_EDITOR environment variable is set, the
     sketch file will be opened with the corresponding editor.
@@ -279,7 +286,11 @@ class _ParamSpec:
 
 
 @cli.command()
-@click.argument("target", required=False)
+@click.argument(
+    "target",
+    type=click.Path(exists=True, path_type=pathlib.Path),
+    required=False,
+)
 @click.option("--name", "-n", metavar="NAME", help="Output name (without extension).")
 @click.option(
     "--config",
@@ -309,7 +320,7 @@ class _ParamSpec:
     help="Enable multiprocessing.",
 )
 def save(
-    target: Optional[str],
+    target: Optional[pathlib.Path],
     name: Optional[str],
     config: Optional[str],
     seed: Optional[str],
