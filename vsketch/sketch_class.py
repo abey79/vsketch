@@ -231,10 +231,10 @@ class Param(Generic[_T]):
         if self.choices and value not in self.choices:
             return False
 
-        if self.min:
+        if self.min is not None:
             value = max(self.min, value)  # type: ignore
 
-        if self.max:
+        if self.max is not None:
             value = min(self.max, value)  # type: ignore
 
         self.value = value
