@@ -1,7 +1,7 @@
 # *vsketch*
 
 ![python](https://img.shields.io/github/languages/top/abey79/vsketch)
-![Test](https://img.shields.io/github/workflow/status/abey79/vsketch/Lint%20and%20Tests?label=Tests&logo=github)
+![Test](https://img.shields.io/github/actions/workflow/status/abey79/vsketch/python-lint-tests.yml?logo=github)
 [![Documentation Status](https://img.shields.io/readthedocs/vsketch?label=Read%20the%20Docs&logo=read-the-docs)](https://vsketch.readthedocs.io/en/latest/?badge=latest)
 
 
