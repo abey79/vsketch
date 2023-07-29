@@ -1,7 +1,7 @@
 # *vsketch*
 
 ![python](https://img.shields.io/github/languages/top/abey79/vsketch)
-![Test](https://img.shields.io/github/workflow/status/abey79/vsketch/Lint%20and%20Tests?label=Tests&logo=github)
+![Test](https://img.shields.io/github/actions/workflow/status/abey79/vsketch/python-lint-tests.yml?logo=github)
 [![Documentation Status](https://img.shields.io/readthedocs/vsketch?label=Read%20the%20Docs&logo=read-the-docs)](https://vsketch.readthedocs.io/en/latest/?badge=latest)
 
 
@@ -35,10 +35,10 @@ You can help by providing feedback and improving the documentation.*
 The recommended way to install *vsketch* is as a stand-alone installation using pipx:
 
 ```bash
-$ pipx install git+https://github.com/abey79/vsketch
+$ pipx install vsketch
 ```
 
-To run the examples, they must be [downloaded](https://github.com/abey79/vsketch/archive/refs/heads/master.zip) separately. After uncompressing the archive, they can be run using the following command:
+To run the examples, they must be [downloaded](https://github.com/abey79/vsketch/archive/refs/heads/master.zip) separately. After decompressing the archive, they can be run using the following command:
 
 ```bash
 $ vsk run path/to/vsketch-master/examples/schotter
@@ -163,7 +163,7 @@ Finally, being extremely picky, it would be nice to be able to generate ONE HUND
 $ vsk save --config "Best config" --seed 0..99 my_project
 ```
 
-You'll find all the SVG file in the project's `output` sub-directory:
+You'll find all the SVG file in the project's `output` subdirectory:
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/49431240/107375111-abab0180-6ae8-11eb-8034-d84c9d400ab2.png">
 
