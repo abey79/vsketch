@@ -24,6 +24,7 @@ from .utils import (
 
 
 @click.group()
+@click.version_option(vsketch.__version__)
 def cli():
     pass
 

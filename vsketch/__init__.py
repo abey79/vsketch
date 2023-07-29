@@ -19,4 +19,14 @@ __all__ = [
     "Shape",
     "working_directory",
     "EASING_FUNCTIONS",
+    "__version__",
 ]
+
+
+def _get_version() -> str:
+    from importlib.metadata import version
+
+    return version(__name__)
+
+
+__version__ = _get_version()
