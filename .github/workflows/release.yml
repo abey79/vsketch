@@ -1,0 +1,38 @@
+
+name: Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+
+  job_release:
+    name: Create Release and Upload to PyPI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version-file: pyproject.toml
+
+    - name: Install poetry and build wheels
+      run: |
+        pipx install poetry
+        poetry build        
+
+    - name: Create Release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        draft: true
+        files: |
+          dist/*
+
+    - name: Publish to PyPI
+      run: poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}

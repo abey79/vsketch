@@ -17,14 +17,13 @@ Installing using pipx
 
 The recommended way to install *vsketch* is using pipx as a stand-alone installation::
 
-    $ pipx install "git+https://github.com/abey79/vsketch"
-
+    $ pipx install vsketch
 
 
 Running the examples
 ====================
 
-Installing *vsketch* with pipx does *not* install the examples and they must be downloaded separately. An archive from the latest version of the *vsketch* `repository <https://github.com/abey79/vsketch>`__ can be downloaded `here <https://github.com/abey79/vsketch/archive/refs/heads/master.zip>`__. After uncompressing the archive, you can readily execute the examples::
+Installing *vsketch* with pipx does *not* install the examples, and they must be downloaded separately. An archive from the latest version of the *vsketch* `repository <https://github.com/abey79/vsketch>`__ can be downloaded `here <https://github.com/abey79/vsketch/archive/refs/heads/master.zip>`__. After decompressing the archive, you can readily execute the examples::
 
   $ vsk run path/to/vsketch-master/examples/schotter
 
@@ -46,7 +45,7 @@ For example, run the following command to install `vpype-perspective <https://gi
 Installing from the repository
 ==============================
 
-If you want to make modifications to *vsketch* itself (whether or not you intend to share them for upstream integration), you must clone the repository and install *vsketch* from source.
+If you want to make modifications to *vsketch* itself (regardless of your intention to share them for upstream integration), you must clone the repository and install *vsketch* from source.
 
 Like *vpype*, *vsketch* uses `Poetry <https://python-poetry.org>`__ as project manager. `Various methods <https://python-poetry.org/docs/#installation>`__ are available to install Poetry. Using pipx is one of them::
 
