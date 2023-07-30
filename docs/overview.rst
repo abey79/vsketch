@@ -51,7 +51,7 @@ If a second screen is available, it can be automatically used for the viewer::
 
     $ vsk run --fullscreen my_project
 
-This can ben permanently enabled by setting the ``VSK_FULLSCREEN`` environment variable.
+This can be permanently enabled by setting the ``VSK_FULLSCREEN`` environment variable.
 
 If the ``--editor`` option is passed, it will be used to open the sketch script in the corresponding editor::
 
