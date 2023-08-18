@@ -511,13 +511,13 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 
 [[package]]
 name = "furo"
-version = "2023.7.26"
+version = "2023.8.17"
 description = "A clean customisable Sphinx documentation theme."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "furo-2023.7.26-py3-none-any.whl", hash = "sha256:1c7936929ec57c5ddecc7c85f07fa8b2ce536b5c89137764cca508be90e11efd"},
-    {file = "furo-2023.7.26.tar.gz", hash = "sha256:257f63bab97aa85213a1fa24303837a3c3f30be92901ec732fea74290800f59e"},
+    {file = "furo-2023.8.17-py3-none-any.whl", hash = "sha256:baed406fc8f75a585caa330756b6841e6a1d4c844a3a355387e01ba9d1a4c6ee"},
+    {file = "furo-2023.8.17.tar.gz", hash = "sha256:56664be7290d1457a49d6c2c98cbf96537b9ee1cf05d28e05a5178e76abe5c55"},
 ]
 
 [package.dependencies]
