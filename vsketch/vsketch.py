@@ -182,7 +182,7 @@ class Vsketch:
 
         By default, the sketch is always centered on the page. This can be disabled with
         ``center=False``. In this case, the sketch's absolute coordinates are used, with (0, 0)
-        corresponding to the page's top-left corener and Y coordinates increasing downwards.
+        corresponding to the page's top-left corner and Y coordinates increasing downwards.
 
         The current page size (in CSS pixels) can be obtained with :py:attr:`width` and
         :py:attr:`height` properties.
@@ -194,7 +194,7 @@ class Vsketch:
                 >>> vsk = Vsketch()
                 >>> vsk.size("a4")
 
-            Alternatively, the page size can be explicitely provided. All of the following
+            Alternatively, the page size can be explicitly provided. All of the following
             calls are strictly equivalent::
 
                 >>> vsk.size("15in", "10in")
@@ -203,7 +203,7 @@ class Vsketch:
                 >>> vsk.size("15in", 960.)  # 1in = 96 CSS pixels
 
         Args:
-            width: page width or page forwat specifier if ``h`` is omitted
+            width: page width or page format specifier if ``h`` is omitted
             height: page height
             landscape: rotate page size by 90 degrees if True
             center: if False, automatic centering is disabled
