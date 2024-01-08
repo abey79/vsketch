@@ -33,6 +33,12 @@ class SketchClass:
     def execute_draw(self) -> None:
         self.draw(self._vsk)
 
+        # apply pen widths to the document's metadata
+        for lid, layer in self._vsk.document.layers.items():
+            pen_width = self._vsk.getPenWidth(lid)
+            if pen_width is not None:
+                layer.set_property(vp.METADATA_FIELD_PEN_WIDTH, pen_width)
+
     def ensure_finalized(self) -> None:
         if self._finalized:
             return
