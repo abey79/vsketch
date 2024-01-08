@@ -95,7 +95,7 @@ def display(
 
         # noinspection PyUnresolvedReferences
         layer_lines = matplotlib.collections.LineCollection(
-            (vp.as_vector(line + offset) * scale for line in lc),
+            [vp.as_vector(line + offset) * scale for line in lc],
             color=color,
             lw=1,
             alpha=0.5,
@@ -107,13 +107,13 @@ def display(
         if show_pen_up:
             # noinspection PyUnresolvedReferences
             pen_up_lines = matplotlib.collections.LineCollection(
-                (
+                [
                     (
                         (vp.as_vector(lc[i])[-1] + offset_ndarr) * scale,
                         (vp.as_vector(lc[i + 1])[0] + offset_ndarr) * scale,
                     )
                     for i in range(len(lc) - 1)
-                ),
+                ],
                 color=(0, 0, 0),
                 lw=0.5,
                 alpha=0.5,
@@ -132,6 +132,6 @@ def display(
     else:
         plt.axis("off")
     if show_grid:
-        plt.grid("on")
+        plt.grid(True)
 
     plt.show()

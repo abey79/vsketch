@@ -58,9 +58,9 @@ Once Poetry is installed, clone the repository using git::
 
 From there, Poetry can install everything needed for development environment using a few commands. Though this can be done automatically, it is a good practice to explicitly create a virtual environment by specifying which Python interpreter to use::
 
-  $ poetry env use /opt/local/bin/python3.10
+  $ poetry env use /opt/local/bin/python3.12
 
-This command will create a new virtual environment for the project using the provided Python interpreter (here Python 3.10 as installed by `MacPorts <https://www.macports.org>`__ on macOS – adjust as needed), and mark it as the default. Note that Poetry can handle any number of virtual environments for the project, for example with different versions of Python. At any time, one of the virtual environment is marked as default and used by other Poetry commands.
+This command will create a new virtual environment for the project using the provided Python interpreter (here Python 3.12 as installed by `MacPorts <https://www.macports.org>`__ on macOS – adjust as needed), and mark it as the default. Note that Poetry can handle any number of virtual environments for the project, for example with different versions of Python. At any time, one of the virtual environment is marked as default and used by other Poetry commands.
 
 Then, everything needed to run *vsketch*, including what's needed for development, can be installed with this command::
 

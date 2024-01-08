@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: [3.9, "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
         os: [ubuntu-latest, macos-latest]
     defaults:
       run:
@@ -66,21 +66,6 @@ jobs:
     - name: Pytest
       run: |
         poetry run pytest --runslow
-      ## FIXME codecov
-      if: true || matrix.python-version != '3.11' || matrix.os != 'ubuntu-latest'
-    ## CODECOV SUPPORT ##
-    ## TODO: need to be activated
-    - name: Pytest with coverage
-      run: |
-        poetry run pytest --runslow --cov=./ --cov-report=xml
-      if: false && matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
-      ## FIXME codecov
-      if: false && matrix.python-version == '3.8' && matrix.os == 'ubuntu-latest'
 
   #################
   # TESTS WINDOWS #
@@ -90,7 +75,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: [3.9, "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     defaults:
       run:
         shell: bash
