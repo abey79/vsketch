@@ -325,6 +325,21 @@ class Vsketch:
         else:
             self._default_pen_width = w
 
+    def getPenWidth(self, layer: int | None) -> float | None:
+        """Get the pen width for a given layer.
+
+        Args:
+            layer: layer ID (or None for default pen width)
+
+        Returns:
+            the pen width (or `None` if not defined)
+        """
+
+        if layer is None:
+            return self._default_pen_width
+
+        return self._pen_width.get(layer, self._default_pen_width)
+
     @property
     def strokePenWidth(self) -> float:
         """Returns the pen width to be used for stroke, or 0 in :func:`noStroke` mode.
