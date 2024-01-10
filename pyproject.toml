@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vsketch"
-version = "1.1.0a0"
+version = "1.1.0"
 description = "Plotter generative art environment"
 authors = ["Antoine Beyeler <abeyeler@ab-ware.com>"]
 license = "MIT"
