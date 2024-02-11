@@ -17,8 +17,7 @@ def _cubic_bezier(
     x4: float,
     y4: float,
     positions: float,
-) -> tuple[float, float]:
-    ...
+) -> tuple[float, float]: ...
 
 
 @overload
@@ -32,8 +31,7 @@ def _cubic_bezier(
     x4: float,
     y4: float,
     positions: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
-    ...
+) -> tuple[np.ndarray, np.ndarray]: ...
 
 
 def _cubic_bezier(
@@ -122,8 +120,7 @@ def _cubic_bezier_tangent(
     x4: float,
     y4: float,
     positions: float,
-) -> tuple[float, float]:
-    ...
+) -> tuple[float, float]: ...
 
 
 @overload
@@ -137,8 +134,7 @@ def _cubic_bezier_tangent(
     x4: float,
     y4: float,
     positions: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
-    ...
+) -> tuple[np.ndarray, np.ndarray]: ...
 
 
 def _cubic_bezier_tangent(

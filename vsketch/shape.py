@@ -731,13 +731,15 @@ class Shape:
 
     def geometry(
         self,
-        shape: LineString
-        | LinearRing
-        | MultiPoint
-        | MultiPolygon
-        | MultiLineString
-        | Point
-        | Polygon,
+        shape: (
+            LineString
+            | LinearRing
+            | MultiPoint
+            | MultiPolygon
+            | MultiLineString
+            | Point
+            | Polygon
+        ),
         op: BooleanOperation = "union",
     ) -> None:
         """Add a Shapely geometry to the shape.

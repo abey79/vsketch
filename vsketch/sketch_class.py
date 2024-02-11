@@ -247,12 +247,10 @@ class Param(Generic[_T]):
         return True
 
     @overload
-    def __get__(self, instance: None, owner: None) -> Param:
-        ...
+    def __get__(self, instance: None, owner: None) -> Param: ...
 
     @overload
-    def __get__(self, instance: object, owner: type[object]) -> _T:
-        ...
+    def __get__(self, instance: object, owner: type[object]) -> _T: ...
 
     def __get__(
         self, instance: object | None, owner: type[object] | None = None
