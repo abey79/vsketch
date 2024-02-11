@@ -6,6 +6,11 @@ install:
 update-deps:
   poetry update
 
+lint:
+    isort --check --diff vsketch vsketch_cli examples tests
+    black --check --diff vsketch vsketch_cli examples tests
+    mypy
+
 # run all tests
 test:
   pytest
