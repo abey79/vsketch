@@ -140,14 +140,13 @@ class SketchViewer(vpype_viewer.QtViewer):
         if self._sketch is None:
             return
 
-        base_name = canonical_name(self._path)
-
-        # Create output directory if it doesn't already exist
-        self._output_dir.mkdir(exist_ok=True)
-        path = find_unique_path(base_name + "_liked.svg", self._output_dir, always_number=True)
+        # find a unique path, and create the output dir if it does not
+        # already exist
+        path = self.get_future_path()
 
         self._sketch.ensure_finalized()
-
+        self._most_recent_path = path
+        
         # launch saving process in a thread
         params = dict(__seed__=self._sketch.vsk.random_seed, **self._sketch.param_set)
         thread = DocumentSaverThread(
@@ -159,8 +158,24 @@ class SketchViewer(vpype_viewer.QtViewer):
         thread.start()
 
     def on_like_completed(self) -> None:
+        self._sketch.execute_post_finalize()
         self._sidebar.setEnabled(True)
         self._sidebar.like_btn.setText("LIKE!")
+    
+    def get_recent_path(self) -> pathlib.Path | None:
+        """Returns the most recent :class:`pathlib.Path` that a sketch was exported
+        to, or `None` if the sketch has not been exported or has been reloaded.
+        """
+        return self._most_recent_path
+    
+    def get_future_path(self) -> pathlib.Path:
+        """Returns a :class:`pathlib.Path` object that a sketch may be exported to,
+        ensuring a unique filename at the time of method call.  Will create
+        the `output_dir` if it does not exist.
+        """
+        base_name = canonical_name(self._path)
+        self._output_dir.mkdir(exist_ok=True)
+        return find_unique_path(base_name + "_liked.svg", self._output_dir, always_number=True)
 
     def reload_sketch_class(self) -> None:
         # extract sketch class from script file
@@ -169,8 +184,11 @@ class SketchViewer(vpype_viewer.QtViewer):
         # update UI to reflect declared parameter while attempting to save their previous
         # values
         if self._sketch_class is not None:
-            # attempt to restore previous set of parameters
+            # unset previous filename
+            self._most_recent_path = None
+            
             if self._sketch is not None:
+                # attempt to restore previous set of parameters
                 self._sketch_class.set_param_set(self._sketch.param_set)
 
             self._sidebar.params_widget.set_params(self._sketch_class.get_params())
@@ -202,6 +220,7 @@ class SketchViewer(vpype_viewer.QtViewer):
             self._sidebar.status_label.succeeded()
             self._sidebar.like_btn.setEnabled(True)
             self.set_document(self._sketch.vsk.document)
+            self._sketch._set_viewer(self)
 
             if self._trigger_fit_to_viewport:
                 self._viewer_widget.engine.fit_to_viewport()

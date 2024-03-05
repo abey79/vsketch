@@ -24,11 +24,20 @@ class SketchClass:
         self._vsk = Vsketch()
         self._finalized = False
         self._params = self.get_params()
+        self._viewer = None
 
     @property
     def vsk(self) -> Vsketch:
         """:class:`Vsketch` instance"""
         return self._vsk
+    
+    @property 
+    def viewer(self) -> SketchViewer | None:
+        """:class:`SketchViewer` instance, or None if no viewer attached."""
+        return self._viewer
+    
+    def _set_viewer(self, viewer: SketchViewer):
+        self._viewer = viewer
 
     def execute_draw(self) -> None:
         self.draw(self._vsk)
@@ -57,6 +66,12 @@ class SketchClass:
                 )
 
         self._finalized = True
+    
+    def execute_post_finalize(self) -> None:
+      if not self._finalized:
+        return
+      
+      self.post_finalize(self._vsk)
 
     @classmethod
     def execute(
@@ -116,6 +131,14 @@ class SketchClass:
         This function must be implemented by subclasses.
         """
         raise NotImplementedError()
+    
+    def post_finalize(self, vsk: Vsketch) -> None:
+        """Called after export, optional in subclasses.
+        
+        Intended to allow for including post-processing on
+        saved files.
+        """
+        return
 
     @classmethod
     def get_params(cls) -> dict[str, Param]:
@@ -136,6 +159,26 @@ class SketchClass:
     def param_set(self) -> dict[str, Any]:
         return {name: param.value for name, param in self._params.items()}
 
+    def get_future_path(self) -> Path | None:
+        """Returns a :class:`Path` object pointing to the future location
+        of the exported file when 'like' is pressed, or `None` if viewer
+        is not set.
+        """
+        if self._viewer is None:
+          return None
+        else:
+          return self._viewer.get_future_path()
+    
+    def get_recent_path(self) -> Path | None:
+        """Returns a :class:`Path` object pointing to the most recent
+        path of the exported file when 'like' was pressed, or `None` if
+        viewer is not set or the sketch class has been reloaded.  Intended
+        for use in `post_finalize`.
+        """
+        if self._viewer is None:
+          return None
+        else:
+          return self._viewer.get_recent_path()
 
 _T = TypeVar("_T")
 
