@@ -1,6 +1,6 @@
 import pathlib
 from traceback import format_exc
-from typing import Any, Optional, Type
+from typing import Any, Callable, Optional, Type
 
 import vpype as vp
 import watchfiles
@@ -43,12 +43,14 @@ class DocumentSaverThread(QThread):
         document: vp.Document,
         *args: Any,
         source: str = "",
+        post_finalize: Callable,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         self._path = path
         self._document = document
         self._source = source
+        self._post_finalize = post_finalize
 
     def run(self) -> None:
         with open(self._path, "w") as fp:
@@ -58,6 +60,8 @@ class DocumentSaverThread(QThread):
                 source_string=self._source,
                 use_svg_metadata=True,
             )
+        # only after the save is complete, execute post finalize
+        self._post_finalize(self._path)
         # noinspection PyUnresolvedReferences
         self.completed.emit()  # type: ignore
         self.deleteLater()
