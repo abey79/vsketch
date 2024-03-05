@@ -10,6 +10,7 @@ import vpype as vp
 
 from .utils import working_directory
 from .vsketch import Vsketch
+from .vsketch_cli import SketchViewer
 
 ParamType = Union[int, float, bool, str]
 
@@ -30,13 +31,13 @@ class SketchClass:
     def vsk(self) -> Vsketch:
         """:class:`Vsketch` instance"""
         return self._vsk
-    
-    @property 
+
+    @property
     def viewer(self) -> SketchViewer | None:
         """:class:`SketchViewer` instance, or None if no viewer attached."""
         return self._viewer
-    
-    def _set_viewer(self, viewer: SketchViewer):
+
+    def _set_viewer(self, viewer: SketchViewer) -> None:
         self._viewer = viewer
 
     def execute_draw(self) -> None:
@@ -66,12 +67,12 @@ class SketchClass:
                 )
 
         self._finalized = True
-    
+
     def execute_post_finalize(self) -> None:
-      if not self._finalized:
-        return
-      
-      self.post_finalize(self._vsk)
+        if not self._finalized:
+            return
+
+        self.post_finalize(self._vsk)
 
     @classmethod
     def execute(
@@ -131,10 +132,10 @@ class SketchClass:
         This function must be implemented by subclasses.
         """
         raise NotImplementedError()
-    
+
     def post_finalize(self, vsk: Vsketch) -> None:
         """Called after export, optional in subclasses.
-        
+
         Intended to allow for including post-processing on
         saved files.
         """
@@ -159,26 +160,27 @@ class SketchClass:
     def param_set(self) -> dict[str, Any]:
         return {name: param.value for name, param in self._params.items()}
 
-    def get_future_path(self) -> Path | None:
+    def get_future_path(self) -> pathlib.Path | None:
         """Returns a :class:`Path` object pointing to the future location
         of the exported file when 'like' is pressed, or `None` if viewer
         is not set.
         """
         if self._viewer is None:
-          return None
+            return None
         else:
-          return self._viewer.get_future_path()
-    
-    def get_recent_path(self) -> Path | None:
+            return self._viewer.get_future_path()
+
+    def get_recent_path(self) -> pathlib.Path | None:
         """Returns a :class:`Path` object pointing to the most recent
         path of the exported file when 'like' was pressed, or `None` if
         viewer is not set or the sketch class has been reloaded.  Intended
         for use in `post_finalize`.
         """
         if self._viewer is None:
-          return None
+            return None
         else:
-          return self._viewer.get_recent_path()
+            return self._viewer.get_recent_path()
+
 
 _T = TypeVar("_T")
 
@@ -290,10 +292,12 @@ class Param(Generic[_T]):
         return True
 
     @overload
-    def __get__(self, instance: None, owner: None) -> Param: ...
+    def __get__(self, instance: None, owner: None) -> Param:
+        ...
 
     @overload
-    def __get__(self, instance: object, owner: type[object]) -> _T: ...
+    def __get__(self, instance: object, owner: type[object]) -> _T:
+        ...
 
     def __get__(
         self, instance: object | None, owner: type[object] | None = None

@@ -1613,7 +1613,8 @@ class Vsketch:
         y: float | None = None,
         z: float | None = None,
         grid_mode: bool = True,
-    ) -> float: ...
+    ) -> float:
+        ...
 
     @overload
     def noise(
@@ -1622,7 +1623,8 @@ class Vsketch:
         y: None | float | Sequence[float] | np.ndarray = None,
         z: None | float | Sequence[float] | np.ndarray = None,
         grid_mode: bool = True,
-    ) -> np.ndarray: ...
+    ) -> np.ndarray:
+        ...
 
     def noise(self, x, y=None, z=None, grid_mode=True):
         """Returns the Perlin noise value at specified coordinates.
@@ -1815,7 +1817,8 @@ class Vsketch:
         low_dead: float = 0.0,
         high_dead: float = 0.0,
         param: float = 10,
-    ) -> float: ...
+    ) -> float:
+        ...
 
     # noinspection PyNestedDecorators
     @overload
@@ -1830,7 +1833,8 @@ class Vsketch:
         low_dead: float = 0.0,
         high_dead: float = 0.0,
         param: float = 10,
-    ) -> np.ndarray: ...
+    ) -> np.ndarray:
+        ...
 
     @staticmethod
     def easing(
