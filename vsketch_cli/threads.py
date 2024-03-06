@@ -44,6 +44,7 @@ class DocumentSaverThread(QThread):
         *args: Any,
         source: str = "",
         post_finalize: Callable,
+        sketch_vsk: vsketch.Vsketch,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
@@ -51,6 +52,7 @@ class DocumentSaverThread(QThread):
         self._document = document
         self._source = source
         self._post_finalize = post_finalize
+        self._sketch_vsk = sketch_vsk
 
     def run(self) -> None:
         with open(self._path, "w") as fp:
@@ -61,7 +63,7 @@ class DocumentSaverThread(QThread):
                 use_svg_metadata=True,
             )
         # only after the save is complete, execute post finalize
-        self._post_finalize(self._path)
+        self._post_finalize(self._sketch_vsk, self._path)
         # noinspection PyUnresolvedReferences
         self.completed.emit()  # type: ignore
         self.deleteLater()

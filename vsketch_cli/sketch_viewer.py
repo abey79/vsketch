@@ -155,7 +155,8 @@ class SketchViewer(vpype_viewer.QtViewer):
             self._sketch.vsk.document,
             self,
             source=f"Vsketch with params {params}",
-            post_finalize=self._sketch.ensure_post_finalized,
+            post_finalize=self._sketch.post_finalize,
+            sketch_vsk=self._sketch._vsk,
         )
         self._sidebar.setEnabled(False)
         self._sidebar.like_btn.setText("saving...")

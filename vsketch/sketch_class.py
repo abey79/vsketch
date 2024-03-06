@@ -23,7 +23,6 @@ class SketchClass:
     def __init__(self):
         self._vsk = Vsketch()
         self._finalized = False
-        self._post_finalized = False
         self._params = self.get_params()
 
     @property
@@ -58,15 +57,6 @@ class SketchClass:
                 )
 
         self._finalized = True
-
-    def ensure_post_finalized(self, path: pathlib.Path) -> None:
-        # only do anything if sketch is finalized but not post_finalized
-        if not self._finalized or self._post_finalized:
-            return
-
-        self.post_finalize(self._vsk, path)
-
-        self._post_finalized = True
 
     @classmethod
     def execute(
