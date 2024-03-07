@@ -123,7 +123,7 @@ class SketchClass:
         Intended to allow for including post-processing on
         saved files.
         """
-        return
+        pass
 
     @classmethod
     def get_params(cls) -> dict[str, Param]:
