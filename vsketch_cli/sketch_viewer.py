@@ -140,9 +140,9 @@ class SketchViewer(vpype_viewer.QtViewer):
         if self._sketch is None:
             return
 
+        # find a unique path, and create the output dir if it does not
+        # already exist
         base_name = canonical_name(self._path)
-
-        # Create output directory if it doesn't already exist
         self._output_dir.mkdir(exist_ok=True)
         path = find_unique_path(base_name + "_liked.svg", self._output_dir, always_number=True)
 
@@ -151,7 +151,12 @@ class SketchViewer(vpype_viewer.QtViewer):
         # launch saving process in a thread
         params = dict(__seed__=self._sketch.vsk.random_seed, **self._sketch.param_set)
         thread = DocumentSaverThread(
-            path, self._sketch.vsk.document, self, source=f"Vsketch with params {params}"
+            path,
+            self._sketch.vsk.document,
+            self,
+            source=f"Vsketch with params {params}",
+            post_finalize=self._sketch.post_finalize,
+            sketch_vsk=self._sketch._vsk,
         )
         self._sidebar.setEnabled(False)
         self._sidebar.like_btn.setText("saving...")
@@ -169,8 +174,8 @@ class SketchViewer(vpype_viewer.QtViewer):
         # update UI to reflect declared parameter while attempting to save their previous
         # values
         if self._sketch_class is not None:
-            # attempt to restore previous set of parameters
             if self._sketch is not None:
+                # attempt to restore previous set of parameters
                 self._sketch_class.set_param_set(self._sketch.param_set)
 
             self._sidebar.params_widget.set_params(self._sketch_class.get_params())

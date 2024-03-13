@@ -502,6 +502,9 @@ def save(
                 use_svg_metadata=True,
             )
 
+        # only run the sketch's post_finalize after the file has been written
+        sketch.post_finalize(sketch._vsk, output_file)
+
     all_output_iterator = itertools.product(
         range(seed_start, seed_end + 1), *[spec.values for spec in param_specs]
     )

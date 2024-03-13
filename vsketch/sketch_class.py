@@ -117,6 +117,14 @@ class SketchClass:
         """
         raise NotImplementedError()
 
+    def post_finalize(self, vsk: Vsketch, path: pathlib.Path) -> None:
+        """Called after export, optional in subclasses.
+
+        Intended to allow for including post-processing on
+        saved files.
+        """
+        pass
+
     @classmethod
     def get_params(cls) -> dict[str, Param]:
         res = {}
