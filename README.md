@@ -169,7 +169,7 @@ You'll find all the SVG file in the project's `output` subdirectory:
 
 Next steps:
 * Use `vsk` integrated help to learn about the all the possibilities (`vsk --help`).
-* Learn the vsketch API on the documentation's [overview](https://vsketch.readthedocs.io/en/latest/overview.html) and [reference](https://vsketch.readthedocs.io/en/latest/reference.html) pages.
+* Learn the vsketch API on the documentation's [overview](https://vsketch.readthedocs.io/en/latest/overview.html) and [reference](https://vsketch.readthedocs.io/en/latest/autoapi/vsketch/index.html) pages.
 
 
 ## Acknowledgments
