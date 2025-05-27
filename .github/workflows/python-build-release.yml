@@ -1,0 +1,140 @@
+#
+# python-build-release.yml
+# Created by Perry Naseck on 6/20/21.
+#
+# This source code is licensed under the MIT License found in the
+# LICENSE file in the root directory of this source tree.
+#
+
+name: Build and Release
+on: [push, pull_request]
+
+jobs:
+  build-python-sdist:
+    name: Build Source Distribution
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: 3.9
+      - name: Install Python build tool
+        run: python -m pip install build
+      - name: Build sdist
+        run: python -m build --sdist --outdir dist/
+      - name: Display structure of dist files
+        run: ls -R
+        working-directory: dist
+      - name: SHA256 files
+        run: find . -type f -exec sha256sum {} \;
+        working-directory: dist
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python-dist
+          path: dist/*.tar.gz
+  install-python-sdist:
+    name: 'Installability of Source Distribution (${{ matrix.python-version }}-${{ matrix.id }}: ${{ matrix.os }})'
+    needs: [build-python-sdist]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-20.04, python-version: 3.9 }
+          - { os: windows-2019, python-version: 3.9 }
+          - { os: macos-10.15,  python-version: 3.9 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Download python-dist artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: python-dist
+          path: dist/
+      - name: SHA256 files
+        shell: bash
+        run: find . -type f -exec sha256sum {} \;
+        working-directory: dist
+      - uses: actions/setup-python@v2
+        name: Install Python ${{ matrix.python-version }}
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install sdist
+        shell: bash
+        run: python -m pip install dist/*.tar.gz
+  build-python-wheel:
+    name: Build Wheel
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: 3.9
+      - name: Install Python build tool
+        run: python -m pip install build
+      - name: Build wheel
+        run: python -m build --wheel --outdir wheelhouse/
+      - name: Display structure of wheelhouse files
+        run: ls -R
+        working-directory: wheelhouse
+      - name: SHA256 files
+        shell: bash
+        run: find . -type f -name "*.whl" -exec sha256sum {} \;
+        working-directory: wheelhouse
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python-dist
+          path: ./wheelhouse/*.whl
+  publish-python:
+    name: Publish distributions to PyPI
+    needs: [build-python-sdist, build-python-wheel]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download python-dist artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: python-dist
+        path: dist/
+    - name: Display structure of dist files
+      run: ls -R
+      working-directory: dist
+    - name: Publish distribution to PyPI
+      env:
+        PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      if: env.PYPI_API_TOKEN != null
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+  publish-release-artifacts:
+    name: Publish Release Artifacts to GitHub
+    needs: [build-python-sdist, build-python-wheel]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download Python artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: python-dist
+        path: python-dist/
+    - name: Display structure of python-dist files
+      run: ls -R
+      working-directory: python-dist
+    - name: Archive python-dist
+      run:  >
+        tar -czvf python-dist-vsketch-${GITHUB_REF##*/}-all.tar.gz -C python-dist .
+    - name: SHA256 files
+      run: find . -type f -name "*.tar.gz" -exec sha256sum {} \;
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        prerelease: ${{ contains(github.event.ref, '-pre') || contains(github.event.ref, '-alpha') || contains(github.event.ref, '-beta') || contains(github.event.ref, '-rc') || contains(github.event.ref, '-dev') }}
+        files: |
+          *.tar.gz
+          python-dist/*.tar.gz
+          python-dist/*.whl
