@@ -1,41 +1,40 @@
-[tool.poetry]
+[project]
 name = "vsketch"
 version = "1.1.0"
 description = "Plotter generative art environment"
-authors = ["Antoine Beyeler <abeyeler@ab-ware.com>"]
+authors = [
+    { name = "Antoine Beyeler", email = "abeyeler@ab-ware.com" }
+]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.11, <3.14"
+dynamic = ["classifiers"]
+
+
+dependencies = [
+    "cookiecutter>=2.1",
+    "matplotlib>=3.3.3",
+    "multiprocess>=0.70",
+    "numpy>=1.20.1,<3",
+    "pnoise>=0.2.0",
+    "PySide6>=6.3.2",
+    "Shapely[vectorized]>=1.8.2",
+    "vpype[all] @ git+https://github.com/abey79/vpype@7a144e2ad97c5acd539f43ed11903f6284ba4c1e",
+    "watchfiles>=0.12",
+]
+
+[project.urls]
 homepage = "https://github.com/abey79/vsketch"
 documentation = "https://vsketch.readthedocs.io/en/latest/"
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Topic :: Artistic Software",
-    "Topic :: Multimedia :: Graphics",
-]
+
+[project.scripts]
+vsk = "vsketch_cli.cli:cli"
+
+[tool.poetry]
 packages = [
     { include = "vsketch" },
     { include = "vsketch_cli" },
 ]
-include = [
-    "README.md",
-    "LICENSE",
-]
-
-[tool.poetry.scripts]
-vsk = "vsketch_cli.cli:cli"
-
-[tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-cookiecutter = ">=2.1"
-matplotlib = ">=3.3.3"
-multiprocess = ">=0.70"
-numpy = ">=1.20.1,<3"
-pnoise = ">=0.2.0"
-PySide6 = ">=6.3.2"
-Shapely = {extras = ["vectorized"], version = ">=1.8.2"}
-vpype = {extras = ["all"], version = "1.14"}
-# vpype = { extras = ["all"], git = "https://github.com/abey79/vpype/", branch = "master" }
-watchfiles = ">=0.12"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=6.2.4"
@@ -58,7 +57,7 @@ sphinx-autobuild = ">=2021.3.14"
 
 
 [build-system]
-requires = ["poetry-core>=1.2"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]

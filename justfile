@@ -1,6 +1,6 @@
 # install a complete dev environment
 install:
-  poetry install --with docs
+  poetry install --with docs,dev
 
 # update Poetry's lockfile
 update-deps:
