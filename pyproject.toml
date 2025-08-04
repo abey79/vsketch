@@ -36,6 +36,11 @@ packages = [
     { include = "vsketch_cli" },
 ]
 
+classifiers = [
+    "Topic :: Artistic Software",
+    "Topic :: Multimedia :: Graphics",
+]
+
 [tool.poetry.group.dev.dependencies]
 pytest = ">=6.2.4"
 mypy = ">=0.901"
