@@ -2407,27 +2407,29 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 
 [[package]]
 name = "vpype"
-version = "1.15.0a0"
+version = "1.15.0"
 description = "The Swiss Army knife of vector graphics for pen plotters"
 optional = false
-python-versions = ">=3.11, <3.14"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "vpype-1.15.0-py3-none-any.whl", hash = "sha256:b94c5841df4de42c8654a6441a15609a2880f931b04aa027ef5eafa442dd408d"},
+    {file = "vpype-1.15.0.tar.gz", hash = "sha256:090a1f88c888238df0744de0179b9d9f3829cd88bac60b88490e3e397a84aed3"},
+]
 
 [package.dependencies]
 asteval = ">=0.9.26"
 cachetools = ">=4.2.2"
 click = ">=8.2"
-glcontext = {version = ">=2.3.2", optional = true}
-matplotlib = {version = ">=3.3.2", optional = true}
-moderngl = {version = ">=5.6.2,<5.7.1 || >5.7.1,<5.7.2 || >5.7.2", optional = true}
+glcontext = {version = ">=2.3.2", optional = true, markers = "extra == \"all\""}
+matplotlib = {version = ">=3.3.2", optional = true, markers = "extra == \"all\""}
+moderngl = {version = ">=5.6.2,<5.7.1 || >5.7.1,<5.7.2 || >5.7.2", optional = true, markers = "extra == \"all\""}
 multiprocess = ">=0.70.11"
 numpy = ">=1.25,<3"
-Pillow = {version = ">=9.0.1", optional = true}
+Pillow = {version = ">=9.0.1", optional = true, markers = "extra == \"all\""}
 pnoise = ">=0.2.0"
 pyphen = ">=0.14,<0.16"
-PySide6 = {version = ">=6.4.0.1,<6.6.2 || >6.6.2", optional = true}
+PySide6 = {version = ">=6.4.0.1,<6.6.2 || >6.6.2", optional = true, markers = "extra == \"all\""}
 scipy = ">=1.6"
 Shapely = ">=1.8.2"
 svgelements = ">=1.6.10"
@@ -2436,12 +2438,6 @@ tomli = ">=2.0.0"
 
 [package.extras]
 all = ["Pillow (>=9.0.1)", "PySide6 (>=6.4.0.1,!=6.6.2)", "glcontext (>=2.3.2)", "matplotlib (>=3.3.2)", "moderngl (>=5.6.2,!=5.7.1,!=5.7.2)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/abey79/vpype"
-reference = "7a144e2ad97c5acd539f43ed11903f6284ba4c1e"
-resolved_reference = "7a144e2ad97c5acd539f43ed11903f6284ba4c1e"
 
 [[package]]
 name = "watchfiles"
@@ -2644,4 +2640,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11, <3.14"
-content-hash = "896dbb4d1712cbb449d52444f54457ff7048497812f254bca917a6901def5e2e"
+content-hash = "284c9153e35fd5047c4cb8c84c9eb613b86e207495079428aed3e704f98ae388"

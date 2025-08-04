@@ -5,6 +5,7 @@
 * Added optional `post_finalize()` function to `SketchClass`, to allow sketches to operate on the output SVG (thanks @gatesphere) (#432)
 * Update for Python 3.13, drop support for Python 3.10 (#504)
 * Update `pyproject.toml` to the standard format (#504)
+* Bumped *vpype* to 1.15
 
 
 ## 1.1.0 (2024-01-10)

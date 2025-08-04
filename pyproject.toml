@@ -19,7 +19,8 @@ dependencies = [
     "pnoise>=0.2.0",
     "PySide6>=6.3.2",
     "Shapely[vectorized]>=1.8.2",
-    "vpype[all] @ git+https://github.com/abey79/vpype@7a144e2ad97c5acd539f43ed11903f6284ba4c1e",
+    "vpype[all]>=1.15.0",
+    #"vpype[all] @ git+https://github.com/abey79/vpype@7a144e2ad97c5acd539f43ed11903f6284ba4c1e",
     "watchfiles>=0.12",
 ]
 
