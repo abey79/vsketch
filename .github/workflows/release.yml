@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version-file: pyproject.toml
 
@@ -25,14 +25,12 @@ jobs:
         pipx install poetry
         poetry build        
 
-    - name: Create Release
-      uses: "marvinpinto/action-automatic-releases@latest"
+    - name: Create GH release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: false
+        files: dist/*
         draft: true
-        files: |
-          dist/*
 
     - name: Publish to PyPI
       run: poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}
