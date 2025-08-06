@@ -1,6 +1,6 @@
 # Change log
 
-## 1.2.0 (UNRELEASED)
+## 1.2.0 (2025-08-06)
 
 * Added optional `post_finalize()` function to `SketchClass`, to allow sketches to operate on the output SVG (thanks @gatesphere) (#432)
 * Update for Python 3.13, drop support for Python 3.10 (#504)
