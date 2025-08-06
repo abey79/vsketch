@@ -1,6 +1,6 @@
 [project]
 name = "vsketch"
-version = "1.1.0"
+version = "1.2.0rc1"
 description = "Plotter generative art environment"
 authors = [
     { name = "Antoine Beyeler", email = "abeyeler@ab-ware.com" }
