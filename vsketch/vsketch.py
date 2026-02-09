@@ -2000,8 +2000,8 @@ class Vsketch:
         elif mode == "label":
             # Then use a point to find out where to move the text to, given the
             # current transformation.
-            location = self._transform_line(np.array([complex(x, y)]))[0]
-            text_lc.translate(location.real, location.imag)
+            location = self._transform_line(np.array([complex(x, y)]))
+            text_lc.translate(float(location.real[0]), float(location.imag[0]))
 
         if self._cur_stroke is not None:
             self._document.add(text_lc, self._cur_stroke)
