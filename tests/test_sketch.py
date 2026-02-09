@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import vsketch
 
@@ -61,3 +62,10 @@ def test_sketch_recursive(vsk):
     assert line_exists(vsk, UNIT_SQUARE + 2)
     assert line_exists(vsk, UNIT_SQUARE + 2j)
     assert line_exists(vsk, UNIT_SQUARE + 2 + 2j)
+
+
+@pytest.mark.parametrize("mode", ["label", "transform"])
+def test_text_does_not_raise(vsk, mode):
+    """Regression test for #517: vsk.text() raises TypeError with NumPy >= 2.4.0."""
+    vsk.size("10cm", "10cm")
+    vsk.text("L", -1, 1, align="center", mode=mode)
