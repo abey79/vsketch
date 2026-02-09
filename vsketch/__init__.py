@@ -10,7 +10,6 @@ from .sketch_class import SketchClass, Param, ParamType
 from .easing import EASING_FUNCTIONS
 from .utils import working_directory
 
-
 __all__ = [
     "Vsketch",
     "Param",
