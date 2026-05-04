@@ -44,8 +44,8 @@ classifiers = [
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=9.0.3"
-mypy = ">=0.901"
-types-requests = ">=2.0"
+mypy = ">=1.20.2"
+types-requests = ">=2.33.0.20260503"
 isort = ">=5.10.1"
 black = ">=22.1"
 
