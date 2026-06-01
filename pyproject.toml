@@ -15,13 +15,13 @@ dependencies = [
     "cookiecutter>=2.1",
     "matplotlib>=3.10.9",
     "multiprocess>=0.70",
-    "numpy>=1.20.1,<3",
+    "numpy>=2.4.6,<3",
     "pnoise>=0.2.0",
-    "PySide6>=6.3.2",
+    "PySide6>=6.11.1",
     "Shapely[vectorized]>=1.8.2",
     "vpype[all]>=1.15.0",
     #"vpype[all] @ git+https://github.com/abey79/vpype@7a144e2ad97c5acd539f43ed11903f6284ba4c1e",
-    "watchfiles>=0.12",
+    "watchfiles>=1.2.0",
 ]
 
 [project.urls]
