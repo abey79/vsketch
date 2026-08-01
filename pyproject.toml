@@ -13,7 +13,7 @@ dynamic = ["classifiers"]
 
 dependencies = [
     "cookiecutter>=2.1",
-    "matplotlib>=3.10.9",
+    "matplotlib>=3.11.1",
     "multiprocess>=0.70",
     "numpy>=2.4.6,<3",
     "pnoise>=0.2.0",
