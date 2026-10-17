@@ -17,6 +17,48 @@ import vsketch
 
 _MAX_INT = (2**31) - 1
 
+# ``QDoubleSpinBox`` renders values with a fixed number of decimal places and,
+# crucially, snaps its *range bounds* to that precision. A declared bound that
+# is finer than the current precision is therefore silently altered by Qt:
+# ``min_value=0.001`` at two decimals becomes an effective minimum of ``0.00``
+# (letting the user type ``0``), while ``min_value=0.05`` at one decimal becomes
+# ``0.1`` (tightening past what the sketch declared).
+#
+# To counter this we raise the number of decimals until every declared bound
+# survives a round-trip through the fixed-notation text format that Qt uses
+# internally, up to a hard ceiling. The ceiling is 18 decimals: it is well
+# beyond any bound a sketch realistically declares, and was verified against
+# the actual Qt behaviour (e.g. ``1e-16`` and ``1e-18`` round-trip exactly at
+# this cap). Doubles whose spacing is finer than 1e-18 -- e.g. ``1e-19`` or
+# ``nextafter(1e-18)`` -- need more precision than the cap can display and
+# fall through to the documented beyond-cap policy below.
+#
+# Bounds needing *more* than the cap (subnormal-magnitude values such as
+# ``1e-19``) cannot be displayed faithfully. Rather than imply that the declared
+# bound still holds, the widget falls back to the cap and lets Qt clamp the
+# bound to the nearest representable value; the enforced minimum/maximum is then
+# exactly ``QDoubleSpinBox.minimum()``/``maximum()``, which callers and tests
+# should read as the real boundary. This is documented and exercised in the
+# test suite.
+_MAX_DISPLAY_DECIMALS = 18
+
+
+def _decimals_to_represent(x: float, start: int) -> int:
+    """Smallest number of decimals >= ``start`` at which ``x`` round-trips
+    through fixed-notation formatting (the precision model Qt applies when
+    snapping spinbox range bounds), capped at ``_MAX_DISPLAY_DECIMALS``.
+
+    If ``x`` cannot be represented within the cap, the cap is returned; the
+    caller should treat the resulting spinbox ``minimum()``/``maximum()`` as the
+    effective bound rather than assuming ``x`` itself was preserved.
+    """
+    d = max(1, start)
+    while d <= _MAX_DISPLAY_DECIMALS:
+        if float(f"{x:.{d}f}") == x:
+            return d
+        d += 1
+    return _MAX_DISPLAY_DECIMALS
+
 
 class ChoiceParamWidget(QComboBox):
     value_changed = Signal()
@@ -78,6 +120,13 @@ class FloatParamWidget(QDoubleSpinBox):
             decimals = 1
         else:
             decimals = max(1, 1 - math.floor(math.log10(abs(val))))
+        # Raise the precision until every declared bound survives Qt's snapping
+        # to the display precision, so the UI enforces what the sketch declares
+        # (see the note above _MAX_DISPLAY_DECIMALS for the beyond-cap case).
+        # ``singleStep`` is not snapped by Qt and needs no such treatment.
+        for extra in (param.min, param.max):
+            if extra is not None:
+                decimals = max(decimals, _decimals_to_represent(float(extra), decimals))
         self.setDecimals(decimals)
         if param.step is not None:
             self.setSingleStep(param.step)
