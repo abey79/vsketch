@@ -47,7 +47,7 @@ pytest = ">=9.0.3"
 mypy = ">=1.20.2"
 types-requests = ">=2.33.0.20260503"
 isort = ">=5.10.1"
-black = ">=22.1"
+black = ">=26.10.1"
 
 
 [tool.poetry.group.docs]
